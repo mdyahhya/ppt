@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI PPT Maker Agent by Yahya</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f7f8;
+            --text-primary: #353740;
+            --text-secondary: #6e6e80;
+            --border-color: #d9d9e3;
+            --accent-color: #10a37f;
+            --accent-hover: #0d8f6f;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --user-bg: #f7f7f8;
+            --assistant-bg: #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: #1a1a1a;
+            border-right: 1px solid #2a2a2a;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.5;
+        }
+
+        .status-section {
+            flex: 1;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .status-item.active {
+            background: rgba(16, 163, 127, 0.2);
+            border-color: var(--accent-color);
+        }
+
+        .status-item.completed {
+            background: rgba(16, 163, 127, 0.1);
+            border-color: var(--accent-color);
+        }
+
+        .status-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            flex-shrink: 0;
+        }
+
+        .status-item.active .status-icon {
+            background: var(--accent-color);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .status-item.completed .status-icon {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .status-text {
+            flex: 1;
+        }
+
+        .status-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .status-sublabel {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.4;
+        }
+
+        .loading-dots {
+            display: inline-flex;
+            gap: 3px;
+            margin-left: 4px;
+        }
+
+        .dot {
+            width: 4px;
+            height: 4px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.6;
+            }
+
+            30% {
+                transform: translateY(-6px);
+                opacity: 1;
+            }
+        }
+
+        .sidebar-footer {
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 8px;
+        }
+
+        .creator-badge {
+            display: inline-block;
+            background: var(--gradient);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header {
+            padding: 20px 24px;
+            background: var(--gradient);
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            background: var(--bg-secondary);
+        }
+
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+
+        .empty-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .empty-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .chat-messages {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .message-wrapper.user .message-avatar {
+            background: #667eea;
+            color: white;
+        }
+
+        .message-wrapper.assistant .message-avatar {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .message-content {
+            flex: 1;
+            padding: 14px 18px;
+            border-radius: 12px;
+            line-height: 1.6;
+            font-size: 14px;
+            max-width: 700px;
+        }
+
+        .message-wrapper.user .message-content {
+            background: var(--user-bg);
+            border: 1px solid var(--border-color);
+        }
+
+        .message-wrapper.assistant .message-content {
+            background: white;
+            border: 1px solid var(--border-color);
+        }
+
+        .typing-indicator {
+            display: inline-flex;
+            gap: 4px;
+            padding: 4px 0;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.6;
+            }
+
+            30% {
+                transform: translateY(-8px);
+                opacity: 1;
+            }
+        }
+
+        /* Input Container */
+        .input-container {
+            padding: 20px 24px;
+            background: white;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .input-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 14px 52px 14px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            resize: none;
+            min-height: 50px;
+            max-height: 200px;
+            transition: all 0.2s;
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.1);
+        }
+
+        .send-button {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            width: 36px;
+            height: 36px;
+            background: var(--accent-color);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-button:hover:not(:disabled) {
+            background: var(--accent-hover);
+            transform: scale(1.05);
+        }
+
+        .send-button:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .input-hint {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Action buttons in preview */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Preview Slides */
+        .slide-preview {
+            background: var(--gradient);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .slide-preview h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+
+        .slide-preview.title-slide h3 {
+            font-size: 28px;
+            text-align: center;
+            border: none;
+            margin: 20px 0;
+        }
+
+        .slide-preview p {
+            font-size: 13px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .slide-preview.title-slide p {
+            text-align: center;
+            font-size: 14px;
+            margin: 12px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .chat-container {
+                padding: 16px;
+            }
+
+            .input-container {
+                padding: 16px;
+            }
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">🎯 AI PPT Maker</div>
+                <div class="sidebar-subtitle">Chat with AI to create professional presentations instantly</div>
+            </div>
+
+            <div class="status-section">
+                <div class="status-item" id="step1">
+                    <div class="status-icon">1</div>
+                    <div class="status-text">
+                        <div class="status-label">User Details</div>
+                        <div class="status-sublabel">Collecting your name and topic</div>
+                    </div>
+                </div>
+
+                <div class="status-item" id="step2">
+                    <div class="status-icon">2</div>
+                    <div class="status-text">
+                        <div class="status-label">Presentation Style</div>
+                        <div class="status-sublabel">Choosing tone and complexity</div>
+                    </div>
+                </div>
+
+                <div class="status-item" id="step3">
+                    <div class="status-icon">3</div>
+                    <div class="status-text">
+                        <div class="status-label">Points Selection</div>
+                        <div class="status-sublabel">Defining slide structure</div>
+                    </div>
+                </div>
+
+                <div class="status-item" id="step4">
+                    <div class="status-icon">4</div>
+                    <div class="status-text">
+                        <div class="status-label">Content Generation</div>
+                        <div class="status-sublabel">AI creating slide content</div>
+                    </div>
+                </div>
+
+                <div class="status-item" id="step5">
+                    <div class="status-icon">✓</div>
+                    <div class="status-text">
+                        <div class="status-label">PDF Ready</div>
+                        <div class="status-sublabel">Download your presentation</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="footer-text">Powered by Dominal AI</div>
+                <div class="creator-badge">Built by Yahya © 2025</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>✨ AI PPT Maker Agent</h1>
+                <p>Let's create your professional presentation together</p>
+            </div>
+
+            <div class="chat-container" id="chatContainer">
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-icon">🎯</div>
+                    <div class="empty-title">AI PPT Maker Agent</div>
+                    <div class="empty-subtitle">Chat with me to create your presentation. I'll guide you through each
+                        step!</div>
+                </div>
+
+                <div class="chat-messages hidden" id="chatMessages"></div>
+            </div>
+
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <textarea class="chat-input" id="chatInput" placeholder="Type 'start' to begin creating your PPT..."
+                        rows="1"></textarea>
+                    <button class="send-button" id="sendButton">➤</button>
+                </div>
+                <div class="input-hint">AI PPT Maker by Yahya • Press Enter to send</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // Configuration & State
+        // ==========================================
+        const API_URL = '/.netlify/functions/ppt-chat';
+
+        const state = {
+            step: 0,
+            userName: '',
+            topic: '',
+            tone: '',
+            slideCount: 0,
+            pointsChoice: '',
+            points: [],
+            content: {},
+            conversationHistory: []
+        };
+
+        const statusMessages = {
+            analyzing: ['Analyzing your request', 'Understanding your needs', 'Processing information'],
+            generating: ['Generating slide structure', 'Creating outline', 'Building framework'],
+            content: ['Writing slide content', 'Crafting professional text', 'Humanizing content', 'Polishing language'],
+            pdf: ['Preparing PDF layout', 'Formatting slides', 'Building document', 'Finalizing presentation'],
+            ppt: ['Creating PowerPoint', 'Building PPTX structure', 'Formatting presentation', 'Finalizing slides']
+        };
+
+        // ==========================================
+        // DOM Elements
+        // ==========================================
+        const emptyState = document.getElementById('emptyState');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendButton');
+
+        // ==========================================
+        // Utility Functions
+        // ==========================================
+        function addMessage(role, content) {
+            emptyState.classList.add('hidden');
+            chatMessages.classList.remove('hidden');
+
+            const wrapper = document.createElement('div');
+            wrapper.className = `message-wrapper ${role}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = role === 'user' ? 'Y' : '🤖';
+
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.textContent = content;
+
+            wrapper.appendChild(avatar);
+            wrapper.appendChild(messageContent);
+            chatMessages.appendChild(wrapper);
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return messageContent;
+        }
+
+        function addTypingIndicator() {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message-wrapper assistant';
+            wrapper.id = 'typingIndicator';
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = '🤖';
+
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.innerHTML = `
+    <div class="typing-indicator">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>
+  `;
+
+            wrapper.appendChild(avatar);
+            wrapper.appendChild(messageContent);
+            chatMessages.appendChild(wrapper);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) indicator.remove();
+        }
+
+        function updateStepStatus(stepNumber, status = 'active') {
+            const step = document.getElementById(`step${stepNumber}`);
+            if (step) {
+                step.classList.remove('active', 'completed');
+                if (status) step.classList.add(status);
+            }
+        }
+
+        function showRandomStatusMessage(category) {
+            const messages = statusMessages[category];
+            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+            const step = document.querySelector('.status-item.active .status-sublabel');
+            if (step) {
+                step.innerHTML = `${randomMsg}<span class="loading-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>`;
+            }
+        }
+
+        // ==========================================
+        // API Call
+        // ==========================================
+        async function callAI(userMessage, systemPrompt = null) {
+            state.conversationHistory.push({
+                role: 'user',
+                content: userMessage
+            });
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: state.conversationHistory,
+                        systemPrompt: systemPrompt
+                    })
+                });
+
+                if (!response.ok) throw new Error('API Error');
+
+                const data = await response.json();
+                const reply = data.reply;
+
+                state.conversationHistory.push({
+                    role: 'assistant',
+                    content: reply
+                });
+
+                return reply;
+            } catch (error) {
+                console.error('API Error:', error);
+                return 'Sorry, I encountered an error. Please try again.';
+            }
+        }
+
+        // ==========================================
+        // Conversation Flow
+        // ==========================================
+        async function handleUserInput(userInput) {
+            const input = userInput.trim().toLowerCase();
+
+            // Step 0: Start
+            if (state.step === 0) {
+                if (input.includes('start') || input.includes('begin') || input.includes('create')) {
+                    state.step = 1;
+                    updateStepStatus(1, 'active');
+                    return "Great! Let's create your presentation. 👋\n\nFirst, what's your name? (It will appear on the title slide)";
+                } else {
+                    return "Hi! I'm your AI PPT Maker. Type 'start' when you're ready to create a professional presentation! 🎯";
+                }
+            }
+
+            // Step 1: Get Name
+            if (state.step === 1) {
+                state.userName = userInput.trim();
+                state.step = 2;
+                updateStepStatus(1, 'completed');
+                updateStepStatus(2, 'active');
+                return `Nice to meet you, ${state.userName}! 😊\n\nWhat's the topic of your presentation?\n(e.g., "Artificial Intelligence", "Climate Change", "Digital Marketing")`;
+            }
+
+            // Step 2: Get Topic
+            if (state.step === 2) {
+                state.topic = userInput.trim();
+                state.step = 3;
+                updateStepStatus(2, 'completed');
+                updateStepStatus(3, 'active');
+                return `Excellent topic: "${state.topic}" 📚\n\nWhat tone should the presentation have?\n\n1️⃣ College Seminar (Simple, Student-friendly)\n2️⃣ Technical (In-depth, Professional)\n3️⃣ Business (Executive, Formal)\n4️⃣ Educational (Learning-focused)\n\nType 1, 2, 3, or 4`;
+            }
+
+            // Step 3: Get Tone
+            if (state.step === 3) {
+                const toneMap = {
+                    '1': 'college_seminar',
+                    '2': 'technical',
+                    '3': 'business',
+                    '4': 'educational',
+                    'college': 'college_seminar',
+                    'technical': 'technical',
+                    'business': 'business',
+                    'educational': 'educational'
+                };
+
+                state.tone = toneMap[input] || 'college_seminar';
+                state.step = 4;
+                return `Perfect! Using ${state.tone.replace('_', ' ')} tone. 🎯\n\nHow many slides would you like?\n\n1️⃣ 5-7 slides (Quick overview)\n2️⃣ 8-10 slides (Standard)\n3️⃣ 12-15 slides (Detailed)\n4️⃣ 15-20 slides (Comprehensive)\n\nType 1, 2, 3, or 4`;
+            }
+
+            // Step 4: Get Slide Count
+            if (state.step === 4) {
+                const countMap = { '1': 7, '2': 10, '3': 15, '4': 20 };
+                state.slideCount = countMap[input] || 10;
+                state.step = 5;
+                updateStepStatus(3, 'completed');
+                updateStepStatus(4, 'active');
+
+                addTypingIndicator();
+                showRandomStatusMessage('generating');
+
+                // Generate points
+                const pointsPrompt = `Generate exactly ${state.slideCount} presentation slide titles for "${state.topic}". 
+    
+Include:
+- Title/Index slide
+- Introduction
+- Main content points (3-5 points)
+- Usage/Applications
+- Advantages/Benefits
+- Future Scope
+- Conclusion
+
+Return ONLY the slide titles, one per line, no numbering, no extra text.`;
+
+                const pointsResponse = await callAI(pointsPrompt, 'You are a presentation structure expert. Create clear, logical slide titles.');
+                removeTypingIndicator();
+
+                state.points = pointsResponse.split('\n').filter(p => p.trim()).slice(0, state.slideCount);
+
+                updateStepStatus(4, 'active');
+                let pointsList = state.points.map((p, idx) => `${idx + 1}. ${p}`).join('\n');
+
+                return `I've created a structure with ${state.points.length} slides:\n\n${pointsList}\n\n✏️ Would you like to:\n1️⃣ Use these points (type "yes" or "use these")\n2️⃣ Modify them (type "modify" or "change") \n \n OR Type "Done" to continue`;
+            }
+
+            // Step 5: Confirm or Modify Points
+            if (state.step === 5) {
+                if (input.includes('yes') || input.includes('use') || input.includes('good') || input.includes('ok')) {
+                    state.step = 6;
+                    return await generateContent();
+                } else if (input.includes('modify') || input.includes('change') || input.includes('edit')) {
+                    return `Please list your custom slide titles, one per line. Press Enter after each title, then type "done" when finished.`;
+                } else {
+                    // User is listing custom points
+                    if (input === 'done') {
+                        state.step = 6;
+                        return await generateContent();
+                    } else {
+                        // Collecting custom points (simplified for this implementation)
+                        return "Got it! Continue adding points, or type 'done' to proceed.";
+                    }
+                }
+            }
+
+            // Step 6: Content generated, show preview
+            if (state.step === 6) {
+                return "Your presentation is ready! Check the preview above. Use the download buttons to get your files! 📥";
+            }
+
+            return "I didn't understand that. Can you try again?";
+        }
+
+        // ==========================================
+        // Generate All Content
+        // ==========================================
+        async function generateContent() {
+            addTypingIndicator();
+            showRandomStatusMessage('content');
+
+            const statusInterval = setInterval(() => {
+                showRandomStatusMessage('content');
+            }, 3000);
+
+            // Generate all content in ONE call
+            const contentPrompt = `Create professional presentation content for "${state.topic}" with ${state.tone} tone.
+
+For each of these ${state.points.length} slides, write 2-3 clear, concise sentences:
+
+${state.points.map((p, i) => `Slide ${i + 1}: ${p}`).join('\n')}
+
+Format: Return content for each slide numbered like "Slide 1: [content]". Keep it simple, humanized, and professional.`;
+
+            try {
+                const allContent = await callAI(contentPrompt, 'You are a professional presentation content creator. Write clear, engaging, humanized content suitable for slides.');
+
+                clearInterval(statusInterval);
+                removeTypingIndicator();
+
+                // Parse content
+                const slides = allContent.split(/Slide \d+:/i).filter(s => s.trim());
+                slides.forEach((content, idx) => {
+                    state.content[idx] = content.trim();
+                });
+
+                updateStepStatus(4, 'completed');
+                updateStepStatus(5, 'active');
+                state.step = 6;
+
+                // Show preview
+                showPreview();
+
+                return `✅ Your presentation is ready!\n\n📊 ${state.points.length + 1} slides created\n🎨 Professional design applied\n✨ Content humanized and polished\n\nScroll up to preview all slides, then choose your download format! 📥`;
+
+            } catch (error) {
+                clearInterval(statusInterval);
+                removeTypingIndicator();
+                return 'Sorry, there was an error generating content. Please try again.';
+            }
+        }
+
+        // ==========================================
+        // Show Preview
+        // ==========================================
+        function showPreview() {
+            // Title slide
+            const titleSlide = document.createElement('div');
+            titleSlide.className = 'slide-preview title-slide';
+            titleSlide.innerHTML = `
+    <h3>${state.topic}</h3>
+    <p>A Presentation</p>
+    <p>By ${state.userName}</p>
+    <p style="margin-top: 30px; font-size: 12px;">Made by yahya.dominal.in</p>
+  `;
+            chatMessages.appendChild(titleSlide);
+
+            // Content slides
+            state.points.forEach((point, idx) => {
+                const slide = document.createElement('div');
+                slide.className = 'slide-preview';
+                slide.innerHTML = `
+      <h3>${point}</h3>
+      <p>${state.content[idx] || 'Content generating...'}</p>
+    `;
+                chatMessages.appendChild(slide);
+            });
+
+            // Download buttons - Multiple options
+            const actionDiv = document.createElement('div');
+            actionDiv.className = 'action-buttons';
+            actionDiv.innerHTML = `
+    <button class="btn btn-secondary" onclick="location.reload()">🔄 Start Over</button>
+  `;
+            chatMessages.appendChild(actionDiv);
+
+            // PDF Download Options
+            const pdfOptionsDiv = document.createElement('div');
+            pdfOptionsDiv.style.cssText = 'margin-top: 16px; padding: 16px; background: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--border-color);';
+            pdfOptionsDiv.innerHTML = `
+    <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">📄 Download as PDF</h4>
+    <div class="action-buttons">
+      <button class="btn btn-primary" onclick="downloadPDF('projector')" style="flex: 1;">
+        🖥️ Projector/PC<br><span style="font-size: 11px; opacity: 0.9;">Large fonts for presentation</span>
+      </button>
+      <button class="btn btn-primary" onclick="downloadPDF('mobile')" style="flex: 1;">
+        📱 Mobile View<br><span style="font-size: 11px; opacity: 0.9;">Optimized for phone screens</span>
+      </button>
+    </div>
+  `;
+            chatMessages.appendChild(pdfOptionsDiv);
+
+            // PPT Download Options
+            const pptOptionsDiv = document.createElement('div');
+            pptOptionsDiv.style.cssText = 'margin-top: 16px; padding: 16px; background: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--border-color);';
+            pptOptionsDiv.innerHTML = `
+    <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">📊 Download as PowerPoint (Editable)</h4>
+    <div class="action-buttons">
+      <button class="btn btn-primary" onclick="downloadPPT('projector')" style="flex: 1; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+        🖥️ PPT - Projector/PC<br><span style="font-size: 11px; opacity: 0.9;">Large fonts, editable</span>
+      </button>
+      <button class="btn btn-primary" onclick="downloadPPT('mobile')" style="flex: 1; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+        📱 PPT - Mobile View<br><span style="font-size: 11px; opacity: 0.9;">Small fonts, editable</span>
+      </button>
+    </div>
+  `;
+            chatMessages.appendChild(pptOptionsDiv);
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // ==========================================
+        // PDF Generation - Projector/PC Version
+        // ==========================================
+        async function downloadPDF(type = 'projector') {
+            const typeName = type === 'mobile' ? 'Mobile' : 'Projector/PC';
+            addMessage('assistant', `Creating your ${typeName} PDF... This will take a moment! ⏳`);
+
+            const statusInterval = setInterval(() => {
+                showRandomStatusMessage('pdf');
+            }, 2000);
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+
+                // Different settings for mobile vs projector
+
+                const settings = type === 'mobile' ? {
+                    margin: 8,
+                    titleFontSize: 72,          // 3x bigger (was 24)
+                    subtitleFontSize: 42,       // 3x bigger (was 14)
+                    nameFontSize: 36,           // 3x bigger (was 12)
+                    footerFontSize: 27,         // 3x bigger (was 9)
+                    headerHeight: 45,           // Bigger header
+                    contentFontSize: 30,        // 3x bigger (was 10) - MAIN TEXT
+                    contentStartY: 60,          // Lower start position
+                    lineSpacing: 1.8            // More line spacing
+                } : {
+                    margin: 15,
+                    titleFontSize: 36,
+                    subtitleFontSize: 18,
+                    nameFontSize: 16,
+                    footerFontSize: 11,
+                    headerHeight: 35,
+                    contentFontSize: 12,
+                    contentStartY: 50,
+                    lineSpacing: 1.6
+                };
+
+                const textWidth = pageWidth - 2 * settings.margin;
+
+                // Title Slide
+                doc.setFillColor(102, 126, 234);
+                doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
+                doc.setTextColor(255, 255, 255);
+                doc.setFont('Helvetica', 'bold');
+                doc.setFontSize(settings.titleFontSize);
+                doc.text(state.topic, pageWidth / 2, pageHeight / 3, { align: 'center', maxWidth: textWidth - 20 });
+
+                doc.setFontSize(settings.subtitleFontSize);
+                doc.setFont('Helvetica', 'normal');
+                doc.text('A Presentation', pageWidth / 2, pageHeight / 2, { align: 'center' });
+
+                doc.setFontSize(settings.nameFontSize);
+                doc.text(`By ${state.userName}`, pageWidth / 2, pageHeight / 2 + 20, { align: 'center' });
+
+                doc.setFontSize(settings.footerFontSize);
+                doc.text('Made by yahya.dominal.in', pageWidth / 2, pageHeight - 25, { align: 'center' });
+                doc.text('ppt.dominal.in', pageWidth / 2, pageHeight - 18, { align: 'center' });
+
+                // Content Slides
+                state.points.forEach((point, idx) => {
+                    doc.addPage();
+
+                    // Header
+                    doc.setFillColor(102, 126, 234);
+                    doc.rect(0, 0, pageWidth, settings.headerHeight, 'F');
+
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(type === 'mobile' ? 14 : 18);
+                    doc.setFont('Helvetica', 'bold');
+                    const titleLines = doc.splitTextToSize(point, textWidth);
+                    doc.text(titleLines, settings.margin, type === 'mobile' ? 18 : 22);
+
+                    // Content
+                    doc.setTextColor(50, 50, 50);
+                    doc.setFontSize(settings.contentFontSize);
+                    doc.setFont('Helvetica', 'normal');
+
+                    const content = state.content[idx] || '';
+                    const contentLines = doc.splitTextToSize(content, textWidth);
+                    doc.text(contentLines, settings.margin, settings.contentStartY);
+
+                    // Footer
+                    doc.setFontSize(settings.footerFontSize - 1);
+                    doc.setTextColor(150, 150, 150);
+                    doc.text(`Slide ${idx + 2} of ${state.points.length + 1}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+                    doc.text('ppt.dominal.in', pageWidth / 2, pageHeight - 5, { align: 'center' });
+                });
+
+                clearInterval(statusInterval);
+
+                // Download
+                const fileName = `${state.topic.replace(/\s+/g, '_')}_${type}_by_${state.userName.replace(/\s+/g, '_')}.pdf`;
+                doc.save(fileName);
+
+                addMessage('assistant', `✅ ${typeName} PDF downloaded successfully!\n\n📄 Filename: ${fileName}\n📊 Total slides: ${state.points.length + 1}\n🎯 Optimized for: ${typeName}\n\nEnjoy your presentation! 🎉`);
+
+            } catch (error) {
+                clearInterval(statusInterval);
+                console.error('PDF Error:', error);
+                addMessage('assistant', '❌ Error creating PDF. Please try again.');
+            }
+        }
+
+        // ==========================================
+        // PPT/PPTX Generation
+        // ==========================================
+        async function downloadPPT(type = 'projector') {
+            const typeName = type === 'mobile' ? 'Mobile' : 'Projector/PC';
+            addMessage('assistant', `Creating your professional ${typeName} PowerPoint... ⏳`);
+
+            const statusInterval = setInterval(() => {
+                showRandomStatusMessage('ppt');
+            }, 2000);
+
+            try {
+                // Initialize PptxGenJS
+                const pptx = new PptxGenJS();
+                
+                // Set layout based on type
+                if (type === 'mobile') {
+                    pptx.layout = 'LAYOUT_4x3'; // More vertical-friendly
+                } else {
+                    pptx.layout = 'LAYOUT_16x9'; // standard widescreen
+                }
+
+                // Title Slide
+                const titleSlide = pptx.addSlide();
+                titleSlide.background = { fill: "667EEA" }; // Matching the gradient brand color
+
+                titleSlide.addText(state.topic, {
+                    x: '10%', y: '35%', w: '80%', h: 1.5,
+                    fontSize: 44, color: 'FFFFFF', bold: true, align: 'center'
+                });
+
+                titleSlide.addText('A Presentation', {
+                    x: '10%', y: '50%', w: '80%', h: 0.5,
+                    fontSize: 20, color: 'FFFFFF', align: 'center'
+                });
+
+                titleSlide.addText(`By ${state.userName}`, {
+                    x: '10%', y: '60%', w: '80%', h: 0.5,
+                    fontSize: 18, color: 'FFFFFF', align: 'center'
+                });
+
+                titleSlide.addText('Made by yahya.dominal.in', {
+                    x: '10%', y: '90%', w: '80%', h: 0.3,
+                    fontSize: 10, color: 'FFFFFF', align: 'center'
+                });
+
+                // Content Slides
+                state.points.forEach((point, idx) => {
+                    const slide = pptx.addSlide();
+                    
+                    // Header Bar
+                    slide.addShape(pptx.ShapeType.rect, {
+                        x: 0, y: 0, w: '100%', h: 0.8, fill: { color: "667EEA" }
+                    });
+
+                    slide.addText(point, {
+                        x: 0.5, y: 0.1, w: '90%', h: 0.6,
+                        fontSize: 24, color: 'FFFFFF', bold: true, align: 'left'
+                    });
+
+                    // Content
+                    const content = state.content[idx] || '';
+                    slide.addText(content, {
+                        x: 0.5, y: 1.2, w: '90%', h: 3.5,
+                        fontSize: type === 'mobile' ? 24 : 18, 
+                        color: '353740', 
+                        align: 'left',
+                        valign: 'top',
+                        lineSpacing: 28
+                    });
+
+                    // Footer
+                    slide.addText(`Slide ${idx + 2} | ppt.dominal.in`, {
+                        x: '10%', y: '92%', w: '80%', h: 0.3,
+                        fontSize: 10, color: 'A9A9A9', align: 'center'
+                    });
+                });
+
+                // Generate and Download
+                const fileName = `${state.topic.replace(/\s+/g, '_')}_${type}_by_${state.userName.replace(/\s+/g, '_')}.pptx`;
+                await pptx.writeFile({ fileName: fileName });
+
+                clearInterval(statusInterval);
+                addMessage('assistant', `✅ ${typeName} PowerPoint downloaded successfully!\n\n📄 Filename: ${fileName}\n📊 Total slides: ${state.points.length + 1}\n✏️ Fully editable in PowerPoint!\n\nEnjoy your presentation! 🎉`);
+
+            } catch (error) {
+                clearInterval(statusInterval);
+                console.error('PPT Error:', error);
+                addMessage('assistant', '❌ Error creating PowerPoint. Generating a text file instead...');
+                downloadTextFallback(type);
+            }
+        }
+
+        // ==========================================
+        // Create PPTX Structure (Simplified)
+        // ==========================================
+
+        // ==========================================
+        // Fallback: Download as Text File
+        // ==========================================
+        function downloadTextFallback(type) {
+            const typeName = type === 'mobile' ? 'Mobile' : 'Projector';
+
+            let content = `${state.topic}\n`;
+            content += `A Presentation by ${state.userName}\n`;
+            content += `Generated by ppt.dominal.in\n`;
+            content += `Made by yahya.dominal.in\n`;
+            content += `Optimized for: ${typeName}\n\n`;
+            content += `${'='.repeat(60)}\n\n`;
+
+            // Title Slide
+            content += `SLIDE 1 - TITLE SLIDE\n`;
+            content += `${state.topic}\n`;
+            content += `A Presentation\n`;
+            content += `By ${state.userName}\n\n`;
+            content += `${'='.repeat(60)}\n\n`;
+
+            // Content Slides
+            state.points.forEach((point, idx) => {
+                content += `SLIDE ${idx + 2} - ${point.toUpperCase()}\n\n`;
+                content += `${state.content[idx] || 'No content'}\n\n`;
+                content += `${'='.repeat(60)}\n\n`;
+            });
+
+            content += `\nTotal Slides: ${state.points.length + 1}\n`;
+            content += `Generated: ${new Date().toLocaleString()}\n`;
+            content += `\nTo convert this to PowerPoint:\n`;
+            content += `1. Copy this content\n`;
+            content += `2. Open PowerPoint\n`;
+            content += `3. Create slides and paste content\n`;
+            content += `4. Format as needed\n\n`;
+            content += `Visit ppt.dominal.in for more features!\n`;
+
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const fileName = `${state.topic.replace(/\s+/g, '_')}_${type}_content.txt`;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            addMessage('assistant', `✅ Content file downloaded as text!\n\n📄 Filename: ${fileName}\n\nYou can copy the content and paste it into PowerPoint to create your presentation manually.`);
+        }
+
+        // ==========================================
+        // Event Listeners
+        // ==========================================
+        sendButton.addEventListener('click', async () => {
+            const userInput = chatInput.value.trim();
+            if (!userInput) return;
+
+            addMessage('user', userInput);
+            chatInput.value = '';
+            sendButton.disabled = true;
+
+            addTypingIndicator();
+            const response = await handleUserInput(userInput);
+            removeTypingIndicator();
+
+            addMessage('assistant', response);
+            sendButton.disabled = false;
+            chatInput.focus();
+        });
+
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendButton.click();
+            }
+        });
+
+        // Auto-resize textarea
+        chatInput.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+        });
+
+        // Initial greeting
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                addMessage('assistant', "👋 Hi! I'm your AI PPT Maker Agent from ppt.dominal.in\n\nI'll help you create a professional presentation in minutes!\n\nType 'start' when you're ready to begin. 🚀");
+            }, 500);
+        });
+    </script>
+</body>
+
+</html>
