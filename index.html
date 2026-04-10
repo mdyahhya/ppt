@@ -2,9 +2,11 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI PPT Maker | by Yahya Mundewadi</title>
+    <title>AI PPT Maker Agent | by Yahya Mundewadi</title>
+    <meta name="description" content="AI PPT Maker Agent - Create professional presentations in under 30 seconds. The best AI tool for generating PPT slides automatically by Yahya Mundewadi.">
+    <meta name="keywords" content="AI PPT Maker, AI PPT Maker Agent, automatic presentation generator, AI slide maker, AI PPT generator, Yahya Mundewadi, ppt.yahya.in">
+    <meta name="author" content="Yahya Mundewadi">
+    <link rel="icon" href="" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
@@ -1078,7 +1080,8 @@
         </h1>
 
         <p class="hero-sub">
-            Just describe your topic. Our AI writes, structures, and exports every slide as a ready-to-use PPTX or PDF — in under 30 seconds, on any device.
+            Just describe your topic. Our AI writes, structures, and exports every slide as a ready-to-use PPTX or PDF —
+            in under 30 seconds, on any device.
         </p>
 
         <div class="hero-btns">
@@ -1117,7 +1120,11 @@
                     <span class="demo-cursor" id="demoCursor"></span>
                 </div>
                 <div class="demo-send-btn">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="19" x2="12" y2="5" />
+                        <polyline points="5 12 12 5 19 12" />
+                    </svg>
                 </div>
             </div>
         </div>
@@ -1130,23 +1137,46 @@
             max-width: 640px;
             margin: 0 auto;
             background: #fff;
-            border: 1px solid rgba(0,0,0,0.08);
+            border: 1px solid rgba(0, 0, 0, 0.08);
             border-radius: 18px;
-            box-shadow: 0 20px 60px rgba(79,142,247,0.10), 0 4px 16px rgba(0,0,0,0.06);
+            box-shadow: 0 20px 60px rgba(79, 142, 247, 0.10), 0 4px 16px rgba(0, 0, 0, 0.06);
             overflow: hidden;
             animation: float 5s ease-in-out infinite;
         }
+
         .demo-topbar {
             display: flex;
             align-items: center;
             gap: 10px;
             padding: 12px 18px;
             background: #F8FAFC;
-            border-bottom: 1px solid rgba(0,0,0,0.06);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
         }
-        .demo-dots { display: flex; gap: 6px; }
-        .demo-title { font-size: 13px; font-weight: 700; color: #0F172A; margin-left: 4px; flex: 1; }
-        .demo-badge { font-size: 10px; font-weight: 700; color: #4F8EF7; background: rgba(79,142,247,0.1); padding: 2px 8px; border-radius: 20px; letter-spacing: 0.5px; text-transform: uppercase; }
+
+        .demo-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .demo-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0F172A;
+            margin-left: 4px;
+            flex: 1;
+        }
+
+        .demo-badge {
+            font-size: 10px;
+            font-weight: 700;
+            color: #4F8EF7;
+            background: rgba(79, 142, 247, 0.1);
+            padding: 2px 8px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
         .demo-messages {
             padding: 16px 18px;
             display: flex;
@@ -1154,146 +1184,340 @@
             gap: 12px;
             min-height: 240px;
         }
-        .dm-row { display: flex; gap: 10px; align-items: flex-start; animation: dmIn 0.35s ease-out forwards; opacity: 0; }
-        .dm-row.user { flex-direction: row-reverse; }
-        @keyframes dmIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+        .dm-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            animation: dmIn 0.35s ease-out forwards;
+            opacity: 0;
+        }
+
+        .dm-row.user {
+            flex-direction: row-reverse;
+        }
+
+        @keyframes dmIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .dm-av {
-            width: 28px; height: 28px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
-        .dm-av.ai { background: #4F8EF7; color: #fff; }
-        .dm-av.usr { background: #F1F5F9; color: #475569; border: 1px solid rgba(0,0,0,0.08); }
+
+        .dm-av.ai {
+            background: #4F8EF7;
+            color: #fff;
+        }
+
+        .dm-av.usr {
+            background: #F1F5F9;
+            color: #475569;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
         .dm-bubble {
-            font-size: 13px; line-height: 1.55; padding: 10px 14px; border-radius: 14px;
-            max-width: 80%; word-wrap: break-word;
+            font-size: 13px;
+            line-height: 1.55;
+            padding: 10px 14px;
+            border-radius: 14px;
+            max-width: 80%;
+            word-wrap: break-word;
         }
-        .dm-row.ai .dm-bubble { background: #F8FAFC; border: 1px solid rgba(0,0,0,0.07); border-top-left-radius: 4px; color: #0F172A; }
-        .dm-row.user .dm-bubble { background: #4F8EF7; color: #fff; border-top-right-radius: 4px; }
-        .dm-dots { display: flex; gap: 4px; padding: 2px 0; }
-        .dm-dots span { width: 6px; height: 6px; border-radius: 50%; background: #94A3B8; animation: dm-pulse 1.4s infinite; }
-        .dm-dots span:nth-child(2){ animation-delay:.2s; } .dm-dots span:nth-child(3){ animation-delay:.4s; }
-        @keyframes dm-pulse { 0%,60%,100%{ transform:translateY(0); opacity:.5; } 30%{ transform:translateY(-4px); opacity:1; } }
-        .dm-progress { display: flex; flex-direction: column; gap: 7px; margin-top: 4px; }
-        .dm-prog-row { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #64748B; }
-        .dm-prog-bar { flex: 1; height: 4px; background: #E2E8F0; border-radius: 99px; overflow: hidden; }
-        .dm-prog-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg,#4F8EF7,#7C5CFC); width: 0%; transition: width 1.2s ease; }
+
+        .dm-row.ai .dm-bubble {
+            background: #F8FAFC;
+            border: 1px solid rgba(0, 0, 0, 0.07);
+            border-top-left-radius: 4px;
+            color: #0F172A;
+        }
+
+        .dm-row.user .dm-bubble {
+            background: #4F8EF7;
+            color: #fff;
+            border-top-right-radius: 4px;
+        }
+
+        .dm-dots {
+            display: flex;
+            gap: 4px;
+            padding: 2px 0;
+        }
+
+        .dm-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #94A3B8;
+            animation: dm-pulse 1.4s infinite;
+        }
+
+        .dm-dots span:nth-child(2) {
+            animation-delay: .2s;
+        }
+
+        .dm-dots span:nth-child(3) {
+            animation-delay: .4s;
+        }
+
+        @keyframes dm-pulse {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+                opacity: .5;
+            }
+
+            30% {
+                transform: translateY(-4px);
+                opacity: 1;
+            }
+        }
+
+        .dm-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            margin-top: 4px;
+        }
+
+        .dm-prog-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: #64748B;
+        }
+
+        .dm-prog-bar {
+            flex: 1;
+            height: 4px;
+            background: #E2E8F0;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .dm-prog-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #4F8EF7, #7C5CFC);
+            width: 0%;
+            transition: width 1.2s ease;
+        }
+
         .dm-file-card {
-            display: flex; align-items: center; gap: 10px;
-            background: #fff; border: 1px solid rgba(79,142,247,0.2); border-radius: 10px;
-            padding: 10px 14px; margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            border: 1px solid rgba(79, 142, 247, 0.2);
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-top: 4px;
         }
-        .dm-file-icon { width: 32px; height: 32px; background: rgba(79,142,247,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #4F8EF7; flex-shrink: 0; }
-        .dm-file-info { flex: 1; }
-        .dm-file-name { font-size: 12px; font-weight: 700; color: #0F172A; }
-        .dm-file-size { font-size: 10px; color: #64748B; }
-        .dm-dl-btn { font-size: 11px; font-weight: 700; color: #4F8EF7; background: rgba(79,142,247,0.08); padding: 4px 10px; border-radius: 6px; }
+
+        .dm-file-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(79, 142, 247, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4F8EF7;
+            flex-shrink: 0;
+        }
+
+        .dm-file-info {
+            flex: 1;
+        }
+
+        .dm-file-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: #0F172A;
+        }
+
+        .dm-file-size {
+            font-size: 10px;
+            color: #64748B;
+        }
+
+        .dm-dl-btn {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4F8EF7;
+            background: rgba(79, 142, 247, 0.08);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
         .demo-inputbar {
-            display: flex; align-items: center; gap: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             padding: 10px 14px 14px;
-            border-top: 1px solid rgba(0,0,0,0.05);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
         }
+
         .demo-input-pill {
-            flex: 1; background: #F1F5F9; border-radius: 12px; padding: 9px 14px;
-            font-size: 13px; color: #0F172A; min-height: 36px; display: flex; align-items: center;
-            border: 1px solid rgba(0,0,0,0.06);
+            flex: 1;
+            background: #F1F5F9;
+            border-radius: 12px;
+            padding: 9px 14px;
+            font-size: 13px;
+            color: #0F172A;
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(0, 0, 0, 0.06);
         }
-        .demo-input-text { flex: 1; }
-        .demo-cursor { width: 2px; height: 14px; background: #4F8EF7; border-radius: 1px; animation: blink 1s infinite; margin-left: 1px; }
-        @keyframes blink { 0%,49%{ opacity:1; } 50%,100%{ opacity:0; } }
-        .demo-send-btn { width: 34px; height: 34px; background: #4F8EF7; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; }
+
+        .demo-input-text {
+            flex: 1;
+        }
+
+        .demo-cursor {
+            width: 2px;
+            height: 14px;
+            background: #4F8EF7;
+            border-radius: 1px;
+            animation: blink 1s infinite;
+            margin-left: 1px;
+        }
+
+        @keyframes blink {
+
+            0%,
+            49% {
+                opacity: 1;
+            }
+
+            50%,
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .demo-send-btn {
+            width: 34px;
+            height: 34px;
+            background: #4F8EF7;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            flex-shrink: 0;
+        }
     </style>
 
     <script>
-    (function() {
-        const aiSVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`;
-        const usrSVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
-        const container = document.getElementById('demoMessages');
-        const inputText  = document.getElementById('demoInputText');
-        const demoCursor = document.getElementById('demoCursor');
+        (function () {
+            const aiSVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`;
+            const usrSVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+            const container = document.getElementById('demoMessages');
+            const inputText = document.getElementById('demoInputText');
+            const demoCursor = document.getElementById('demoCursor');
 
-        function addMessage(role, contentHTML, delay) {
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    const row = document.createElement('div');
-                    row.className = `dm-row ${role}`;
-                    const av = document.createElement('div');
-                    av.className = `dm-av ${role}`;
-                    av.innerHTML = role === 'ai' ? aiSVG : usrSVG;
-                    const bubble = document.createElement('div');
-                    bubble.className = 'dm-bubble';
-                    bubble.innerHTML = contentHTML;
-                    row.appendChild(av);
-                    row.appendChild(bubble);
-                    container.appendChild(row);
-                    container.scrollTop = container.scrollHeight;
-                    resolve(bubble);
-                }, delay);
-            });
-        }
+            function addMessage(role, contentHTML, delay) {
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        const row = document.createElement('div');
+                        row.className = `dm-row ${role}`;
+                        const av = document.createElement('div');
+                        av.className = `dm-av ${role}`;
+                        av.innerHTML = role === 'ai' ? aiSVG : usrSVG;
+                        const bubble = document.createElement('div');
+                        bubble.className = 'dm-bubble';
+                        bubble.innerHTML = contentHTML;
+                        row.appendChild(av);
+                        row.appendChild(bubble);
+                        container.appendChild(row);
+                        container.scrollTop = container.scrollHeight;
+                        resolve(bubble);
+                    }, delay);
+                });
+            }
 
-        function typeInput(text, delay) {
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    let i = 0;
-                    inputText.textContent = '';
-                    demoCursor.style.display = 'inline-block';
-                    const iv = setInterval(() => {
-                        inputText.textContent += text[i++];
-                        if (i >= text.length) { clearInterval(iv); resolve(); }
-                    }, 55);
-                }, delay);
-            });
-        }
+            function typeInput(text, delay) {
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        let i = 0;
+                        inputText.textContent = '';
+                        demoCursor.style.display = 'inline-block';
+                        const iv = setInterval(() => {
+                            inputText.textContent += text[i++];
+                            if (i >= text.length) { clearInterval(iv); resolve(); }
+                        }, 55);
+                    }, delay);
+                });
+            }
 
-        function clearInput(delay) {
-            return new Promise(r => setTimeout(() => { inputText.textContent = ''; r(); }, delay));
-        }
+            function clearInput(delay) {
+                return new Promise(r => setTimeout(() => { inputText.textContent = ''; r(); }, delay));
+            }
 
-        function showThinking(delay) {
-            return new Promise(resolve => {
-                setTimeout(async () => {
-                    const row = document.createElement('div');
-                    row.className = 'dm-row ai';
-                    row.id = 'demoThink';
-                    const av = document.createElement('div'); av.className = 'dm-av ai'; av.innerHTML = aiSVG;
-                    const bub = document.createElement('div'); bub.className = 'dm-bubble';
-                    bub.innerHTML = `<div class="dm-dots"><span></span><span></span><span></span></div>`;
-                    row.appendChild(av); row.appendChild(bub);
-                    container.appendChild(row);
-                    container.scrollTop = container.scrollHeight;
-                    resolve(row);
-                }, delay);
-            });
-        }
+            function showThinking(delay) {
+                return new Promise(resolve => {
+                    setTimeout(async () => {
+                        const row = document.createElement('div');
+                        row.className = 'dm-row ai';
+                        row.id = 'demoThink';
+                        const av = document.createElement('div'); av.className = 'dm-av ai'; av.innerHTML = aiSVG;
+                        const bub = document.createElement('div'); bub.className = 'dm-bubble';
+                        bub.innerHTML = `<div class="dm-dots"><span></span><span></span><span></span></div>`;
+                        row.appendChild(av); row.appendChild(bub);
+                        container.appendChild(row);
+                        container.scrollTop = container.scrollHeight;
+                        resolve(row);
+                    }, delay);
+                });
+            }
 
-        function removeThinking() {
-            const el = document.getElementById('demoThink');
-            if (el) el.remove();
-        }
+            function removeThinking() {
+                const el = document.getElementById('demoThink');
+                if (el) el.remove();
+            }
 
-        async function runDemo() {
-            container.innerHTML = '';
+            async function runDemo() {
+                container.innerHTML = '';
 
-            await addMessage('ai', 'Hello! What topic would you like a presentation on?', 400);
-            await typeInput('Future of Artificial Intelligence', 1300);
-            await clearInput(2800);
-            await addMessage('user', 'Future of Artificial Intelligence', 100);
+                await addMessage('ai', 'Hello! What topic would you like a presentation on?', 400);
+                await typeInput('Future of Artificial Intelligence', 1300);
+                await clearInput(2800);
+                await addMessage('user', 'Future of Artificial Intelligence', 100);
 
-            const think1 = await showThinking(600);
-            await new Promise(r => setTimeout(r, 1600));
-            removeThinking();
+                const think1 = await showThinking(600);
+                await new Promise(r => setTimeout(r, 1600));
+                removeThinking();
 
-            await addMessage('ai', `Great topic. Choose a tone:<br><span style="color:#4F8EF7;font-weight:600;">1.</span> Corporate Business &nbsp; <span style="color:#4F8EF7;font-weight:600;">2.</span> Academic &nbsp; <span style="color:#4F8EF7;font-weight:600;">3.</span> Pitch Deck`, 200);
+                await addMessage('ai', `Great topic. Choose a tone:<br><span style="color:#4F8EF7;font-weight:600;">1.</span> Corporate Business &nbsp; <span style="color:#4F8EF7;font-weight:600;">2.</span> Academic &nbsp; <span style="color:#4F8EF7;font-weight:600;">3.</span> Pitch Deck`, 200);
 
-            await typeInput('2', 1200);
-            await clearInput(2200);
-            await addMessage('user', 'Academic', 100);
+                await typeInput('2', 1200);
+                await clearInput(2200);
+                await addMessage('user', 'Academic', 100);
 
-            const think2 = await showThinking(500);
-            await new Promise(r => setTimeout(r, 1200));
-            removeThinking();
+                const think2 = await showThinking(500);
+                await new Promise(r => setTimeout(r, 1200));
+                removeThinking();
 
-            const progBubble = await addMessage('ai', `
+                const progBubble = await addMessage('ai', `
                 <div style="font-size:12px;color:#0F172A;font-weight:600;margin-bottom:8px;">Generating 9 slides for you...</div>
                 <div class="dm-progress">
                     <div class="dm-prog-row">
@@ -1314,13 +1538,13 @@
                 </div>
             `, 300);
 
-            setTimeout(() => { const e = document.getElementById('pb1'); if(e) e.style.width='100%'; }, 500);
-            setTimeout(() => { const e = document.getElementById('pb2'); if(e) e.style.width='100%'; }, 1100);
-            setTimeout(() => { const e = document.getElementById('pb3'); if(e) e.style.width='100%'; }, 1800);
+                setTimeout(() => { const e = document.getElementById('pb1'); if (e) e.style.width = '100%'; }, 500);
+                setTimeout(() => { const e = document.getElementById('pb2'); if (e) e.style.width = '100%'; }, 1100);
+                setTimeout(() => { const e = document.getElementById('pb3'); if (e) e.style.width = '100%'; }, 1800);
 
-            await new Promise(r => setTimeout(r, 3400));
+                await new Promise(r => setTimeout(r, 3400));
 
-            await addMessage('ai', `
+                await addMessage('ai', `
                 <div style="font-weight:700;font-size:13px;color:#0F172A;margin-bottom:8px;">Your presentation is ready!</div>
                 <div class="dm-file-card">
                     <div class="dm-file-icon">
@@ -1334,14 +1558,14 @@
                 </div>
             `, 300);
 
-            // Loop after 5s
-            await new Promise(r => setTimeout(r, 6000));
-            runDemo();
-        }
+                // Loop after 5s
+                await new Promise(r => setTimeout(r, 6000));
+                runDemo();
+            }
 
-        // Start after page load
-        setTimeout(runDemo, 800);
-    })();
+            // Start after page load
+            setTimeout(runDemo, 800);
+        })();
     </script>
 
     <!-- FEATURES -->
