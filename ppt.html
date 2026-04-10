@@ -1328,29 +1328,57 @@
             try {
                 const pptx = new PptxGenJS();
                 const isMobile = type === 'mobile';
-                if (isMobile) pptx.layout = { name: "mobile_layout", width: 5.625, height: 10.0 };
-                else pptx.layout = 'LAYOUT_16x9';
+
+                if (isMobile) {
+                    pptx.defineLayout({ name: 'MOBILE_PORTRAIT', width: 5.625, height: 10.0 });
+                    pptx.layout = 'MOBILE_PORTRAIT';
+                } else {
+                    pptx.layout = 'LAYOUT_16x9';
+                }
 
                 pptx.defineSlideMaster({
-                    title: 'MASTER_SLIDE', background: { fill: 'FFFFFF' },
-                    objects: [] // No branding footer on content slides
+                    title: 'MASTER_SLIDE',
+                    background: { fill: 'FFFFFF' },
+                    objects: []
                 });
 
+                // Title slide (no master — dark background)
                 const slide1 = pptx.addSlide();
                 slide1.background = { fill: '212121' };
-                slide1.addText(state.topic, { x: '10%', y: '35%', w: '80%', h: 2, fontSize: isMobile ? 36 : 54, color: 'FFFFFF', bold: true, align: 'center', valign: 'middle' });
-                slide1.addText(`By ${state.userName}`, { x: '10%', y: isMobile ? '55%' : '60%', w: '80%', h: 1, fontSize: isMobile ? 18 : 24, color: 'B4B4B4', align: 'center' });
-                slide1.addText("ppt.yahya.in : A Project by Yahya Mundewadi", { x: '10%', y: '92%', w: '80%', h: 0.5, fontSize: 10, color: 'B4B4B4', align: 'center' });
+                slide1.addText(state.topic, {
+                    x: '5%', y: '30%', w: '90%', h: isMobile ? 2.5 : 2,
+                    fontSize: isMobile ? 32 : 54, color: 'FFFFFF', bold: true,
+                    align: 'center', valign: 'middle', wrap: true
+                });
+                slide1.addText(`By ${state.userName}`, {
+                    x: '5%', y: isMobile ? '58%' : '60%', w: '90%', h: 0.8,
+                    fontSize: isMobile ? 16 : 24, color: 'B4B4B4', align: 'center'
+                });
+                slide1.addText('ppt.yahya.in : A Project by Yahya Mundewadi', {
+                    x: '5%', y: '90%', w: '90%', h: 0.4,
+                    fontSize: 9, color: '6B7280', align: 'center'
+                });
 
+                // Content slides
                 state.points.forEach((title, i) => {
                     const slide = pptx.addSlide({ masterName: 'MASTER_SLIDE' });
-                    slide.addText(title, { x: '6%', y: '8%', w: '88%', h: isMobile ? 1.5 : 1, fontSize: isMobile ? 28 : 36, color: '212121', bold: true, valign: 'top' });
-                    slide.addText((state.content[i] || '').replace(/\*/g, ''), { x: '6%', y: isMobile ? '25%' : '22%', w: '88%', h: '65%', fontSize: isMobile ? 18 : 22, color: '334155', valign: 'top', lineSpacing: 34 });
+                    slide.addText(title, {
+                        x: '6%', y: '5%', w: '88%', h: isMobile ? 1.8 : 1.2,
+                        fontSize: isMobile ? 26 : 36, color: '212121', bold: true, valign: 'top', wrap: true
+                    });
+                    slide.addText((state.content[i] || '').replace(/\*/g, ''), {
+                        x: '6%', y: isMobile ? '23%' : '20%', w: '88%', h: isMobile ? '70%' : '72%',
+                        fontSize: isMobile ? 16 : 20, color: '334155', valign: 'top',
+                        lineSpacing: isMobile ? 28 : 32, wrap: true
+                    });
                 });
 
                 await pptx.writeFile({ fileName: `${state.topic.replace(/\s+/g, '_')}_${type.toUpperCase()}.pptx` });
                 addMessage('system', `✅ PPTX generated successfully.`);
-            } catch (err) { addMessage('system', `❌ Error building PPTX file.`); }
+            } catch (err) {
+                console.error('PPTX error:', err);
+                addMessage('system', `❌ Error building PPTX file: ${err.message || err}`);
+            }
         }
 
         dom.sendBtn.addEventListener('click', async () => {
