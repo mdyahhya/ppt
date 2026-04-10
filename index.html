@@ -6,11 +6,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI PPT Maker Agent by Yahya</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .status-badge.connected {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: rgba(0, 255, 136, 0.4);
+        }
+
+        .status-badge.error {
+            background: rgba(255, 68, 68, 0.2);
+            border-color: rgba(255, 68, 68, 0.4);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ffd700;
+            box-shadow: 0 0 10px #ffd700;
+            animation: pulse-yellow 2s infinite;
+        }
+
+        .connected .status-dot {
+            background: #00ff88;
+            box-shadow: 0 0 10px #00ff88;
+            animation: none;
+        }
+
+        .error .status-dot {
+            background: #ff4444;
+            box-shadow: 0 0 10px #ff4444;
+            animation: none;
+        }
+
+        @keyframes pulse-yellow {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         :root {
@@ -617,8 +670,16 @@
         <!-- Main Content -->
         <div class="main-content">
             <div class="header">
-                <h1>✨ AI PPT Maker Agent</h1>
-                <p>Let's create your professional presentation together</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div>
+                        <h1>✨ AI PPT Maker Agent</h1>
+                        <p>Let's create your professional presentation together</p>
+                    </div>
+                    <div id="connectionStatus" class="status-badge">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Connecting AI...</span>
+                    </div>
+                </div>
             </div>
 
             <div class="chat-container" id="chatContainer">
@@ -1137,90 +1198,44 @@ Format: Return content for each slide numbered like "Slide 1: [content]". Keep i
         // ==========================================
         async function downloadPPT(type = 'projector') {
             const typeName = type === 'mobile' ? 'Mobile' : 'Projector/PC';
-            addMessage('assistant', `Creating your ${typeName} PowerPoint file... This will take a moment! ⏳`);
+            addMessage('assistant', `Creating your professional ${typeName} PowerPoint... ⏳`);
 
             const statusInterval = setInterval(() => {
                 showRandomStatusMessage('ppt');
             }, 2000);
 
             try {
-                // Create XML structure for PPTX
-                const settings = type === 'mobile' ? {
-                    titleSize: 2800,
-                    contentSize: 1400,
-                    subtitleSize: 1600,
-                    nameSize: 1400,
-                    footerSize: 1000
-                } : {
-                    titleSize: 4400,
-                    contentSize: 1800,
-                    subtitleSize: 2000,
-                    nameSize: 1800,
-                    footerSize: 1200
-                };
+                const pptx = new PptxGenJS();
+                pptx.layout = type === 'mobile' ? 'LAYOUT_4x3' : 'LAYOUT_16x9';
 
-                // Create PPTX structure
-                const pptxContent = createPPTXStructure(settings);
+                // Title Slide
+                const titleSlide = pptx.addSlide();
+                titleSlide.background = { fill: "667EEA" };
+                titleSlide.addText(state.topic, { x: '10%', y: '35%', w: '80%', h: 1.5, fontSize: 44, color: 'FFFFFF', bold: true, align: 'center' });
+                titleSlide.addText('A Presentation', { x: '10%', y: '50%', w: '80%', h: 0.5, fontSize: 20, color: 'FFFFFF', align: 'center' });
+                titleSlide.addText(`By ${state.userName}`, { x: '10%', y: '60%', w: '80%', h: 0.5, fontSize: 18, color: 'FFFFFF', align: 'center' });
 
-                // Create blob and download
-                const blob = new Blob([pptxContent], { type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                const fileName = `${state.topic.replace(/\s+/g, '_')}_${type}_by_${state.userName.replace(/\s+/g, '_')}.pptx`;
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+                // Content Slides
+                state.points.forEach((point, idx) => {
+                    const slide = pptx.addSlide();
+                    slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: '100%', h: 0.8, fill: { color: "667EEA" } });
+                    slide.addText(point, { x: 0.5, y: 0.1, w: '90%', h: 0.6, fontSize: 24, color: 'FFFFFF', bold: true });
+                    slide.addText(state.content[idx] || '', { x: 0.5, y: 1.2, w: '90%', h: 3.5, fontSize: type === 'mobile' ? 24 : 18, color: '353740', lineSpacing: 28 });
+                });
+
+                const fileName = `${state.topic.replace(/\s+/g, '_')}_${type}.pptx`;
+                await pptx.writeFile({ fileName: fileName });
 
                 clearInterval(statusInterval);
-
-                addMessage('assistant', `✅ ${typeName} PowerPoint downloaded successfully!\n\n📄 Filename: ${fileName}\n📊 Total slides: ${state.points.length + 1}\n🎯 Optimized for: ${typeName}\n✏️ Fully editable in PowerPoint!\n\nEnjoy your presentation! 🎉`);
-
+                addMessage('assistant', `✅ ${typeName} PowerPoint downloaded successfully!`);
             } catch (error) {
                 clearInterval(statusInterval);
                 console.error('PPT Error:', error);
-                addMessage('assistant', '❌ Error creating PowerPoint. Generating a text file instead with all content...');
-
-                // Fallback: Create text file with content
+                addMessage('assistant', '❌ Error creating PowerPoint. Generating text instead...');
                 downloadTextFallback(type);
             }
         }
 
-        // ==========================================
-        // Create PPTX Structure (Simplified)
-        // ==========================================
-        function createPPTXStructure(settings) {
-            // This is a simplified version - full PPTX requires complex XML structure
-            // For a real implementation, use a library like PptxGenJS
-
-            let content = `POWERPOINT PRESENTATION\n`;
-            content += `Generated by ppt.dominal.in\n`;
-            content += `Made by yahya.dominal.in\n\n`;
-            content += `========================================\n\n`;
-
-            // Title Slide
-            content += `TITLE SLIDE:\n`;
-            content += `${state.topic}\n`;
-            content += `A Presentation\n`;
-            content += `By ${state.userName}\n\n`;
-            content += `========================================\n\n`;
-
-            // Content Slides
-            state.points.forEach((point, idx) => {
-                content += `SLIDE ${idx + 2}:\n`;
-                content += `Title: ${point}\n\n`;
-                content += `Content:\n${state.content[idx] || 'No content'}\n\n`;
-                content += `========================================\n\n`;
-            });
-
-            content += `\nTotal Slides: ${state.points.length + 1}\n`;
-            content += `Generated at: ${new Date().toLocaleString()}\n`;
-            content += `Visit: ppt.dominal.in\n`;
-
-            return content;
-        }
 
         // ==========================================
         // Fallback: Download as Text File
@@ -1305,8 +1320,38 @@ Format: Return content for each slide numbered like "Slide 1: [content]". Keep i
             this.style.height = Math.min(this.scrollHeight, 200) + 'px';
         });
 
+        // ==========================================
+        // Connection Check
+        // ==========================================
+        async function checkAIConnection() {
+            const statusBadge = document.getElementById('connectionStatus');
+            const statusText = statusBadge.querySelector('.status-text');
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ checkConnection: true })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.status === 'connected') {
+                    statusBadge.classList.add('connected');
+                    statusText.textContent = 'AI Connected';
+                } else {
+                    throw new Error(data.error || 'Connection failed');
+                }
+            } catch (error) {
+                statusBadge.classList.add('error');
+                statusText.textContent = 'AI Disconnected';
+                console.error('Connection Check Failed:', error);
+            }
+        }
+
         // Initial greeting
         window.addEventListener('load', () => {
+            checkAIConnection();
             setTimeout(() => {
                 addMessage('assistant', "👋 Hi! I'm your AI PPT Maker Agent from ppt.dominal.in\n\nI'll help you create a professional presentation in minutes!\n\nType 'start' when you're ready to begin. 🚀");
             }, 500);
