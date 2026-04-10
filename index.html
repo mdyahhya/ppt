@@ -5,16 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI PPT Maker | Professional Presentation Generator</title>
-    
+
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- JS Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
-    
+
     <style>
         * {
             margin: 0;
@@ -45,7 +45,7 @@
         body {
             background-color: var(--bg-main);
             color: var(--text-primary);
-            height: 100vh;
+            height: 100dvh; /* Dynamic viewport height to prevent mobile clipping */
             overflow: hidden;
             display: flex;
         }
@@ -69,14 +69,17 @@
             border: 1px solid var(--border);
             transition: all 0.3s ease;
         }
+
         .status-badge.connected {
             border-color: rgba(16, 185, 129, 0.4);
             background: rgba(16, 185, 129, 0.1);
         }
+
         .status-badge.error {
             border-color: rgba(239, 68, 68, 0.4);
             background: rgba(239, 68, 68, 0.1);
         }
+
         .status-dot {
             width: 8px;
             height: 8px;
@@ -85,11 +88,13 @@
             box-shadow: 0 0 8px #F59E0B;
             animation: pulse-yellow 2s infinite;
         }
+
         .connected .status-dot {
             background: var(--success);
             box-shadow: 0 0 8px var(--success);
             animation: none;
         }
+
         .error .status-dot {
             background: var(--error);
             box-shadow: 0 0 8px var(--error);
@@ -97,9 +102,17 @@
         }
 
         @keyframes pulse-yellow {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
         }
 
         /* ----- Sidebar ----- */
@@ -119,6 +132,7 @@
             gap: 12px;
             margin-bottom: 32px;
         }
+
         .brand-icon {
             width: 40px;
             height: 40px;
@@ -130,11 +144,13 @@
             color: white;
             box-shadow: var(--shadow-md);
         }
+
         .brand-title {
             font-size: 18px;
             font-weight: 700;
             letter-spacing: -0.5px;
         }
+
         .brand-subtitle {
             font-size: 13px;
             color: var(--text-secondary);
@@ -146,6 +162,7 @@
             flex-direction: column;
             gap: 16px;
         }
+
         .step-item {
             display: flex;
             align-items: flex-start;
@@ -157,12 +174,14 @@
             transition: all 0.3s;
             opacity: 0.6;
         }
+
         .step-item.active {
             opacity: 1;
             background: var(--bg-card);
             border-color: var(--border);
             box-shadow: var(--shadow-sm);
         }
+
         .step-item.completed {
             opacity: 1;
         }
@@ -189,6 +208,7 @@
             color: white;
             box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
         }
+
         .step-item.completed .step-icon-wrapper {
             background: var(--success);
             border-color: var(--success);
@@ -199,12 +219,14 @@
             display: flex;
             flex-direction: column;
         }
+
         .step-title {
             font-size: 14px;
             font-weight: 600;
             color: var(--text-primary);
             margin-bottom: 2px;
         }
+
         .step-desc {
             font-size: 12px;
             color: var(--text-secondary);
@@ -217,10 +239,12 @@
             border-top: 1px solid var(--border);
             text-align: center;
         }
+
         .sidebar-footer p {
             font-size: 12px;
             color: var(--text-secondary);
         }
+
         .sidebar-footer a {
             color: var(--accent);
             text-decoration: none;
@@ -246,7 +270,7 @@
             backdrop-filter: blur(10px);
             z-index: 5;
         }
-        
+
         .top-nav-title {
             font-size: 16px;
             font-weight: 600;
@@ -254,7 +278,7 @@
             align-items: center;
             gap: 10px;
         }
-        
+
         /* Chat Area */
         .chat-container {
             flex: 1;
@@ -266,9 +290,11 @@
         .chat-container::-webkit-scrollbar {
             width: 8px;
         }
+
         .chat-container::-webkit-scrollbar-track {
             background: transparent;
         }
+
         .chat-container::-webkit-scrollbar-thumb {
             background: var(--border);
             border-radius: 4px;
@@ -285,6 +311,7 @@
             max-width: 500px;
             margin: 0 auto;
         }
+
         .empty-state svg {
             width: 64px;
             height: 64px;
@@ -292,11 +319,13 @@
             margin-bottom: 20px;
             filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.4));
         }
+
         .empty-state h2 {
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 10px;
         }
+
         .empty-state p {
             font-size: 14px;
             color: var(--text-secondary);
@@ -316,13 +345,21 @@
             gap: 16px;
             animation: fadeIn 0.4s ease forwards;
         }
+
         .message-row.user {
             flex-direction: row-reverse;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .avatar {
@@ -335,10 +372,12 @@
             flex-shrink: 0;
             box-shadow: var(--shadow-sm);
         }
+
         .avatar.system {
             background: var(--gradient);
             color: white;
         }
+
         .avatar.user {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -354,12 +393,14 @@
             word-wrap: break-word;
             position: relative;
         }
+
         .message-row.system .message-bubble {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-top-left-radius: 4px;
             box-shadow: var(--shadow-sm);
         }
+
         .message-row.user .message-bubble {
             background: var(--bg-user-msg);
             color: white;
@@ -378,6 +419,7 @@
             align-items: center;
             height: 24px;
         }
+
         .pulse-dots span {
             width: 6px;
             height: 6px;
@@ -385,12 +427,28 @@
             background: var(--text-secondary);
             animation: pulse-dot 1.5s infinite;
         }
-        .pulse-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .pulse-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        .pulse-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .pulse-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
 
         @keyframes pulse-dot {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
-            30% { transform: translateY(-4px); opacity: 1; }
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+
+            30% {
+                transform: translateY(-4px);
+                opacity: 1;
+            }
         }
 
         /* ----- Input Area ----- */
@@ -399,6 +457,7 @@
             background: var(--bg-panel);
             border-top: 1px solid var(--border);
         }
+
         .input-wrapper {
             max-width: 850px;
             margin: 0 auto;
@@ -409,8 +468,9 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             transition: all 0.2s;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
         }
+
         .input-wrapper:focus-within {
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
@@ -429,6 +489,7 @@
             min-height: 54px;
             font-family: inherit;
         }
+
         .chat-input::placeholder {
             color: var(--text-muted);
         }
@@ -447,15 +508,18 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+
         .send-btn:hover:not(:disabled) {
             background: var(--accent-hover);
             transform: scale(1.05);
         }
+
         .send-btn:disabled {
             background: var(--border);
             color: var(--text-muted);
             cursor: not-allowed;
         }
+
         .send-btn svg {
             width: 18px;
             height: 18px;
@@ -467,14 +531,15 @@
             gap: 16px;
             margin-top: 20px;
         }
-        
+
         .slide-card {
             background: var(--bg-main);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 20px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .slide-card-header {
             font-size: 12px;
             text-transform: uppercase;
@@ -486,12 +551,14 @@
             align-items: center;
             gap: 8px;
         }
+
         .slide-card h4 {
             font-size: 18px;
             font-weight: 600;
             margin-bottom: 10px;
             color: var(--text-primary);
         }
+
         .slide-card p {
             font-size: 14px;
             color: var(--text-secondary);
@@ -506,6 +573,7 @@
             margin-top: 24px;
             text-align: center;
         }
+
         .download-zone h3 {
             font-size: 18px;
             margin-bottom: 20px;
@@ -518,7 +586,7 @@
             gap: 16px;
             margin-bottom: 16px;
         }
-        
+
         .action-btn {
             display: flex;
             flex-direction: column;
@@ -533,39 +601,71 @@
             font-family: inherit;
             text-decoration: none;
         }
+
         .action-btn.pdf {
             background: rgba(239, 68, 68, 0.1);
             color: #EF4444;
             border-color: rgba(239, 68, 68, 0.2);
         }
+
         .action-btn.pdf:hover {
             background: #EF4444;
             color: white;
             box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
         }
+
         .action-btn.ppt {
             background: rgba(249, 115, 22, 0.1);
             color: #F97316;
             border-color: rgba(249, 115, 22, 0.2);
         }
+
         .action-btn.ppt:hover {
             background: #F97316;
             color: white;
             box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
         }
-        
-        .action-btn svg { width: 24px; height: 24px; }
-        .action-btn .btn-title { font-size: 14px; font-weight: 600; }
-        .action-btn .btn-sub { font-size: 11px; opacity: 0.8; }
 
-        .hidden { display: none !important; }
+        .action-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .action-btn .btn-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .action-btn .btn-sub {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .hidden {
+            display: none !important;
+        }
 
         @media (max-width: 768px) {
-            .sidebar { display: none; }
-            .chat-container { padding: 16px; }
-            .input-area { padding: 16px; }
-            .btn-group { grid-template-columns: 1fr; }
-            .message-bubble { max-width: 95%; }
+            .sidebar {
+                display: none;
+            }
+
+            .chat-container {
+                padding: 16px;
+            }
+
+            .input-area {
+                padding: 16px;
+                padding-bottom: max(16px, env(safe-area-inset-bottom, 24px));
+            }
+
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+
+            .message-bubble {
+                max-width: 95%;
+            }
         }
     </style>
 </head>
@@ -576,7 +676,8 @@
     <div class="sidebar">
         <div class="brand-header">
             <div class="brand-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
                     <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
                     <line x1="8" y1="21" x2="16" y2="21"></line>
                     <line x1="12" y1="17" x2="12" y2="21"></line>
@@ -619,7 +720,8 @@
             </div>
             <div class="step-item" id="step5">
                 <div class="step-icon-wrapper">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                 </div>
@@ -640,14 +742,17 @@
         <!-- Top Nav -->
         <div class="top-nav">
             <div class="top-nav-title">
-                <svg style="color: var(--accent)" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <svg style="color: var(--accent)" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                    </path>
                     <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
                     <line x1="12" y1="22.08" x2="12" y2="12"></line>
                 </svg>
                 Workspace
             </div>
-            
+
             <div id="connectionStatus" class="status-badge">
                 <span class="status-dot"></span>
                 <span class="status-text">Connecting AI...</span>
@@ -657,7 +762,8 @@
         <!-- Chat Area -->
         <div class="chat-container" id="chatContainer">
             <div class="empty-state" id="emptyState">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round">
                     <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
                     <polyline points="14 2 14 8 20 8"></polyline>
                     <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -665,7 +771,8 @@
                     <line x1="10" y1="9" x2="8" y2="9"></line>
                 </svg>
                 <h2>Professional PPT Agent</h2>
-                <p>Welcome. Let's design an impactful presentation together.<br>I will guide you step by step to structure and generate your slides.</p>
+                <p>Welcome. Let's design an impactful presentation together.<br>I will guide you step by step to
+                    structure and generate your slides.</p>
             </div>
 
             <div class="chat-messages hidden" id="chatMessages"></div>
@@ -674,9 +781,11 @@
         <!-- Input Area -->
         <div class="input-area">
             <div class="input-wrapper">
-                <textarea id="chatInput" class="chat-input" placeholder="Type 'start' to begin your presentation..." rows="1"></textarea>
+                <textarea id="chatInput" class="chat-input" placeholder="Type 'start' to begin your presentation..."
+                    rows="1"></textarea>
                 <button id="sendButton" class="send-btn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
                         <line x1="22" y1="2" x2="11" y2="13"></line>
                         <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                     </svg>
@@ -688,7 +797,7 @@
     <!-- Application Script -->
     <script>
         const API_URL = '/.netlify/functions/ppt-chat';
-        
+
         // Icons
         const botIconSVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>`;
         const userIconSVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
@@ -742,7 +851,7 @@
             row.appendChild(avatar);
             row.appendChild(bubble);
             dom.chatMessages.appendChild(row);
-            
+
             // smooth scroll
             requestAnimationFrame(() => {
                 dom.chatMessages.parentElement.scrollTo({
@@ -777,7 +886,7 @@
             row.appendChild(avatar);
             row.appendChild(bubble);
             dom.chatMessages.appendChild(row);
-            
+
             dom.chatMessages.parentElement.scrollTop = dom.chatMessages.parentElement.scrollHeight;
         }
 
@@ -797,16 +906,16 @@
         async function checkAIConnection() {
             const statusBadge = document.getElementById('connectionStatus');
             const statusText = statusBadge.querySelector('.status-text');
-            
+
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ checkConnection: true })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok && data.status === 'connected') {
                     statusBadge.classList.add('connected');
                     statusText.textContent = 'AI Connected';
@@ -889,20 +998,20 @@
                 updateStepStatus(4, 'active');
 
                 showTyping();
-                
+
                 const structurePrompt = `Create exactly ${state.slideCount} sequential slide titles for a presentation on "${state.topic}". Tone is ${state.tone}. Include Introduction, core elements, and Conclusion. Format: Provide strictly one title per line with no bullets, numbers, or hyphens. No extra chat.`;
                 const pointsResponse = await callAI(structurePrompt, 'You are a master presentation architect.');
-                
+
                 hideTyping();
-                
+
                 state.points = pointsResponse.split('\n').map(p => p.trim()).filter(p => p.length > 0).slice(0, state.slideCount);
-                
+
                 let listHTML = `<div style="margin: 10px 0; padding-left: 14px; border-left: 3px solid var(--accent);">`;
                 state.points.forEach((p, i) => {
-                    listHTML += `<div style="margin-bottom: 6px; font-size: 13px;"><strong>Slide ${i+1}:</strong> ${p}</div>`;
+                    listHTML += `<div style="margin-bottom: 6px; font-size: 13px;"><strong>Slide ${i + 1}:</strong> ${p}</div>`;
                 });
                 listHTML += `</div>`;
-                
+
                 return `I have engineered the following architecture:<br>${listHTML}<br>Type **"Proceed"** to generate the content, or **"Regenerate"** to create a new architecture.`;
             }
 
@@ -923,22 +1032,22 @@
 
         async function generateAndRenderContent() {
             showTyping();
-            
-            const prompt = `Write professional slide body content for the topic "${state.topic}" (${state.tone} tone).\nHere are the slide titles:\n${state.points.map((p, i) => `S${i+1}: ${p}`).join('\n')}\n\nFor each slide title provided, write exactly 2-3 highly professional, impactful bullet points. Do not include slide titles in your response, ONLY the content. Separate the content for each slide with the token "|||". Do not output anything else.`;
-            
+
+            const prompt = `Write professional slide body content for the topic "${state.topic}" (${state.tone} tone).\nHere are the slide titles:\n${state.points.map((p, i) => `S${i + 1}: ${p}`).join('\n')}\n\nFor each slide title provided, write exactly 2-3 highly professional, impactful bullet points. Do not include slide titles in your response, ONLY the content. Separate the content for each slide with the token "|||". Do not output anything else.`;
+
             try {
                 const response = await callAI(prompt, 'You are an elite copywriter for executive presentations. Be extremely concise but highly impactful.');
                 hideTyping();
-                
+
                 const blocks = response.split('|||').map(b => b.trim());
                 state.points.forEach((_, idx) => {
                     state.content[idx] = blocks[idx] || "Content optimization failed. Please customize.";
                 });
-                
+
                 updateStepStatus(4, 'completed');
                 updateStepStatus(5, 'completed');
                 state.step = 7;
-                
+
                 renderFinalPreview();
                 return null;
             } catch (err) {
@@ -1024,21 +1133,21 @@
         // ==========================================
         async function exportPDF(type) {
             addMessage('assistant', `Building high-resolution ${type.toUpperCase()} PDF. Please wait...`);
-            
+
             try {
                 const { jsPDF } = window.jspdf;
-                
+
                 // Formats: Mobile -> Custom Portrait (100x178mm), PC -> 16:9 aspect ratio standard presentation size (254x143mm)
                 const isMobile = type === 'mobile';
                 const doc = new jsPDF({
                     orientation: isMobile ? 'portrait' : 'landscape',
                     unit: 'mm',
-                    format: isMobile ? [108, 192] : [254, 142.8] 
+                    format: isMobile ? [108, 192] : [254, 142.8]
                 });
 
                 const w = doc.internal.pageSize.getWidth();
                 const h = doc.internal.pageSize.getHeight();
-                
+
                 const margins = isMobile ? 12 : 20;
                 const textWidth = w - (margins * 2);
 
@@ -1053,7 +1162,7 @@
                 // Slide 1 Layout
                 doc.setFillColor(15, 23, 42); // deep blue
                 doc.rect(0, 0, w, h, 'F');
-                
+
                 // Add graphical accent
                 doc.setFillColor(37, 99, 235); // Accent blue
                 doc.rect(0, 0, w, isMobile ? 8 : 12, 'F');
@@ -1061,31 +1170,31 @@
                 doc.setTextColor(255, 255, 255);
                 doc.setFont('Helvetica', 'bold');
                 doc.setFontSize(isMobile ? 28 : 42);
-                
+
                 const titleLines = doc.splitTextToSize(state.topic, textWidth);
                 const titleHeight = titleLines.length * (isMobile ? 10 : 15);
                 const startY = (h / 2) - (titleHeight / 2) - 10;
-                
-                doc.text(titleLines, w/2, startY, { align: 'center' });
-                
+
+                doc.text(titleLines, w / 2, startY, { align: 'center' });
+
                 doc.setFontSize(isMobile ? 12 : 16);
                 doc.setFont('Helvetica', 'normal');
                 doc.setTextColor(148, 163, 184); // secondary text
-                doc.text(`A Presentation by ${state.userName}`, w/2, startY + titleHeight + 10, { align: 'center' });
-                
+                doc.text(`A Presentation by ${state.userName}`, w / 2, startY + titleHeight + 10, { align: 'center' });
+
                 renderFooter(null);
 
                 // Content Slides
                 state.points.forEach((point, idx) => {
                     doc.addPage();
-                    
+
                     doc.setFillColor(255, 255, 255);
                     doc.rect(0, 0, w, h, 'F');
 
                     // Header bar
                     doc.setFillColor(37, 99, 235);
                     doc.rect(0, 0, w, isMobile ? 6 : 8, 'F');
-                    
+
                     // Title
                     doc.setTextColor(15, 23, 42);
                     doc.setFont('Helvetica', 'bold');
@@ -1097,9 +1206,9 @@
                     doc.setTextColor(51, 65, 85);
                     doc.setFont('Helvetica', 'normal');
                     doc.setFontSize(isMobile ? 14 : 18);
-                    
+
                     const contentY = margins + (isMobile ? 10 : 15) + (headLines.length * (isMobile ? 8 : 12)) + (isMobile ? 10 : 15);
-                    
+
                     // Simple clean up format
                     let cleanText = (state.content[idx] || '').replace(/\*/g, '');
                     const lines = doc.splitTextToSize(cleanText, textWidth);
@@ -1108,7 +1217,7 @@
                     renderFooter(idx + 2);
                 });
 
-                doc.save(`${state.topic.replace(/\s+/g,'_')}_${type.toUpperCase()}.pdf`);
+                doc.save(`${state.topic.replace(/\s+/g, '_')}_${type.toUpperCase()}.pdf`);
                 addMessage('assistant', `✅ PDF exported successfully.`);
 
             } catch (err) {
@@ -1122,11 +1231,11 @@
         // ==========================================
         async function exportPPTX(type) {
             addMessage('assistant', `Generating editable ${type.toUpperCase()} PPTX file...`);
-            
+
             try {
                 const pptx = new PptxGenJS();
                 const isMobile = type === 'mobile';
-                
+
                 // Set architecture mapping
                 if (isMobile) {
                     // Portrait Mobile Layout: Standard widescreen swapped
@@ -1157,7 +1266,7 @@
                     x: '10%', y: '35%', w: '80%', h: 2,
                     fontSize: isMobile ? 36 : 54, color: 'FFFFFF', bold: true, align: 'center', valign: 'middle'
                 });
-                
+
                 slide1.addText(`By ${state.userName}`, {
                     x: '10%', y: isMobile ? '55%' : '60%', w: '80%', h: 1,
                     fontSize: isMobile ? 18 : 24, color: '94A3B8', align: 'center'
@@ -1171,7 +1280,7 @@
                 // Body content iteration
                 state.points.forEach((title, i) => {
                     const slide = pptx.addSlide({ masterName: 'MASTER_SLIDE' });
-                    
+
                     slide.addText(title, {
                         x: '6%', y: '8%', w: '88%', h: isMobile ? 1.5 : 1,
                         fontSize: isMobile ? 28 : 36, color: brandColor, bold: true, valign: 'top'
@@ -1184,9 +1293,9 @@
                     });
                 });
 
-                await pptx.writeFile({ fileName: `${state.topic.replace(/\s+/g,'_')}_${type.toUpperCase()}.pptx` });
+                await pptx.writeFile({ fileName: `${state.topic.replace(/\s+/g, '_')}_${type.toUpperCase()}.pptx` });
                 addMessage('assistant', `✅ PPTX generated successfully. Fully editable.`);
-                
+
             } catch (err) {
                 console.error(err);
                 addMessage('assistant', `❌ Error building PPTX file.`);
@@ -1199,10 +1308,10 @@
         dom.sendBtn.addEventListener('click', async () => {
             const val = dom.chatInput.value.trim();
             if (!val) return;
-            
+
             addMessage('user', val);
             dom.chatInput.value = '';
-            
+
             const r = await handleUserInput(val);
             if (r) {
                 addMessage('assistant', r);
@@ -1225,4 +1334,5 @@
         };
     </script>
 </body>
+
 </html>
