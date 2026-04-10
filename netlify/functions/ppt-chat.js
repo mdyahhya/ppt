@@ -1,6 +1,17 @@
-const fetch = require('node-fetch');
-
 exports.handler = async (event) => {
+    // Handle OPTIONS request for CORS
+    if (event.httpMethod === 'OPTIONS') {
+        return {
+            statusCode: 200,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS'
+            },
+            body: ''
+        };
+    }
+
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
@@ -9,32 +20,50 @@ exports.handler = async (event) => {
     }
 
     try {
-        const { messages, systemPrompt } = JSON.parse(event.body);
+        const body = JSON.parse(event.body);
+        
+        // Simple health check check
+        if (body.checkConnection) {
+            return {
+                statusCode: 200,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                body: JSON.stringify({ status: 'connected', message: 'AI Backend is reachable' })
+            };
+        }
+
+        const { messages, systemPrompt } = body;
+        const API_KEY = process.env.GROQ_API_KEY;
+
+        if (!API_KEY) {
+            throw new Error('GROQ_API_KEY is not set in Netlify environment variables');
+        }
 
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+                'Authorization': `Bearer ${API_KEY}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: 'llama-3.1-8b-instant',
+                model: 'llama-3.3-70b-versatile',
                 messages: [
                     {
                         role: 'system',
-                        content: systemPrompt || 'You are a helpful AI assistant for creating presentations.'
+                        content: systemPrompt || 'You are a professional presentation expert.'
                     },
                     ...messages
                 ],
-                temperature: 0.3,
-                max_tokens: 600,
-                stream: false
+                temperature: 0.7,
+                max_tokens: 2048
             })
-
         });
 
         if (!response.ok) {
-            throw new Error(`Groq API error: ${response.statusText}`);
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error?.message || `Groq API error: ${response.statusText}`);
         }
 
         const data = await response.json();
