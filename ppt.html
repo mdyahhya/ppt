@@ -635,17 +635,87 @@
             display: none !important;
         }
 
+        /* Mobile sidebar overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 20;
+        }
+        .sidebar-overlay.open { display: block; }
+
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: var(--text-primary);
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Status message animation */
+        .status-animate {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .status-animate .spin {
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent-green);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .action-btn .btn-sub {
+            font-size: 11px;
+            opacity: 0.65;
+            font-weight: 400;
+            display: block;
+            margin-top: 2px;
+        }
+        .action-btn {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 16px 12px;
+            gap: 6px;
+        }
+        .action-btn svg { flex-shrink: 0; }
+
         @media (max-width: 768px) {
             .sidebar {
-                display: none;
+                position: fixed;
+                left: -280px;
+                top: 0;
+                height: 100dvh;
+                width: 260px;
+                z-index: 30;
+                transition: left 0.28s cubic-bezier(0.4,0,0.2,1);
+                box-shadow: none;
             }
+
+            .sidebar.open {
+                left: 0;
+                box-shadow: 4px 0 20px rgba(0,0,0,0.12);
+            }
+
+            .mobile-menu-btn { display: flex; }
 
             .message-row {
                 padding: 16px;
             }
 
             .btn-group {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
             }
 
             .input-area {
@@ -662,8 +732,11 @@
 
 <body>
 
+    <!-- Mobile Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <button class="new-chat-btn" onclick="startNewChat()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round">
@@ -701,10 +774,16 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="top-nav" id="topNav">
-            <div class="model-selector">
-                AI PPT Maker
-                <span
-                    style="font-size: 13px; font-weight: 500; color: var(--accent-green); background: rgba(16,163,127,0.1); padding: 2px 8px; border-radius: 12px; margin-left: 8px;">v2.0</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <button class="mobile-menu-btn" onclick="openSidebar()" aria-label="Open menu">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+                <div class="model-selector">
+                    AI PPT Maker
+                    <span style="font-size: 13px; font-weight: 500; color: var(--accent-green); background: rgba(16,163,127,0.1); padding: 2px 8px; border-radius: 12px; margin-left: 8px;">v2.0</span>
+                </div>
             </div>
         </div>
 
@@ -1021,36 +1100,76 @@
                     state.customInstructions = userInput.trim();
                 }
                 state.step = 7;
-                addMessage('system', `Processing instructions... Generating presentation content...`);
+                addMessage('system', `<div class="status-animate"><span class="spin"></span>Processing your instructions...</div>`, true);
                 return generateAndRenderContent();
+            }
+
+            // Step 7+: freeform chat — send to AI and regenerate PPT
+            if (state.step >= 7) {
+                // Store user's freeform request
+                const freeReq = userInput.trim();
+                showTyping();
+                const customMsg = `The user has requested the following change to their existing presentation on "${state.topic}":\n"${freeReq}"\n\nCurrent slide titles: ${state.points.join(', ')}\n\nRespond by either: (a) updating the slide content as instructed — produce content for ALL ${state.points.length} slides separated by |||, or (b) if the request changes the topic/structure entirely, reply with NEW_TITLES on the first line followed by the new slide titles one per line, then |||CONTENT||| followed by content blocks separated by |||.`;
+                const response = await callAI(customMsg, 'You are an expert presentation editor. Follow the user instruction precisely and maintain professional quality.');
+                hideTyping();
+
+                if (response.startsWith('NEW_TITLES')) {
+                    const parts = response.split('|||CONTENT|||');
+                    const newTitlesRaw = parts[0].replace('NEW_TITLES', '').trim();
+                    state.points = newTitlesRaw.split('\n').map(t => t.trim()).filter(t => t.length > 0);
+                    const blocks = (parts[1] || '').split('|||').map(b => b.trim());
+                    state.points.forEach((_, idx) => { state.content[idx] = blocks[idx] || 'Content pending.'; });
+                } else {
+                    const blocks = response.split('|||').map(b => b.trim());
+                    state.points.forEach((_, idx) => { state.content[idx] = blocks[idx] || state.content[idx]; });
+                }
+
+                addMessage('system', `<div class="status-animate"><span class="spin"></span>Applying your changes and rebuilding slides...</div>`, true);
+                await new Promise(r => setTimeout(r, 1500));
+                renderFinalPreview();
+                return null;
             }
 
             return "I didn't quite catch that. Respond to the prompt to continue.";
         }
 
+        const generationPhrases = [
+            'Drafting slide content with AI...',
+            'Arranging your slide structure...',
+            'Polishing bullet points...',
+            'Almost there — finalizing slides...'
+        ];
+
         async function generateAndRenderContent() {
-            showTyping();
+            let phraseIdx = 0;
+            const animBubble = rawAddMessage('system', `<div class="status-animate"><span class="spin"></span>${generationPhrases[0]}</div>`, true);
+            const phraseTimer = setInterval(() => {
+                phraseIdx = (phraseIdx + 1) % generationPhrases.length;
+                if (animBubble) animBubble.innerHTML = `<div class="status-animate"><span class="spin"></span>${generationPhrases[phraseIdx]}</div>`;
+            }, 2200);
 
             let instructionAddon = "";
             if (state.customInstructions) {
                 instructionAddon = `\n\nCRITICAL CONTEXT & USER INSTRUCTIONS TO FOLLOW:\n"${state.customInstructions}"`;
             }
 
-            const prompt = `Write slide content for topic "${state.topic}" (${state.tone}).\nTitles:\n${state.points.map((p, i) => `S${i + 1}: ${p}`).join('\n')}${instructionAddon}\n\nFor each slide, write exactly 2-3 professional bullet points. Use "|||" as a separator between slides. No extra text.`;
+            const prompt = `Write slide content for topic "${state.topic}" (${state.tone}).\nTitles:\n${state.points.map((p, i) => `S${i + 1}: ${p}`).join('\n')}${instructionAddon}\n\nFor EACH slide title listed above, write ONLY the content for that specific slide — exactly 2-3 professional bullet points relevant to that slide's title. Use "|||" as a separator between slides. Output content in the exact same order as the slide titles. No titles, no extra text, no explanations.`;
 
             try {
-                const response = await callAI(prompt, 'You are an elite presentation copywriter.');
-                hideTyping();
+                const response = await callAI(prompt, 'You are an elite presentation copywriter. Write content ONLY for each slide in order, separated by |||. Do not mix content across slides.');
+                clearInterval(phraseTimer);
+                if (animBubble) animBubble.innerHTML = `<div class="status-animate"><span style="color:var(--accent-green)">✓</span>Slides generated successfully!</div>`;
 
                 const blocks = response.split('|||').map(b => b.trim());
                 state.points.forEach((_, idx) => {
                     state.content[idx] = blocks[idx] || "Content generation error.";
                 });
 
+                await new Promise(r => setTimeout(r, 800));
                 renderFinalPreview();
                 return null;
             } catch (err) {
-                hideTyping();
+                clearInterval(phraseTimer);
                 return "Generation failed due to a network timeout. Type 'Proceed' to try again.";
             }
         }
@@ -1089,25 +1208,30 @@
 
             html += `
                 <div class="download-zone">
-                    <h3 style="color: var(--text-primary); margin-bottom: 18px; font-weight: 700;">Download Ready</h3>
+                    <h3 style="color: var(--text-primary); margin-bottom: 6px; font-weight: 700;">Download Ready</h3>
+                    <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 18px;">Choose format — or type a change request below to edit your slides.</p>
                     <div class="btn-group">
                         <a onclick="exportPPTX('pc')" class="action-btn ppt-btn">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                            Standard PPTX
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                            PPT for Projector / PC
+                            <span class="btn-sub">16:9 Widescreen · Editable</span>
                         </a>
                         <a onclick="exportPDF('pc')" class="action-btn pdf-btn">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                            Standard PDF
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                            PDF for Projector / PC
+                            <span class="btn-sub">16:9 Widescreen · Print-ready</span>
                         </a>
                     </div>
                     <div class="btn-group">
                         <a onclick="exportPPTX('mobile')" class="action-btn ppt-btn">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                             Mobile PPTX
+                            <span class="btn-sub">Portrait · Phone-optimized</span>
                         </a>
                         <a onclick="exportPDF('mobile')" class="action-btn pdf-btn">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                             Mobile PDF
+                            <span class="btn-sub">Portrait · WhatsApp-ready</span>
                         </a>
                     </div>
                 </div>
@@ -1127,7 +1251,6 @@
 
                 const renderFooter = (pageIdx) => {
                     doc.setFontSize(8); doc.setTextColor(150); doc.setFont('Helvetica', 'normal');
-                    doc.text('ppt.yahya.in : A Project by Yahya Mundewadi', margins, h - 8);
                     if (pageIdx !== null) doc.text(`${pageIdx}`, w - margins, h - 8, { align: 'right' });
                 };
 
@@ -1141,6 +1264,9 @@
                 doc.text(titleLines, w / 2, startY, { align: 'center' });
                 doc.setFontSize(14); doc.setFont('Helvetica', 'normal'); doc.setTextColor(180);
                 doc.text(`By ${state.userName}`, w / 2, startY + titleHeight + 10, { align: 'center' });
+                // Branding only on title slide
+                doc.setFontSize(8); doc.setTextColor(120);
+                doc.text('ppt.yahya.in : A Project by Yahya Mundewadi', margins, h - 8);
                 renderFooter(null);
 
                 state.points.forEach((point, idx) => {
@@ -1172,7 +1298,7 @@
 
                 pptx.defineSlideMaster({
                     title: 'MASTER_SLIDE', background: { fill: 'FFFFFF' },
-                    objects: [{ text: { text: "ppt.yahya.in : A Project by Yahya Mundewadi", options: { x: '5%', y: '96%', w: '90%', h: 0.3, fontSize: 9, color: '94A3B8' } } }]
+                    objects: [] // No branding footer on content slides
                 });
 
                 const slide1 = pptx.addSlide();
@@ -1212,13 +1338,18 @@
             }
         });
 
+        function openSidebar() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('sidebarOverlay').classList.add('open');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('open');
+        }
+
         window.onload = () => {
             renderSidebar();
-            if (chatHistoryDb.length === 0) {
-                startNewChat();
-            } else {
-                startNewChat();
-            }
+            startNewChat(); // Always start fresh on page load; history is in sidebar
         };
     </script>
 </body>
