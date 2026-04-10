@@ -640,10 +640,13 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0, 0, 0, 0.4);
             z-index: 20;
         }
-        .sidebar-overlay.open { display: block; }
+
+        .sidebar-overlay.open {
+            display: block;
+        }
 
         .mobile-menu-btn {
             display: none;
@@ -664,6 +667,7 @@
             font-size: 14px;
             color: var(--text-secondary);
         }
+
         .status-animate .spin {
             width: 14px;
             height: 14px;
@@ -673,7 +677,12 @@
             animation: spin 0.8s linear infinite;
             flex-shrink: 0;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         .action-btn .btn-sub {
             font-size: 11px;
@@ -682,6 +691,7 @@
             display: block;
             margin-top: 2px;
         }
+
         .action-btn {
             flex-direction: column;
             align-items: center;
@@ -689,7 +699,10 @@
             padding: 16px 12px;
             gap: 6px;
         }
-        .action-btn svg { flex-shrink: 0; }
+
+        .action-btn svg {
+            flex-shrink: 0;
+        }
 
         @media (max-width: 768px) {
             .sidebar {
@@ -699,16 +712,18 @@
                 height: 100dvh;
                 width: 260px;
                 z-index: 30;
-                transition: left 0.28s cubic-bezier(0.4,0,0.2,1);
+                transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
                 box-shadow: none;
             }
 
             .sidebar.open {
                 left: 0;
-                box-shadow: 4px 0 20px rgba(0,0,0,0.12);
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.12);
             }
 
-            .mobile-menu-btn { display: flex; }
+            .mobile-menu-btn {
+                display: flex;
+            }
 
             .message-row {
                 padding: 16px;
@@ -754,7 +769,8 @@
             <a href="https://yahya.in" target="_blank" style="text-decoration: none; color: inherit;">
                 <div class="user-profile">
                     <div class="user-avatar">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="16 18 22 12 16 6"></polyline>
                             <polyline points="8 6 2 12 8 18"></polyline>
                             <line x1="14" y1="4" x2="10" y2="20"></line>
@@ -776,13 +792,17 @@
         <div class="top-nav" id="topNav">
             <div style="display:flex; align-items:center; gap:8px;">
                 <button class="mobile-menu-btn" onclick="openSidebar()" aria-label="Open menu">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
                     </svg>
                 </button>
                 <div class="model-selector">
-                    AI PPT Maker
-                    <span style="font-size: 13px; font-weight: 500; color: var(--accent-green); background: rgba(16,163,127,0.1); padding: 2px 8px; border-radius: 12px; margin-left: 8px;">v2.0</span>
+                    AI PPT Maker by Yahya
+                    <span
+                        style="font-size: 13px; font-weight: 500; color: var(--accent-green); background: rgba(16,163,127,0.1); padding: 2px 8px; border-radius: 12px; margin-left: 8px;">v2.0</span>
                 </div>
             </div>
         </div>
