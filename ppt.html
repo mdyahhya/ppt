@@ -148,13 +148,19 @@
             border: none;
             color: var(--text-muted);
             cursor: pointer;
-            opacity: 0;
-            width: 18px;
-            height: 18px;
+            opacity: 0.45;
+            width: 24px;
+            height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 4px;
+            transition: opacity 0.15s, color 0.15s, background 0.15s;
+        }
+
+        /* Always fully visible on touch/mobile, visible on hover on desktop */
+        @media (hover: none) {
+            .delete-chat-btn { opacity: 1; }
         }
 
         .history-item:hover .delete-chat-btn {
@@ -911,7 +917,10 @@
                     };
                     item.appendChild(delBtn);
 
-                    item.onclick = () => loadChat(chat.id);
+                    item.onclick = () => {
+                        loadChat(chat.id);
+                        closeSidebar();
+                    };
                     dom.sidebarHistory.appendChild(item);
                 });
             }
@@ -1108,13 +1117,18 @@
             }
             if (state.step === 5) {
                 if (input.includes('proceed') || input.includes('yes') || input.includes('ok')) {
-                    state.step = 6;
-                    return `**One last step!** 🎯\n\nBefore I generate the final slide content, do you have any specific guidelines, extra data, or focus areas?\n\n*Examples:*\n- "Include bullet points about market growth"\n- "Explain it simply for beginners"\n- Or paste any raw text paragraph you want me to reference/summarize.\n\nYou can also just type **'skip'** to let me handle it entirely with defaults.`;
+                    // Step 6 (custom instructions) is temporarily disabled.
+                    // Jump straight to generation.
+                    state.step = 7;
+                    addMessage('system', `<div class="status-animate"><span class="spin"></span>Got it! Starting slide generation now...</div>`, true);
+                    return generateAndRenderContent();
                 } else {
                     state.step = 4;
                     return `Okay, let's redo. How many slides do you need? (Type 1 for Quick, 2 for Standard, 3 for Comprehensive)`;
                 }
             }
+
+            /* ── CUSTOM INSTRUCTIONS STEP (disabled for now) ──────────────────
             if (state.step === 6) {
                 if (!input.includes('skip')) {
                     state.customInstructions = userInput.trim();
@@ -1123,6 +1137,7 @@
                 addMessage('system', `<div class="status-animate"><span class="spin"></span>Processing your instructions...</div>`, true);
                 return generateAndRenderContent();
             }
+            ─────────────────────────────────────────────────────────────────── */
 
             // Step 7+: freeform chat — send to AI and regenerate PPT
             if (state.step >= 7) {
