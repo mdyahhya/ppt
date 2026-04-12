@@ -322,43 +322,8 @@
             flex-direction: row;
         }
 
-        .slide-layout-right .slide-text-zone {
-            width: 58%;
-            padding: 6% 4% 6% 7%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .slide-layout-right .slide-image-zone {
-            width: 42%;
-            position: relative;
-        }
-
-        .slide-layout-left {
-            display: flex;
-            flex-direction: row;
-        }
-
-        .slide-layout-left .slide-text-zone {
-            width: 58%;
-            padding: 6% 7% 6% 4%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            order: 2;
-        }
-
-        .slide-layout-left {
-            flex-direction: row;
-        }
-
-        .slide-layout-right {
-            flex-direction: row;
-        }
-
         .slide-text-zone {
-            flex: 1;
+            flex: 0 0 50%;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -368,7 +333,7 @@
         }
 
         .slide-image-zone {
-            flex: 1;
+            flex: 0 0 50%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1611,21 +1576,15 @@
                                 style="flex:1;padding:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);border-radius:8px;cursor:pointer;font-size:11px;font-weight:600;">Contain</button>
                         </div>
 
-                        <div class="tool-section-label" style="margin-top:16px;">Adjust Position (Pan)</div>
+                        <div class="tool-section-label" style="margin-top:16px;">Crop & Zoom</div>
                         <div style="margin-top:10px;">
                             <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:4px;">
-                                <span>Horizontal</span>
-                                <span id="valPosX">50%</span>
+                                <span>Zoom / Crop Level</span>
+                                <span id="valZoom">100%</span>
                             </div>
-                            <input type="range" min="0" max="100" value="50" style="width:100%;accent-color:var(--accent);" oninput="setImgPos('x', this.value)">
+                            <input type="range" min="100" max="300" value="100" style="width:100%;accent-color:var(--accent);" oninput="setImgZoom(this.value)">
                         </div>
-                        <div style="margin-top:10px;">
-                            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:4px;">
-                                <span>Vertical</span>
-                                <span id="valPosY">50%</span>
-                            </div>
-                            <input type="range" min="0" max="100" value="50" style="width:100%;accent-color:var(--accent);" oninput="setImgPos('y', this.value)">
-                        </div>
+                        <button onclick="resetImgCrop()" style="width:100%;margin-top:12px;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;">Reset Crop</button>
                     </div>
                     <hr class="sep">
                     <div class="tool-section">
@@ -2009,9 +1968,9 @@
                     const img = document.createElement('img');
                     img.src = s.image;
                     img.style.objectFit = s.imgFit || 'cover';
-                    img.style.objectPosition = `${s.imgPosX || 50}% ${s.imgPosY || 50}%`;
+                    img.style.transform = `scale(${(s.imgZoom || 100) / 100})`;
                     imgZone.appendChild(img);
-                    imgZone.innerHTML += `<div class="img-edit-overlay" onclick="openMobileSheet('image')">Edit Position</div>`;
+                    imgZone.innerHTML += `<div class="img-edit-overlay" onclick="openMobileSheet('image')">Crop / Zoom</div>`;
                 } else {
                     imgZone.innerHTML = `
                         <div class="slide-image-placeholder" onclick="openMobileSheet('image');triggerImageUpload()">
@@ -2111,7 +2070,6 @@
                 document.getElementById('imgPreviewZone').classList.add('hidden');
             }
 
-            // Image fit buttons
             const fitCover = document.getElementById('fitCover');
             const fitContain = document.getElementById('fitContain');
             const isCover = (s.imgFit || 'cover') === 'cover';
@@ -2123,8 +2081,9 @@
             fitContain.style.color = !isCover ? 'var(--accent)' : 'var(--text2)';
             
             // Update sliders
-            document.getElementById('valPosX').textContent = (s.imgPosX || 50) + '%';
-            document.getElementById('valPosY').textContent = (s.imgPosY || 50) + '%';
+            const zoomVal = s.imgZoom || 100;
+            document.getElementById('valZoom').textContent = zoomVal + '%';
+            document.querySelector('#tab-image input[type="range"]').value = zoomVal;
         }
 
         // ── APPLY THEME ──────────────────────────────────────────────────
@@ -2272,34 +2231,33 @@
             this.value = '';
         });
 
-        function removeSlideImage() {
-            slideStates[currentSlideIdx].image = null;
-            document.getElementById('imgUploadZone').classList.remove('hidden');
-            document.getElementById('imgPreviewZone').classList.add('hidden');
-            applyLayout('text-only', document.querySelector('[data-layout="text-only"]'));
-            showToast('Image removed');
+        function setImgZoom(val) {
+            slideStates[currentSlideIdx].imgZoom = val;
+            const disp = document.getElementById('valZoom');
+            if (disp) disp.textContent = val + '%';
+            const mobDisp = document.getElementById('mobValZoom');
+            if (mobDisp) mobDisp.textContent = val + '%';
+            renderCanvas();
+        }
+
+        function resetImgCrop() {
+            const s = slideStates[currentSlideIdx];
+            s.imgZoom = 100;
+            renderCanvas();
+            syncPanelToSlide();
         }
 
         function setImgFit(fit) {
             slideStates[currentSlideIdx].imgFit = fit;
-            const isCover = fit === 'cover';
-            const fitCover = document.getElementById('fitCover');
-            const fitContain = document.getElementById('fitContain');
-            fitCover.style.background = isCover ? 'rgba(16,163,127,0.12)' : 'var(--surface2)';
-            fitCover.style.borderColor = isCover ? 'var(--accent)' : 'var(--border)';
-            fitCover.style.color = isCover ? 'var(--accent)' : 'var(--text2)';
-            fitContain.style.background = !isCover ? 'rgba(16,163,127,0.12)' : 'var(--surface2)';
-            fitContain.style.borderColor = !isCover ? 'var(--accent)' : 'var(--border)';
-            fitContain.style.color = !isCover ? 'var(--accent)' : 'var(--text2)';
             renderCanvas();
+            syncPanelToSlide();
         }
 
-        function setImgPos(axis, val) {
-            if (axis === 'x') slideStates[currentSlideIdx].imgPosX = val;
-            else slideStates[currentSlideIdx].imgPosY = val;
-            document.getElementById('valPosX').textContent = (slideStates[currentSlideIdx].imgPosX || 50) + '%';
-            document.getElementById('valPosY').textContent = (slideStates[currentSlideIdx].imgPosY || 50) + '%';
-            renderCanvas();
+        function removeSlideImage() {
+            slideStates[currentSlideIdx].image = null;
+            slideStates[currentSlideIdx].imgZoom = 100;
+            applyLayout('text-only', document.querySelector('[data-layout="text-only"]'));
+            showToast('Image removed');
         }
 
         // ── TABS (Desktop) ──────────────────────────────────────────────
@@ -2595,20 +2553,13 @@
                 </div>
 
                 <div class="tool-section">
-                    <div class="tool-section-label">Adjust Position (Pan)</div>
+                    <div class="tool-section-label">Crop & Zoom</div>
                     <div style="margin-top:10px;">
                         <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:4px;">
-                            <span>Horizontal</span>
-                            <span id="mobValPosX">${s.imgPosX || 50}%</span>
+                            <span>Zoom / Crop Level</span>
+                            <span id="mobValZoom">${s.imgZoom || 100}%</span>
                         </div>
-                        <input type="range" min="0" max="100" value="${s.imgPosX || 50}" style="width:100%;accent-color:var(--accent);" oninput="setImgPos('x', this.value);document.getElementById('mobValPosX').textContent=this.value+'%'">
-                    </div>
-                    <div style="margin-top:10px;">
-                        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:4px;">
-                            <span>Vertical</span>
-                            <span id="mobValPosY">${s.imgPosY || 50}%</span>
-                        </div>
-                        <input type="range" min="0" max="100" value="${s.imgPosY || 50}" style="width:100%;accent-color:var(--accent);" oninput="setImgPos('y', this.value);document.getElementById('mobValPosY').textContent=this.value+'%'">
+                        <input type="range" min="100" max="300" value="${s.imgZoom || 100}" style="width:100%;accent-color:var(--accent);" oninput="setImgZoom(this.value);document.getElementById('mobValZoom').textContent=this.value+'%'">
                     </div>
                 </div>
             `;
@@ -2707,19 +2658,16 @@
         }
 
         // ── PDF EXPORT ───────────────────────────────────────────────────
-        async function exportPDF(type) {
+        async function exportPDF() {
             flushCurrentEdits();
             showToast('Building PDF...');
             try {
                 const { jsPDF } = window.jspdf;
-                const isMobile = type === 'mobile';
-                const doc = new jsPDF({ orientation: isMobile ? 'portrait' : 'landscape', unit: 'mm', format: isMobile ? [108, 192] : [254, 142.8] });
+                const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [254, 142.8] });
                 const w = doc.internal.pageSize.getWidth();
                 const h = doc.internal.pageSize.getHeight();
-                const margins = isMobile ? 12 : 18;
+                const margins = 18;
                 const textWidth = w - margins * 2;
-
-                // Get the person names
                 const userName = pptData.userName || 'Unknown';
                 const nameLines = userName.split('\n').map(n => n.trim()).filter(n => n);
                 const byLine = nameLines.length > 1 ? `By ${nameLines.join(', ')}` : `By ${nameLines[0] || 'Unknown'}`;
@@ -2728,100 +2676,65 @@
                     if (i > 0) doc.addPage();
                     const s = slideStates[i];
                     const thm = getEffectiveTheme(s);
-
-                    // Background
                     const hexBg = thm.bg.replace('#', '');
                     const rb = parseInt(hexBg.substring(0, 2), 16), gb = parseInt(hexBg.substring(2, 4), 16), bb = parseInt(hexBg.substring(4, 6), 16);
                     doc.setFillColor(rb, gb, bb); doc.rect(0, 0, w, h, 'F');
 
-                    // Image (if exists and layout supports)
+                    const hasImgSide = s.image && (s.layout === 'image-right' || s.layout === 'image-left');
                     if (s.image && s.layout !== 'text-only') {
                         try {
                             let imgX = 0, imgY = 0, imgW = w / 2, imgH = h;
-                            if (s.layout === 'image-right') { imgX = w / 2; imgW = w / 2; }
-                            else if (s.layout === 'image-left') { imgX = 0; imgW = w / 2; }
-                            else if (s.layout === 'image-background') { imgX = 0; imgY = 0; imgW = w; imgH = h; }
+                            if (s.layout === 'image-right') imgX = w / 2;
+                            else if (s.layout === 'image-background') imgW = w;
                             doc.addImage(s.image, 'JPEG', imgX, imgY, imgW, imgH, undefined, 'FAST');
-                        } catch (imgErr) { console.warn('Image embed error', imgErr); }
+                        } catch (e) {}
                     }
 
-                    // Text
                     const hexHead = thm.heading.replace('#', '');
                     const rh = parseInt(hexHead.substring(0, 2), 16), gh = parseInt(hexHead.substring(2, 4), 16), bh = parseInt(hexHead.substring(4, 6), 16);
                     const hexBody = thm.body.replace('#', '');
                     const rb2 = parseInt(hexBody.substring(0, 2), 16), gb2 = parseInt(hexBody.substring(2, 4), 16), bb2 = parseInt(hexBody.substring(4, 6), 16);
 
-                    const hasImgSide = s.image && (s.layout === 'image-right' || s.layout === 'image-left');
-                    const textAreaW = hasImgSide ? textWidth * 0.55 : textWidth;
-                    const textX = (s.layout === 'image-left') ? margins + w * 0.42 : margins;
-                    const startY = (i === 0) ? h * 0.35 : margins + (isMobile ? 14 : 16);
-
+                    const textAreaW = hasImgSide ? textWidth * 0.45 : textWidth;
+                    const textX = (s.layout === 'image-left') ? margins + w/2 : margins;
+                    const headY = (i === 0) ? h * 0.35 : margins + 16;
+                    
                     doc.setFont('Helvetica', 'bold');
-                    doc.setFontSize(i === 0 ? (isMobile ? 26 : 36) : (isMobile ? 20 : 28));
+                    doc.setFontSize(i === 0 ? 36 : 28);
                     doc.setTextColor(rh, gh, bh);
                     const headLines = doc.splitTextToSize(s.heading, textAreaW);
-                    
-                    // Fixed align logic for side layouts on title slide
                     let align = (i === 0 || s.align === 'center') ? 'center' : (s.align === 'right' ? 'right' : 'left');
-                    if (hasImgSide) align = s.align || 'left'; // Override center for side images
+                    if (hasImgSide) align = s.align || 'left';
+                    const headX = align === 'center' ? (hasImgSide ? textX + textAreaW/2 : w/2) : (align === 'right' ? textX + textAreaW : textX);
+                    doc.text(headLines, headX, headY, { align });
 
-                    const headX = align === 'center' ? (hasImgSide ? (s.layout === 'image-left' ? textX + textAreaW/2 : textX + textAreaW/2) : w / 2) : (align === 'right' ? (hasImgSide ? textX + textAreaW : w - margins) : textX);
-                    doc.text(headLines, headX, startY, { align });
-
-                    // Add person name on title slide
                     if (i === 0) {
                         doc.setFont('Helvetica', 'normal');
-                        doc.setFontSize(isMobile ? 14 : 18);
+                        doc.setFontSize(18);
                         doc.setTextColor(rb2, gb2, bb2);
-                        const nameY = startY + headLines.length * (isMobile ? 9 : 12) + (isMobile ? 10 : 14);
-                        doc.text(byLine, headX, nameY, { align });
-                        doc.setFontSize(8);
-                        doc.text('ppt.yahya.in · A Project by Yahya Mundewadi', headX, nameY + (isMobile ? 8 : 10), { align });
-                    }
-
-                    if (s.body && i > 0) {
+                        doc.text(byLine, headX, headY + headLines.length * 12 + 12, { align });
+                    } else if (s.body) {
                         doc.setFont('Helvetica', 'normal');
-                        doc.setFontSize(isMobile ? 13 : 17);
+                        doc.setFontSize(17);
                         doc.setTextColor(rb2, gb2, bb2);
-                        const bodyY = startY + headLines.length * (isMobile ? 9 : 12) + (isMobile ? 8 : 12);
                         const bodyLines = doc.splitTextToSize(s.body, textAreaW);
-                        const bodyX = align === 'center' ? headX : (align === 'right' ? textX + textAreaW : textX);
-                        doc.text(bodyLines, bodyX, bodyY, { align, lineHeightFactor: 1.6 });
+                        doc.text(bodyLines, headX, headY + headLines.length * 12 + 10, { align, lineHeightFactor: 1.5 });
                     }
-
-                    // Page number
-                    doc.setFontSize(8); doc.setTextColor(150);
-                    doc.text(`${i + 1}`, w - margins, h - 8, { align: 'right' });
+                    doc.setFontSize(7); doc.setTextColor(170);
+                    doc.text('ppt.yahya.in · A Project by Yahya Mundewadi', margins, h - 8);
+                    doc.text(`${i+1}`, w - margins, h - 8, { align: 'right' });
                 }
-
-                // Branding
-                doc.setFontSize(7); doc.setTextColor(130);
-                doc.text('ppt.yahya.in · A Project by Yahya Mundewadi', margins, doc.internal.pageSize.getHeight() - 4);
-
-                doc.save(`${pptData.topic.replace(/\s+/g, '_')}_DESIGNED_${type.toUpperCase()}.pdf`);
+                doc.save(`${pptData.topic.replace(/\s+/g, '_')}.pdf`);
                 showToast('PDF downloaded ✓');
-            } catch (err) { console.error(err); showToast('PDF export error — see console'); }
+            } catch (err) { console.error(err); showToast('PDF error'); }
         }
 
-        // ── PPTX EXPORT ──────────────────────────────────────────────────
-        async function exportPPTX(type) {
+        async function exportPPTX() {
             flushCurrentEdits();
             showToast('Building PPTX...');
             try {
                 const pptx = new PptxGenJS();
-                const isMobile = type === 'mobile';
-
-                if (isMobile) {
-                    pptx.defineLayout({ name: 'MOBILE_PORTRAIT', width: 5.625, height: 10.0 });
-                    pptx.layout = 'MOBILE_PORTRAIT';
-                } else {
-                    pptx.layout = 'LAYOUT_16x9';
-                }
-
-                const PW = isMobile ? 5.625 : 10;
-                const PH = isMobile ? 10.0 : 5.625;
-
-                // Get the person names
+                pptx.layout = 'LAYOUT_16x9';
                 const userName = pptData.userName || 'Unknown';
                 const nameLines = userName.split('\n').map(n => n.trim()).filter(n => n);
                 const byLine = nameLines.length > 1 ? `By ${nameLines.join(', ')}` : `By ${nameLines[0] || 'Unknown'}`;
@@ -2830,48 +2743,32 @@
                     const s = slideStates[i];
                     const thm = getEffectiveTheme(s);
                     const slide = pptx.addSlide();
+                    slide.background = { fill: thm.bg.replace('#', '') };
+                    const hasImgSide = s.image && (s.layout === 'image-left' || s.layout === 'image-right');
 
-                    // Background color
-                    const bgHex = thm.bg.replace('#', '');
-                    slide.background = { fill: bgHex };
-
-                    // Image if present
                     if (s.image && s.layout !== 'text-only') {
-                        let imgX = 0, imgY = 0, imgW = PW * 0.42, imgH = PH;
-                        if (s.layout === 'image-right') { imgX = PW * 0.58; imgW = PW * 0.42; }
-                        else if (s.layout === 'image-left') { imgX = 0; imgW = PW * 0.42; }
-                        else if (s.layout === 'image-bottom') { imgX = 0; imgY = PH * 0.55; imgW = PW; imgH = PH * 0.45; }
-                        try {
-                            slide.addImage({ data: s.image, x: imgX, y: imgY, w: imgW, h: imgH, sizing: { type: 'crop', w: imgW, h: imgH } });
-                        } catch (e) { console.warn('PPTX image error', e); }
+                        let imgX = 0, imgY = 0, imgW = 5, imgH = 5.625;
+                        if (s.layout === 'image-right') imgX = 5;
+                        else if (s.layout === 'image-background') imgW = 10;
+                        slide.addImage({ data: s.image, x: imgX, y: imgY, w: imgW, h: imgH, sizing: { type: 'crop', w: imgW, h: imgH } });
                     }
 
-                    const hasImgSide = s.image && (s.layout === 'image-right' || s.layout === 'image-left');
-                    const textW = hasImgSide ? PW * 0.52 : PW * 0.88;
-                    const textXRight = hasImgSide && s.layout === 'image-right' ? PW * 0.06 : PW * 0.06;
-                    const textXLeft = hasImgSide && s.layout === 'image-left' ? PW * 0.46 : PW * 0.06;
-                    const textX = s.layout === 'image-left' ? textXLeft : textXRight;
-                    const headColor = thm.heading.replace('#', '');
-                    const bodyColor = thm.body.replace('#', '');
-
-                    const pptAlign = i === 0 ? 'center' : (s.align || 'left');
+                    const textW = hasImgSide ? 4.5 : 9, textX = (hasImgSide && s.layout === 'image-left') ? 5.25 : 0.5;
+                    const hCol = thm.heading.replace('#', ''), bCol = thm.body.replace('#', '');
+                    const align = (i === 0 || s.align === 'center') ? (hasImgSide ? (s.align || 'left') : 'center') : (s.align || 'left');
 
                     if (i === 0) {
-                        // Title slide
-                        slide.addText(s.heading, { x: '5%', y: '30%', w: '90%', h: isMobile ? 2 : 1.8, fontSize: isMobile ? 30 : 40, color: headColor, bold: true, align: 'center', valign: 'middle', wrap: true });
-                        slide.addText(byLine, { x: '5%', y: isMobile ? '55%' : '58%', w: '90%', h: 0.6, fontSize: isMobile ? 14 : 18, color: bodyColor, align: 'center' });
-                        slide.addText('ppt.yahya.in · A Project by Yahya Mundewadi', { x: '5%', y: '90%', w: '90%', h: 0.3, fontSize: 8, color: bodyColor, align: 'center' });
+                        slide.addText(s.heading, { x: textX, y: '30%', w: textW, fontSize: 44, color: hCol, bold: true, align });
+                        slide.addText(byLine, { x: textX, y: '60%', w: textW, fontSize: 20, color: bCol, align });
+                        slide.addText('ppt.yahya.in · A Project by Yahya Mundewadi', { x: textX, y: '90%', w: textW, fontSize: 8, color: '888888', align });
                     } else {
-                        const headY = s.layout === 'image-bottom' ? 0.2 : 0.25;
-                        const bodyY = s.layout === 'image-bottom' ? headY + 0.8 : headY + (isMobile ? 1.0 : 0.8);
-                        slide.addText(s.heading, { x: textX, y: headY, w: textW, h: isMobile ? 1.5 : 1.2, fontSize: isMobile ? 22 : 28, color: headColor, bold: true, valign: 'top', align: pptAlign, wrap: true });
-                        slide.addText(s.body, { x: textX, y: bodyY, w: textW, h: isMobile ? PH * 0.55 : PH * 0.55, fontSize: isMobile ? 14 : 17, color: bodyColor, valign: 'top', align: pptAlign, lineSpacing: isMobile ? 22 : 26, wrap: true });
+                        slide.addText(s.heading, { x: textX, y: '10%', w: textW, fontSize: 32, color: hCol, bold: true, align });
+                        if (s.body) slide.addText(s.body.replace(/\*/g, ''), { x: textX, y: '28%', w: textW, fontSize: 18, color: bCol, valign: 'top', align });
                     }
                 }
-
-                await pptx.writeFile({ fileName: `${pptData.topic.replace(/\s+/g, '_')}_DESIGNED_${type.toUpperCase()}.pptx` });
+                await pptx.writeFile({ fileName: `${pptData.topic.replace(/\s+/g, '_')}.pptx` });
                 showToast('PPTX downloaded ✓');
-            } catch (err) { console.error(err); showToast('PPTX export error — see console'); }
+            } catch (err) { console.error(err); showToast('PPTX error'); }
         }
     </script>
 </body>
