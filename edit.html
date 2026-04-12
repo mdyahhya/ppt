@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit & Design PPT — AI PPT Maker by Yahya</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --sidebar-w: 260px;
+            --tools-w: 300px;
+            --bg: #0f0f0f;
+            --surface: #1a1a1a;
+            --surface2: #222222;
+            --surface3: #2a2a2a;
+            --border: #333333;
+            --border2: #3d3d3d;
+            --text: #f0f0f0;
+            --text2: #a0a0a0;
+            --text3: #666666;
+            --accent: #10A37F;
+            --accent2: #0d8a6b;
+            --red: #ef4444;
+            --font-main: 'Inter', sans-serif;
+            --font-display: 'DM Sans', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg);
+            color: var(--text);
+            height: 100dvh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── TOP BAR ─────────────────────────────────────────────── */
+        .topbar {
+            height: 56px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 12px;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+
+        .topbar-back {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text2);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .topbar-back:hover {
+            color: var(--text);
+            border-color: var(--border2);
+            background: var(--surface2);
+        }
+
+        .topbar-title {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .topbar-title span {
+            color: var(--text3);
+            font-weight: 400;
+            font-size: 13px;
+            margin-left: 6px;
+        }
+
+        .export-group {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .exp-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .exp-btn.pptx {
+            background: rgba(249, 115, 22, 0.12);
+            border-color: rgba(249, 115, 22, 0.3);
+            color: #fb923c;
+        }
+
+        .exp-btn.pptx:hover {
+            background: rgba(249, 115, 22, 0.2);
+            border-color: #fb923c;
+        }
+
+        .exp-btn.pdf {
+            background: rgba(239, 68, 68, 0.12);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .exp-btn.pdf:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #f87171;
+        }
+
+        .exp-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        /* ── MAIN LAYOUT ─────────────────────────────────────────── */
+        .editor-body {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* ── SLIDE THUMBNAILS PANEL ──────────────────────────────── */
+        .thumbs-panel {
+            width: var(--sidebar-w);
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .thumbs-header {
+            padding: 14px 16px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text3);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .thumbs-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .thumbs-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .thumbs-list::-webkit-scrollbar-thumb {
+            background: var(--border2);
+            border-radius: 4px;
+        }
+
+        .thumb-item {
+            border-radius: 10px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .thumb-item:hover {
+            border-color: var(--border2);
+        }
+
+        .thumb-item.active {
+            border-color: var(--accent);
+        }
+
+        .thumb-canvas {
+            width: 100%;
+            aspect-ratio: 16/9;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 10px 12px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .thumb-canvas.portrait {
+            aspect-ratio: 9/16;
+        }
+
+        .thumb-label {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+            margin-bottom: 4px;
+        }
+
+        .thumb-title {
+            font-size: 10px;
+            font-weight: 700;
+            line-height: 1.3;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .thumb-index {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            font-size: 9px;
+            font-weight: 700;
+            opacity: 0.5;
+        }
+
+        /* ── CANVAS AREA ─────────────────────────────────────────── */
+        .canvas-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+            padding: 32px;
+            overflow: auto;
+        }
+
+        .slide-canvas-wrap {
+            width: 100%;
+            max-width: 820px;
+        }
+
+        .slide-canvas {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .slide-canvas.portrait {
+            aspect-ratio: 9/16;
+            max-width: 360px;
+            margin: 0 auto;
+        }
+
+        .slide-canvas-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Image layout variants */
+        .slide-layout-full .slide-image-zone {
+            position: absolute;
+            inset: 0;
+        }
+
+        .slide-layout-full .slide-text-zone {
+            position: relative;
+            z-index: 2;
+            padding: 6% 7%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide-layout-right {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .slide-layout-right .slide-text-zone {
+            width: 58%;
+            padding: 6% 4% 6% 7%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide-layout-right .slide-image-zone {
+            width: 42%;
+            position: relative;
+        }
+
+        .slide-layout-left {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .slide-layout-left .slide-text-zone {
+            width: 58%;
+            padding: 6% 7% 6% 4%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            order: 2;
+        }
+
+        .slide-layout-left .slide-image-zone {
+            width: 42%;
+            position: relative;
+            order: 1;
+        }
+
+        .slide-layout-bottom {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide-layout-bottom .slide-text-zone {
+            padding: 5% 7% 3%;
+            flex-shrink: 0;
+        }
+
+        .slide-layout-bottom .slide-image-zone {
+            flex: 1;
+            position: relative;
+        }
+
+        .slide-image-zone img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .slide-image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            cursor: pointer;
+            transition: background 0.2s;
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+        }
+
+        .slide-image-placeholder:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .slide-image-placeholder svg {
+            opacity: 0.4;
+        }
+
+        .slide-image-placeholder span {
+            font-size: 12px;
+            opacity: 0.5;
+            font-weight: 500;
+        }
+
+        .slide-heading {
+            font-weight: 800;
+            line-height: 1.2;
+            outline: none;
+            border: none;
+            background: transparent;
+            width: 100%;
+            resize: none;
+            overflow: hidden;
+            font-family: var(--font-display);
+            cursor: text;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .slide-heading:focus {
+            border-bottom-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .slide-body {
+            outline: none;
+            border: none;
+            background: transparent;
+            width: 100%;
+            resize: none;
+            overflow: hidden;
+            font-family: var(--font-main);
+            line-height: 1.65;
+            cursor: text;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .slide-body:focus {
+            border-bottom-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Title slide special */
+        .title-slide-inner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8% 10%;
+        }
+
+        .title-slide-name {
+            font-size: clamp(11px, 1.8vw, 16px);
+            opacity: 0.6;
+            margin-top: 1em;
+            font-weight: 400;
+        }
+
+        .title-slide-brand {
+            font-size: clamp(8px, 1.2vw, 11px);
+            opacity: 0.35;
+            margin-top: 0.6em;
+        }
+
+        /* Overlay when title slide is active */
+        .title-overlay-edit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* ── TOOLS PANEL ─────────────────────────────────────────── */
+        .tools-panel {
+            width: var(--tools-w);
+            background: var(--surface);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .tools-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .tools-tab {
+            flex: 1;
+            padding: 12px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+            cursor: pointer;
+            color: var(--text3);
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tools-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            background: rgba(16, 163, 127, 0.05);
+        }
+
+        .tools-tab:hover:not(.active) {
+            color: var(--text2);
+            background: var(--surface2);
+        }
+
+        .tools-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .tools-body::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .tools-body::-webkit-scrollbar-thumb {
+            background: var(--border2);
+            border-radius: 4px;
+        }
+
+        .tool-section {
+            margin-bottom: 22px;
+        }
+
+        .tool-section-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text3);
+            margin-bottom: 10px;
+        }
+
+        /* Theme grid */
+        .theme-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .theme-swatch {
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            aspect-ratio: 16/9;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            justify-content: flex-end;
+            position: relative;
+        }
+
+        .theme-swatch:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .theme-swatch.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.3);
+        }
+
+        .theme-swatch-name {
+            font-size: 10px;
+            font-weight: 700;
+            text-align: center;
+            width: 100%;
+            position: absolute;
+            bottom: 6px;
+            left: 0;
+        }
+
+        /* Color pickers */
+        .color-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .color-row label {
+            font-size: 13px;
+            color: var(--text2);
+            flex: 1;
+        }
+
+        .color-pick {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 2px solid var(--border2);
+            cursor: pointer;
+            padding: 2px;
+            background: var(--surface2);
+            overflow: hidden;
+        }
+
+        .color-pick input[type="color"] {
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            border-radius: 6px;
+            background: transparent;
+        }
+
+        /* Font size */
+        .size-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .size-btn {
+            width: 32px;
+            height: 32px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+
+        .size-btn:hover {
+            background: var(--surface3);
+            border-color: var(--border2);
+        }
+
+        .size-display {
+            flex: 1;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text2);
+            background: var(--surface2);
+            padding: 6px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        /* Layout buttons */
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .layout-btn {
+            padding: 10px 6px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text2);
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .layout-btn svg {
+            width: 28px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.5;
+            opacity: 0.7;
+        }
+
+        .layout-btn:hover {
+            background: var(--surface3);
+            color: var(--text);
+            border-color: var(--border2);
+        }
+
+        .layout-btn.active {
+            background: rgba(16, 163, 127, 0.12);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .layout-btn.active svg {
+            opacity: 1;
+        }
+
+        /* Image upload zone */
+        .img-upload-zone {
+            background: var(--surface2);
+            border: 2px dashed var(--border2);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .img-upload-zone:hover {
+            border-color: var(--accent);
+            background: rgba(16, 163, 127, 0.05);
+        }
+
+        .img-upload-zone svg {
+            width: 28px;
+            height: 28px;
+            fill: none;
+            stroke: var(--text3);
+            stroke-width: 1.5;
+        }
+
+        .img-upload-zone p {
+            font-size: 13px;
+            color: var(--text2);
+        }
+
+        .img-upload-zone span {
+            font-size: 11px;
+            color: var(--text3);
+        }
+
+        .img-preview-wrap {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            background: var(--surface2);
+        }
+
+        .img-preview-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .img-remove-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .img-remove-btn:hover {
+            background: var(--red);
+        }
+
+        /* Export section */
+        .export-section {
+            margin-top: 8px;
+        }
+
+        .export-full-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .export-full-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        .export-full-btn.pptx-pc {
+            background: rgba(249, 115, 22, 0.1);
+            border-color: rgba(249, 115, 22, 0.3);
+            color: #fb923c;
+        }
+
+        .export-full-btn.pptx-pc:hover {
+            background: rgba(249, 115, 22, 0.18);
+        }
+
+        .export-full-btn.pptx-mobile {
+            background: rgba(249, 115, 22, 0.06);
+            border-color: rgba(249, 115, 22, 0.2);
+            color: #fdba74;
+        }
+
+        .export-full-btn.pptx-mobile:hover {
+            background: rgba(249, 115, 22, 0.12);
+        }
+
+        .export-full-btn.pdf-pc {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .export-full-btn.pdf-pc:hover {
+            background: rgba(239, 68, 68, 0.18);
+        }
+
+        .export-full-btn.pdf-mobile {
+            background: rgba(239, 68, 68, 0.06);
+            border-color: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .export-full-btn.pdf-mobile:hover {
+            background: rgba(239, 68, 68, 0.12);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--surface3);
+            border: 1px solid var(--border2);
+            color: var(--text);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 999;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* No data state */
+        .no-data {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 16px;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .no-data h2 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .no-data p {
+            color: var(--text2);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .no-data a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 900px) {
+            .thumbs-panel {
+                width: 180px;
+            }
+
+            :root {
+                --tools-w: 240px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .thumbs-panel {
+                display: none;
+            }
+
+            .tools-panel {
+                width: 200px;
+            }
+
+            .topbar-title span {
+                display: none;
+            }
+
+            .exp-btn span {
+                display: none;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Tab panels */
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* Separator */
+        .sep {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 16px 0;
+        }
+
+        /* Slide counter badge */
+        .slide-counter {
+            position: absolute;
+            bottom: 12px;
+            right: 16px;
+            font-size: 11px;
+            font-weight: 600;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Hidden file input -->
+    <input type="file" id="imageFileInput" accept="image/*" style="display:none">
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <a href="javascript:history.back()" class="topbar-back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round">
+                <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Back
+        </a>
+        <div class="topbar-title" id="topbarTitle">
+            Edit Presentation <span>Loading...</span>
+        </div>
+        <div class="export-group">
+            <button class="exp-btn pptx" onclick="exportPPTX('pc')">
+                <svg viewBox="0 0 24 24">
+                    <rect x="2" y="3" width="20" height="14" rx="2" />
+                    <line x1="8" y1="21" x2="16" y2="21" />
+                    <line x1="12" y1="17" x2="12" y2="21" />
+                </svg>
+                <span>PPTX</span>
+            </button>
+            <button class="exp-btn pdf" onclick="exportPDF('pc')">
+                <svg viewBox="0 0 24 24">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                </svg>
+                <span>PDF</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- EDITOR BODY -->
+    <div class="editor-body" id="editorBody">
+
+        <!-- NO DATA STATE -->
+        <div class="no-data" id="noDataState">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5"
+                stroke-linecap="round">
+                <path
+                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+            </svg>
+            <h2>No Presentation Data Found</h2>
+            <p>Please generate a presentation first from the AI PPT Maker,<br>then click <strong>"Edit & Design
+                    PPT"</strong> to open the editor here.</p>
+            <a href="ppt.html">← Go back to AI PPT Maker</a>
+        </div>
+
+        <!-- SLIDE THUMBNAILS PANEL -->
+        <div class="thumbs-panel hidden" id="thumbsPanel">
+            <div class="thumbs-header">Slides</div>
+            <div class="thumbs-list" id="thumbsList"></div>
+        </div>
+
+        <!-- CANVAS AREA -->
+        <div class="canvas-area hidden" id="canvasArea">
+            <div class="slide-canvas-wrap" id="slideCanvasWrap">
+                <div class="slide-canvas" id="slideCanvas">
+                    <!-- Dynamically rendered -->
+                </div>
+                <div class="slide-counter" id="slideCounter"></div>
+            </div>
+        </div>
+
+        <!-- TOOLS PANEL -->
+        <div class="tools-panel hidden" id="toolsPanel">
+            <div class="tools-tabs">
+                <div class="tools-tab active" onclick="switchTab('design')">Design</div>
+                <div class="tools-tab" onclick="switchTab('text')">Text</div>
+                <div class="tools-tab" onclick="switchTab('image')">Image</div>
+                <div class="tools-tab" onclick="switchTab('export')">Export</div>
+            </div>
+
+            <div class="tools-body">
+
+                <!-- DESIGN TAB -->
+                <div class="tab-panel active" id="tab-design">
+                    <div class="tool-section">
+                        <div class="tool-section-label">Background Theme</div>
+                        <div class="theme-grid" id="themeGrid"></div>
+                    </div>
+
+                    <hr class="sep">
+
+                    <div class="tool-section">
+                        <div class="tool-section-label">Custom Colors</div>
+                        <div class="color-row">
+                            <label>Background</label>
+                            <div class="color-pick"><input type="color" id="bgColorPicker" value="#ffffff"
+                                    oninput="applyCustomBg(this.value)"></div>
+                        </div>
+                        <div class="color-row">
+                            <label>Heading Color</label>
+                            <div class="color-pick"><input type="color" id="headColorPicker" value="#111111"
+                                    oninput="applyCustomHeadColor(this.value)"></div>
+                        </div>
+                        <div class="color-row">
+                            <label>Body Text Color</label>
+                            <div class="color-pick"><input type="color" id="bodyColorPicker" value="#333333"
+                                    oninput="applyCustomBodyColor(this.value)"></div>
+                        </div>
+                    </div>
+
+                    <hr class="sep">
+
+                    <div class="tool-section">
+                        <div class="tool-section-label">Slide Layout</div>
+                        <div class="layout-grid" id="layoutGrid">
+                            <button class="layout-btn active" data-layout="text-only"
+                                onclick="applyLayout('text-only', this)">
+                                <svg viewBox="0 0 28 20">
+                                    <rect x="2" y="2" width="24" height="16" rx="2" />
+                                    <line x1="6" y1="7" x2="22" y2="7" />
+                                    <line x1="6" y1="10" x2="22" y2="10" />
+                                    <line x1="6" y1="13" x2="18" y2="13" />
+                                </svg>
+                                Text Only
+                            </button>
+                            <button class="layout-btn" data-layout="image-right"
+                                onclick="applyLayout('image-right', this)">
+                                <svg viewBox="0 0 28 20">
+                                    <rect x="2" y="2" width="14" height="16" rx="1" />
+                                    <rect x="18" y="2" width="8" height="16" rx="1" fill="currentColor" opacity="0.3" />
+                                </svg>
+                                Img Right
+                            </button>
+                            <button class="layout-btn" data-layout="image-left"
+                                onclick="applyLayout('image-left', this)">
+                                <svg viewBox="0 0 28 20">
+                                    <rect x="2" y="2" width="8" height="16" rx="1" fill="currentColor" opacity="0.3" />
+                                    <rect x="12" y="2" width="14" height="16" rx="1" />
+                                </svg>
+                                Img Left
+                            </button>
+                            <button class="layout-btn" data-layout="image-bottom"
+                                onclick="applyLayout('image-bottom', this)">
+                                <svg viewBox="0 0 28 20">
+                                    <rect x="2" y="2" width="24" height="9" rx="1" />
+                                    <rect x="2" y="12" width="24" height="6" rx="1" fill="currentColor" opacity="0.3" />
+                                </svg>
+                                Img Bottom
+                            </button>
+                        </div>
+                    </div>
+
+                    <hr class="sep">
+
+                    <div class="tool-section">
+                        <div class="tool-section-label">Apply To</div>
+                        <div style="display:flex;gap:8px;">
+                            <button onclick="applyThemeToAll()"
+                                style="flex:1;padding:9px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s;"
+                                onmouseover="this.style.borderColor='var(--border2)'"
+                                onmouseout="this.style.borderColor='var(--border)'">
+                                Apply Theme to All
+                            </button>
+                            <button onclick="applyLayoutToAll()"
+                                style="flex:1;padding:9px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s;"
+                                onmouseover="this.style.borderColor='var(--border2)'"
+                                onmouseout="this.style.borderColor='var(--border)'">
+                                Apply Layout to All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TEXT TAB -->
+                <div class="tab-panel" id="tab-text">
+                    <div class="tool-section">
+                        <div class="tool-section-label">Heading Size</div>
+                        <div class="size-row">
+                            <button class="size-btn" onclick="changeSize('heading', -2)">−</button>
+                            <div class="size-display" id="headSizeDisplay">32px</div>
+                            <button class="size-btn" onclick="changeSize('heading', 2)">+</button>
+                        </div>
+                    </div>
+                    <div class="tool-section">
+                        <div class="tool-section-label">Body Text Size</div>
+                        <div class="size-row">
+                            <button class="size-btn" onclick="changeSize('body', -1)">−</button>
+                            <div class="size-display" id="bodySizeDisplay">16px</div>
+                            <button class="size-btn" onclick="changeSize('body', 1)">+</button>
+                        </div>
+                    </div>
+                    <hr class="sep">
+                    <div class="tool-section">
+                        <div class="tool-section-label">Text Alignment</div>
+                        <div style="display:flex;gap:8px;">
+                            <button onclick="setAlign('left')" id="alignLeft"
+                                style="flex:1;padding:8px;background:rgba(16,163,127,0.12);border:1px solid var(--accent);color:var(--accent);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">Left</button>
+                            <button onclick="setAlign('center')" id="alignCenter"
+                                style="flex:1;padding:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">Center</button>
+                            <button onclick="setAlign('right')" id="alignRight"
+                                style="flex:1;padding:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">Right</button>
+                        </div>
+                    </div>
+                    <hr class="sep">
+                    <div class="tool-section">
+                        <div class="tool-section-label">Edit Heading</div>
+                        <textarea id="textEditHeading" rows="2" oninput="syncHeadingFromPanel()"
+                            style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-size:13px;font-family:var(--font-main);resize:vertical;outline:none;transition:border-color 0.2s;"
+                            onfocus="this.style.borderColor='var(--border2)'"
+                            onblur="this.style.borderColor='var(--border)'"></textarea>
+                    </div>
+                    <div class="tool-section">
+                        <div class="tool-section-label">Edit Body Text</div>
+                        <textarea id="textEditBody" rows="6" oninput="syncBodyFromPanel()"
+                            style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-size:13px;font-family:var(--font-main);resize:vertical;outline:none;transition:border-color 0.2s;line-height:1.6;"
+                            onfocus="this.style.borderColor='var(--border2)'"
+                            onblur="this.style.borderColor='var(--border)'"></textarea>
+                    </div>
+                </div>
+
+                <!-- IMAGE TAB -->
+                <div class="tab-panel" id="tab-image">
+                    <div class="tool-section">
+                        <div class="tool-section-label">Slide Image</div>
+                        <div id="imgUploadZone" class="img-upload-zone" onclick="triggerImageUpload()">
+                            <svg viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="18" height="18" rx="2" />
+                                <circle cx="8.5" cy="8.5" r="1.5" />
+                                <polyline points="21 15 16 10 5 21" />
+                            </svg>
+                            <p>Click to upload image</p>
+                            <span>JPG, PNG, GIF · Any size</span>
+                        </div>
+                        <div id="imgPreviewZone" class="img-preview-wrap hidden">
+                            <img id="imgPreviewEl" src="" alt="Slide image">
+                            <button class="img-remove-btn" onclick="removeSlideImage()">✕ Remove</button>
+                        </div>
+                    </div>
+                    <hr class="sep">
+                    <div class="tool-section">
+                        <div class="tool-section-label">Image Layout</div>
+                        <p style="font-size:12px;color:var(--text3);margin-bottom:10px;">Go to the Design tab to change
+                            image position (left, right, bottom).</p>
+                        <div class="tool-section-label" style="margin-top:8px;">Image Object Fit</div>
+                        <div style="display:flex;gap:8px;margin-top:6px;">
+                            <button onclick="setImgFit('cover')" id="fitCover"
+                                style="flex:1;padding:8px;background:rgba(16,163,127,0.12);border:1px solid var(--accent);color:var(--accent);border-radius:8px;cursor:pointer;font-size:11px;font-weight:600;">Cover</button>
+                            <button onclick="setImgFit('contain')" id="fitContain"
+                                style="flex:1;padding:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);border-radius:8px;cursor:pointer;font-size:11px;font-weight:600;">Contain</button>
+                        </div>
+                    </div>
+                    <hr class="sep">
+                    <div class="tool-section">
+                        <div class="tool-section-label">Note</div>
+                        <p style="font-size:12px;color:var(--text3);line-height:1.6;">Images you upload apply to the
+                            currently selected slide. Switch slides using the left panel to set images per slide.</p>
+                    </div>
+                </div>
+
+                <!-- EXPORT TAB -->
+                <div class="tab-panel" id="tab-export">
+                    <div class="tool-section">
+                        <div class="tool-section-label">PowerPoint (Editable)</div>
+                        <div class="export-section">
+                            <button class="export-full-btn pptx-pc" onclick="exportPPTX('pc')">
+                                <svg viewBox="0 0 24 24">
+                                    <rect x="2" y="3" width="20" height="14" rx="2" />
+                                    <line x1="8" y1="21" x2="16" y2="21" />
+                                    <line x1="12" y1="17" x2="12" y2="21" />
+                                </svg>
+                                PC / Projector PPTX (16:9)
+                            </button>
+                            <button class="export-full-btn pptx-mobile" onclick="exportPPTX('mobile')">
+                                <svg viewBox="0 0 24 24">
+                                    <rect x="5" y="2" width="14" height="20" rx="2" />
+                                    <line x1="12" y1="18" x2="12.01" y2="18" />
+                                </svg>
+                                Mobile PPTX (Portrait)
+                            </button>
+                        </div>
+                    </div>
+                    <hr class="sep">
+                    <div class="tool-section">
+                        <div class="tool-section-label">PDF (Print / Share)</div>
+                        <div class="export-section">
+                            <button class="export-full-btn pdf-pc" onclick="exportPDF('pc')">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <polyline points="14 2 14 8 20 8" />
+                                </svg>
+                                PC / Projector PDF (16:9)
+                            </button>
+                            <button class="export-full-btn pdf-mobile" onclick="exportPDF('mobile')">
+                                <svg viewBox="0 0 24 24">
+                                    <rect x="5" y="2" width="14" height="20" rx="2" />
+                                    <line x1="12" y1="18" x2="12.01" y2="18" />
+                                </svg>
+                                Mobile PDF (Portrait)
+                            </button>
+                        </div>
+                    </div>
+                    <hr class="sep">
+                    <div style="font-size:12px;color:var(--text3);line-height:1.7;">
+                        <strong style="color:var(--text2);">Tip:</strong> PPTX files are fully editable in PowerPoint,
+                        Keynote, and Google Slides. Theme colors and fonts are embedded. Images are embedded at full
+                        resolution.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ── THEMES ───────────────────────────────────────────────────────
+        const THEMES = [
+            { id: 'white', name: 'Clean White', bg: '#ffffff', heading: '#111111', body: '#444444', gradient: null },
+            { id: 'navy', name: 'Navy Pro', bg: '#0f1729', heading: '#e8ecf5', body: '#94a3c4', gradient: 'linear-gradient(135deg,#0f1729,#1e3a5f)' },
+            { id: 'slate', name: 'Slate Dark', bg: '#1e293b', heading: '#f1f5f9', body: '#94a3b8', gradient: 'linear-gradient(135deg,#1e293b,#0f172a)' },
+            { id: 'sand', name: 'Sand Warm', bg: '#faf5eb', heading: '#3d2e1e', body: '#7a6250', gradient: null },
+            { id: 'forest', name: 'Forest', bg: '#0d2818', heading: '#d4edda', body: '#8fc99b', gradient: 'linear-gradient(135deg,#0d2818,#1a3a2a)' },
+            { id: 'rose', name: 'Rose Dust', bg: '#fff0f3', heading: '#4a1020', body: '#8a3050', gradient: null },
+            { id: 'midnight', name: 'Midnight', bg: '#08080f', heading: '#e0e0ff', body: '#8888cc', gradient: 'linear-gradient(135deg,#08080f,#0d0d1a)' },
+            { id: 'cream', name: 'Cream', bg: '#fdf8f0', heading: '#2c2415', body: '#5a4e3c', gradient: null },
+            { id: 'teal', name: 'Teal Depth', bg: '#0a1f1e', heading: '#ccf0ee', body: '#7ec4bf', gradient: 'linear-gradient(135deg,#0a1f1e,#0d2b2a)' },
+            { id: 'charcoal', name: 'Charcoal', bg: '#1c1c1c', heading: '#f5f5f5', body: '#aaaaaa', gradient: null }
+        ];
+
+        // ── STATE ────────────────────────────────────────────────────────
+        let pptData = null;
+        let currentSlideIdx = 0; // 0 = title slide
+        let slideStates = []; // per-slide state: { heading, body, theme, layout, image, headSize, bodySize, align, imgFit }
+        let globalThemeId = 'white';
+        let globalLayout = 'text-only';
+        let activeTab = 'design';
+
+        // ── INIT ─────────────────────────────────────────────────────────
+        window.onload = () => {
+            try {
+                const raw = localStorage.getItem('ppt_edit_state');
+                if (!raw) { showNoData(); return; }
+                pptData = JSON.parse(raw);
+                if (!pptData.points || !pptData.content) { showNoData(); return; }
+                initEditor();
+            } catch (e) { showNoData(); }
+        };
+
+        function showNoData() {
+            document.getElementById('noDataState').style.display = 'flex';
+        }
+
+        function initEditor() {
+            document.getElementById('noDataState').style.display = 'none';
+            document.getElementById('thumbsPanel').classList.remove('hidden');
+            document.getElementById('canvasArea').classList.remove('hidden');
+            document.getElementById('toolsPanel').classList.remove('hidden');
+
+            const title = document.getElementById('topbarTitle');
+            title.innerHTML = `Edit Presentation <span>— ${pptData.topic}</span>`;
+
+            // Init per-slide state
+            const totalSlides = pptData.points.length + 1; // +1 for title
+            for (let i = 0; i < totalSlides; i++) {
+                if (i === 0) {
+                    slideStates.push({ heading: pptData.topic, body: `By ${pptData.userName}`, theme: 'charcoal', layout: 'text-only', image: null, headSize: 40, bodySize: 18, align: 'center', imgFit: 'cover' });
+                } else {
+                    const idx = i - 1;
+                    slideStates.push({ heading: pptData.points[idx], body: (pptData.content[idx] || '').replace(/\*/g, ''), theme: 'white', layout: 'text-only', image: null, headSize: 32, bodySize: 16, align: 'left', imgFit: 'cover' });
+                }
+            }
+
+            buildThemeGrid();
+            buildThumbs();
+            selectSlide(0);
+        }
+
+        function buildThemeGrid() {
+            const grid = document.getElementById('themeGrid');
+            grid.innerHTML = '';
+            THEMES.forEach(t => {
+                const sw = document.createElement('div');
+                sw.className = 'theme-swatch';
+                sw.style.background = t.gradient || t.bg;
+                sw.setAttribute('data-theme-id', t.id);
+                sw.title = t.name;
+
+                // Preview lines
+                sw.innerHTML = `
+                <div style="font-size:8px;font-weight:800;color:${t.heading};overflow:hidden;white-space:nowrap;text-overflow:ellipsis;line-height:1;margin-bottom:4px;max-width:100%;">${t.name}</div>
+                <div style="font-size:6px;color:${t.body};line-height:1.4;overflow:hidden;">Sample slide text<br>content goes here</div>
+                <div class="theme-swatch-name" style="color:${t.heading};"></div>
+            `;
+
+                sw.onclick = () => applyTheme(t.id, sw);
+                grid.appendChild(sw);
+            });
+        }
+
+        // ── THUMBNAILS ───────────────────────────────────────────────────
+        function buildThumbs() {
+            const list = document.getElementById('thumbsList');
+            list.innerHTML = '';
+            slideStates.forEach((s, i) => {
+                const item = document.createElement('div');
+                item.className = 'thumb-item ' + (i === currentSlideIdx ? 'active' : '');
+                item.id = `thumb-${i}`;
+                item.onclick = () => selectSlide(i);
+
+                const thm = THEMES.find(t => t.id === s.theme) || THEMES[0];
+                const canvas = document.createElement('div');
+                canvas.className = 'thumb-canvas';
+                canvas.style.background = thm.gradient || thm.bg;
+
+                canvas.innerHTML = `
+                <div class="thumb-index" style="color:${thm.heading}">${i + 1}</div>
+                <div class="thumb-label" style="color:${thm.body}">${i === 0 ? 'TITLE' : `SLIDE ${i + 1}`}</div>
+                <div class="thumb-title" style="color:${thm.heading}">${s.heading}</div>
+            `;
+
+                item.appendChild(canvas);
+                list.appendChild(item);
+            });
+        }
+
+        function refreshThumb(idx) {
+            const s = slideStates[idx];
+            const thm = THEMES.find(t => t.id === s.theme) || THEMES[0];
+            const item = document.getElementById(`thumb-${idx}`);
+            if (!item) return;
+            const canvas = item.querySelector('.thumb-canvas');
+            canvas.style.background = thm.gradient || thm.bg;
+            canvas.innerHTML = `
+            <div class="thumb-index" style="color:${thm.heading}">${idx + 1}</div>
+            <div class="thumb-label" style="color:${thm.body}">${idx === 0 ? 'TITLE' : `SLIDE ${idx + 1}`}</div>
+            <div class="thumb-title" style="color:${thm.heading}">${s.heading}</div>
+        `;
+        }
+
+        // ── SELECT SLIDE ─────────────────────────────────────────────────
+        function selectSlide(idx) {
+            // Save current text edits to state
+            if (currentSlideIdx >= 0 && slideStates[currentSlideIdx]) {
+                const headEl = document.querySelector('.slide-heading');
+                const bodyEl = document.querySelector('.slide-body');
+                if (headEl) slideStates[currentSlideIdx].heading = headEl.value;
+                if (bodyEl) slideStates[currentSlideIdx].body = bodyEl.value;
+            }
+
+            currentSlideIdx = idx;
+
+            // Update thumb highlight
+            document.querySelectorAll('.thumb-item').forEach((el, i) => {
+                el.classList.toggle('active', i === idx);
+            });
+
+            renderCanvas();
+            syncPanelToSlide();
+
+            document.getElementById('slideCounter').textContent = `${idx + 1} / ${slideStates.length}`;
+        }
+
+        // ── RENDER CANVAS ────────────────────────────────────────────────
+        function renderCanvas() {
+            const canvas = document.getElementById('slideCanvas');
+            const s = slideStates[currentSlideIdx];
+            const thm = THEMES.find(t => t.id === s.theme) || THEMES[0];
+
+            canvas.innerHTML = '';
+            canvas.style.background = thm.gradient || thm.bg;
+
+            if (currentSlideIdx === 0) {
+                // Title slide
+                const inner = document.createElement('div');
+                inner.className = 'title-slide-inner';
+                inner.style.background = thm.gradient || thm.bg;
+                inner.innerHTML = `
+                <textarea class="slide-heading" style="font-size:${s.headSize}px;color:${thm.heading};text-align:${s.align};background:transparent;font-weight:800;" rows="2" oninput="onHeadingInput(this)">${s.heading}</textarea>
+                <div class="title-slide-name" style="color:${thm.body};">By ${pptData.userName}</div>
+                <div class="title-slide-brand" style="color:${thm.body};">ppt.yahya.in · A Project by Yahya Mundewadi</div>
+            `;
+                canvas.appendChild(inner);
+            } else {
+                const isTextOnly = s.layout === 'text-only';
+                const inner = document.createElement('div');
+                inner.className = 'slide-canvas-inner';
+
+                if (s.layout === 'image-right') {
+                    inner.className += ' slide-layout-right';
+                } else if (s.layout === 'image-left') {
+                    inner.className += ' slide-layout-left';
+                } else if (s.layout === 'image-bottom') {
+                    inner.className += ' slide-layout-bottom';
+                } else {
+                    inner.className += ' slide-layout-full';
+                }
+
+                // Text zone
+                const textZone = document.createElement('div');
+                textZone.className = 'slide-text-zone';
+                textZone.innerHTML = `
+                <textarea class="slide-heading" style="font-size:${s.headSize}px;color:${thm.heading};text-align:${s.align};" rows="2" oninput="onHeadingInput(this)">${s.heading}</textarea>
+                <div style="height:${Math.round(s.headSize * 0.5)}px;"></div>
+                <textarea class="slide-body" style="font-size:${s.bodySize}px;color:${thm.body};text-align:${s.align};" rows="6" oninput="onBodyInput(this)">${s.body}</textarea>
+            `;
+                inner.appendChild(textZone);
+
+                // Image zone (only if not text-only)
+                if (!isTextOnly) {
+                    const imgZone = document.createElement('div');
+                    imgZone.className = 'slide-image-zone';
+
+                    if (s.image) {
+                        const img = document.createElement('img');
+                        img.src = s.image;
+                        img.style.objectFit = s.imgFit || 'cover';
+                        imgZone.appendChild(img);
+                    } else {
+                        imgZone.innerHTML = `
+                        <div class="slide-image-placeholder" onclick="switchTab('image');triggerImageUpload()">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="${thm.body}" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            <span style="color:${thm.body};">Click to add image</span>
+                        </div>
+                    `;
+                    }
+
+                    inner.appendChild(imgZone);
+                }
+
+                canvas.appendChild(inner);
+            }
+
+            autoResizeTextareas();
+        }
+
+        function autoResizeTextareas() {
+            setTimeout(() => {
+                document.querySelectorAll('.slide-heading, .slide-body').forEach(el => {
+                    el.style.height = 'auto';
+                    el.style.height = el.scrollHeight + 'px';
+                });
+            }, 10);
+        }
+
+        function onHeadingInput(el) {
+            slideStates[currentSlideIdx].heading = el.value;
+            el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
+            document.getElementById('textEditHeading').value = el.value;
+            refreshThumb(currentSlideIdx);
+        }
+
+        function onBodyInput(el) {
+            slideStates[currentSlideIdx].body = el.value;
+            el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
+            document.getElementById('textEditBody').value = el.value;
+        }
+
+        // ── SYNC PANEL → SLIDE ───────────────────────────────────────────
+        function syncPanelToSlide() {
+            const s = slideStates[currentSlideIdx];
+            const thm = THEMES.find(t => t.id === s.theme) || THEMES[0];
+
+            // Update theme swatches
+            document.querySelectorAll('.theme-swatch').forEach(sw => {
+                sw.classList.toggle('active', sw.getAttribute('data-theme-id') === s.theme);
+            });
+
+            // Update color pickers
+            document.getElementById('bgColorPicker').value = thm.bg;
+            document.getElementById('headColorPicker').value = thm.heading;
+            document.getElementById('bodyColorPicker').value = thm.body;
+
+            // Update size displays
+            document.getElementById('headSizeDisplay').textContent = s.headSize + 'px';
+            document.getElementById('bodySizeDisplay').textContent = s.bodySize + 'px';
+
+            // Update layout buttons
+            document.querySelectorAll('.layout-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-layout') === s.layout);
+            });
+
+            // Update text editors in text tab
+            document.getElementById('textEditHeading').value = s.heading;
+            document.getElementById('textEditBody').value = s.body;
+
+            // Update align buttons
+            const aligns = ['left', 'center', 'right'];
+            aligns.forEach(a => {
+                const btn = document.getElementById('align' + a.charAt(0).toUpperCase() + a.slice(1));
+                if (btn) {
+                    btn.style.background = s.align === a ? 'rgba(16,163,127,0.12)' : 'var(--surface2)';
+                    btn.style.borderColor = s.align === a ? 'var(--accent)' : 'var(--border)';
+                    btn.style.color = s.align === a ? 'var(--accent)' : 'var(--text2)';
+                }
+            });
+
+            // Update image section
+            if (s.image) {
+                document.getElementById('imgUploadZone').classList.add('hidden');
+                document.getElementById('imgPreviewZone').classList.remove('hidden');
+                document.getElementById('imgPreviewEl').src = s.image;
+            } else {
+                document.getElementById('imgUploadZone').classList.remove('hidden');
+                document.getElementById('imgPreviewZone').classList.add('hidden');
+            }
+
+            // Image fit buttons
+            const fitCover = document.getElementById('fitCover');
+            const fitContain = document.getElementById('fitContain');
+            const isCover = (s.imgFit || 'cover') === 'cover';
+            fitCover.style.background = isCover ? 'rgba(16,163,127,0.12)' : 'var(--surface2)';
+            fitCover.style.borderColor = isCover ? 'var(--accent)' : 'var(--border)';
+            fitCover.style.color = isCover ? 'var(--accent)' : 'var(--text2)';
+            fitContain.style.background = !isCover ? 'rgba(16,163,127,0.12)' : 'var(--surface2)';
+            fitContain.style.borderColor = !isCover ? 'var(--accent)' : 'var(--border)';
+            fitContain.style.color = !isCover ? 'var(--accent)' : 'var(--text2)';
+        }
+
+        // ── APPLY THEME ──────────────────────────────────────────────────
+        function applyTheme(themeId, swatchEl) {
+            slideStates[currentSlideIdx].theme = themeId;
+            document.querySelectorAll('.theme-swatch').forEach(sw => sw.classList.remove('active'));
+            if (swatchEl) swatchEl.classList.add('active');
+            const thm = THEMES.find(t => t.id === themeId);
+            if (thm) {
+                document.getElementById('bgColorPicker').value = thm.bg;
+                document.getElementById('headColorPicker').value = thm.heading;
+                document.getElementById('bodyColorPicker').value = thm.body;
+            }
+            renderCanvas();
+            refreshThumb(currentSlideIdx);
+        }
+
+        function applyThemeToAll() {
+            const themeId = slideStates[currentSlideIdx].theme;
+            slideStates.forEach(s => s.theme = themeId);
+            buildThumbs();
+            renderCanvas();
+            showToast('Theme applied to all slides ✓');
+        }
+
+        function applyLayoutToAll() {
+            const layout = slideStates[currentSlideIdx].layout;
+            slideStates.forEach((s, i) => { if (i > 0) s.layout = layout; });
+            buildThumbs();
+            renderCanvas();
+            showToast('Layout applied to all slides ✓');
+        }
+
+        function applyCustomBg(val) {
+            // Apply a custom "override" pseudo-theme by modifying directly
+            const s = slideStates[currentSlideIdx];
+            const thm = THEMES.find(t => t.id === s.theme) || THEMES[0];
+            // Create a temp inline override
+            document.getElementById('slideCanvas').style.background = val;
+            // Store custom override
+            s._customBg = val;
+            refreshThumb(currentSlideIdx);
+        }
+
+        function applyCustomHeadColor(val) {
+            const headEl = document.querySelector('.slide-heading');
+            if (headEl) headEl.style.color = val;
+            slideStates[currentSlideIdx]._customHead = val;
+        }
+
+        function applyCustomBodyColor(val) {
+            const bodyEl = document.querySelector('.slide-body');
+            if (bodyEl) bodyEl.style.color = val;
+            slideStates[currentSlideIdx]._customBody = val;
+        }
+
+        // ── LAYOUT ───────────────────────────────────────────────────────
+        function applyLayout(layout, btnEl) {
+            slideStates[currentSlideIdx].layout = layout;
+            document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+            renderCanvas();
+        }
+
+        // ── TEXT TOOLS ───────────────────────────────────────────────────
+        function changeSize(type, delta) {
+            const s = slideStates[currentSlideIdx];
+            if (type === 'heading') {
+                s.headSize = Math.max(12, Math.min(80, (s.headSize || 32) + delta));
+                document.getElementById('headSizeDisplay').textContent = s.headSize + 'px';
+            } else {
+                s.bodySize = Math.max(8, Math.min(40, (s.bodySize || 16) + delta));
+                document.getElementById('bodySizeDisplay').textContent = s.bodySize + 'px';
+            }
+            renderCanvas();
+        }
+
+        function setAlign(align) {
+            slideStates[currentSlideIdx].align = align;
+            const aligns = ['left', 'center', 'right'];
+            aligns.forEach(a => {
+                const btn = document.getElementById('align' + a.charAt(0).toUpperCase() + a.slice(1));
+                if (btn) {
+                    btn.style.background = a === align ? 'rgba(16,163,127,0.12)' : 'var(--surface2)';
+                    btn.style.borderColor = a === align ? 'var(--accent)' : 'var(--border)';
+                    btn.style.color = a === align ? 'var(--accent)' : 'var(--text2)';
+                }
+            });
+            renderCanvas();
+        }
+
+        function syncHeadingFromPanel() {
+            const val = document.getElementById('textEditHeading').value;
+            slideStates[currentSlideIdx].heading = val;
+            const headEl = document.querySelector('.slide-heading');
+            if (headEl) { headEl.value = val; headEl.style.height = 'auto'; headEl.style.height = headEl.scrollHeight + 'px'; }
+            refreshThumb(currentSlideIdx);
+        }
+
+        function syncBodyFromPanel() {
+            const val = document.getElementById('textEditBody').value;
+            slideStates[currentSlideIdx].body = val;
+            const bodyEl = document.querySelector('.slide-body');
+            if (bodyEl) { bodyEl.value = val; bodyEl.style.height = 'auto'; bodyEl.style.height = bodyEl.scrollHeight + 'px'; }
+        }
+
+        // ── IMAGE ────────────────────────────────────────────────────────
+        function triggerImageUpload() {
+            document.getElementById('imageFileInput').click();
+        }
+
+        document.getElementById('imageFileInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const dataUrl = ev.target.result;
+                slideStates[currentSlideIdx].image = dataUrl;
+                document.getElementById('imgUploadZone').classList.add('hidden');
+                document.getElementById('imgPreviewZone').classList.remove('hidden');
+                document.getElementById('imgPreviewEl').src = dataUrl;
+                // Auto switch to image-right if layout is text-only
+                if (slideStates[currentSlideIdx].layout === 'text-only') {
+                    applyLayout('image-right', document.querySelector('[data-layout="image-right"]'));
+                } else {
+                    renderCanvas();
+                }
+                showToast('Image added ✓');
+            };
+            reader.readAsDataURL(file);
+            this.value = '';
+        });
+
+        function removeSlideImage() {
+            slideStates[currentSlideIdx].image = null;
+            document.getElementById('imgUploadZone').classList.remove('hidden');
+            document.getElementById('imgPreviewZone').classList.add('hidden');
+            applyLayout('text-only', document.querySelector('[data-layout="text-only"]'));
+            showToast('Image removed');
+        }
+
+        function setImgFit(fit) {
+            slideStates[currentSlideIdx].imgFit = fit;
+            const isCover = fit === 'cover';
+            const fitCover = document.getElementById('fitCover');
+            const fitContain = document.getElementById('fitContain');
+            fitCover.style.background = isCover ? 'rgba(16,163,127,0.12)' : 'var(--surface2)';
+            fitCover.style.borderColor = isCover ? 'var(--accent)' : 'var(--border)';
+            fitCover.style.color = isCover ? 'var(--accent)' : 'var(--text2)';
+            fitContain.style.background = !isCover ? 'rgba(16,163,127,0.12)' : 'var(--surface2)';
+            fitContain.style.borderColor = !isCover ? 'var(--accent)' : 'var(--border)';
+            fitContain.style.color = !isCover ? 'var(--accent)' : 'var(--text2)';
+            renderCanvas();
+        }
+
+        // ── TABS ─────────────────────────────────────────────────────────
+        function switchTab(tab) {
+            activeTab = tab;
+            document.querySelectorAll('.tools-tab').forEach((el, i) => {
+                const tabs = ['design', 'text', 'image', 'export'];
+                el.classList.toggle('active', tabs[i] === tab);
+            });
+            document.querySelectorAll('.tab-panel').forEach(el => {
+                el.classList.toggle('active', el.id === 'tab-' + tab);
+            });
+        }
+
+        // ── HELPERS ──────────────────────────────────────────────────────
+        function getEffectiveTheme(s) {
+            const thm = JSON.parse(JSON.stringify(THEMES.find(t => t.id === s.theme) || THEMES[0]));
+            if (s._customBg) thm.bg = s._customBg;
+            if (s._customHead) thm.heading = s._customHead;
+            if (s._customBody) thm.body = s._customBody;
+            return thm;
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2400);
+        }
+
+        // Save text before export
+        function flushCurrentEdits() {
+            const headEl = document.querySelector('.slide-heading');
+            const bodyEl = document.querySelector('.slide-body');
+            if (headEl) slideStates[currentSlideIdx].heading = headEl.value;
+            if (bodyEl) slideStates[currentSlideIdx].body = bodyEl.value;
+        }
+
+        // ── PDF EXPORT ───────────────────────────────────────────────────
+        async function exportPDF(type) {
+            flushCurrentEdits();
+            showToast('Building PDF...');
+            try {
+                const { jsPDF } = window.jspdf;
+                const isMobile = type === 'mobile';
+                const doc = new jsPDF({ orientation: isMobile ? 'portrait' : 'landscape', unit: 'mm', format: isMobile ? [108, 192] : [254, 142.8] });
+                const w = doc.internal.pageSize.getWidth();
+                const h = doc.internal.pageSize.getHeight();
+                const margins = isMobile ? 12 : 18;
+                const textWidth = w - margins * 2;
+
+                for (let i = 0; i < slideStates.length; i++) {
+                    if (i > 0) doc.addPage();
+                    const s = slideStates[i];
+                    const thm = getEffectiveTheme(s);
+
+                    // Background
+                    const hexBg = thm.bg.replace('#', '');
+                    const rb = parseInt(hexBg.substring(0, 2), 16), gb = parseInt(hexBg.substring(2, 4), 16), bb = parseInt(hexBg.substring(4, 6), 16);
+                    doc.setFillColor(rb, gb, bb); doc.rect(0, 0, w, h, 'F');
+
+                    // Image (if exists and layout supports)
+                    if (s.image && s.layout !== 'text-only') {
+                        try {
+                            let imgX = 0, imgY = 0, imgW = w / 2, imgH = h;
+                            if (s.layout === 'image-right') { imgX = w / 2; imgW = w / 2; }
+                            else if (s.layout === 'image-left') { imgX = 0; imgW = w / 2; }
+                            else if (s.layout === 'image-bottom') { imgX = 0; imgY = h * 0.55; imgW = w; imgH = h * 0.45; }
+                            doc.addImage(s.image, 'JPEG', imgX, imgY, imgW, imgH, undefined, 'FAST');
+                        } catch (imgErr) { console.warn('Image embed error', imgErr); }
+                    }
+
+                    // Text
+                    const hexHead = thm.heading.replace('#', '');
+                    const rh = parseInt(hexHead.substring(0, 2), 16), gh = parseInt(hexHead.substring(2, 4), 16), bh = parseInt(hexHead.substring(4, 6), 16);
+                    const hexBody = thm.body.replace('#', '');
+                    const rb2 = parseInt(hexBody.substring(0, 2), 16), gb2 = parseInt(hexBody.substring(2, 4), 16), bb2 = parseInt(hexBody.substring(4, 6), 16);
+
+                    const textAreaW = (s.layout === 'image-right' || s.layout === 'image-left') ? textWidth * 0.55 : textWidth;
+                    const textX = (s.layout === 'image-left') ? margins + w * 0.42 : margins;
+                    const startY = (i === 0) ? h * 0.3 : margins + (isMobile ? 14 : 16);
+
+                    doc.setFont('Helvetica', 'bold');
+                    doc.setFontSize(i === 0 ? (isMobile ? 26 : 36) : (isMobile ? 20 : 28));
+                    doc.setTextColor(rh, gh, bh);
+                    const headLines = doc.splitTextToSize(s.heading, textAreaW);
+                    const align = (i === 0 || s.align === 'center') ? 'center' : (s.align === 'right' ? 'right' : 'left');
+                    const headX = align === 'center' ? w / 2 : (align === 'right' ? w - margins : textX);
+                    doc.text(headLines, headX, startY, { align });
+
+                    if (s.body && i > 0) {
+                        doc.setFont('Helvetica', 'normal');
+                        doc.setFontSize(isMobile ? 13 : 17);
+                        doc.setTextColor(rb2, gb2, bb2);
+                        const bodyY = startY + headLines.length * (isMobile ? 9 : 12) + (isMobile ? 8 : 12);
+                        const bodyLines = doc.splitTextToSize(s.body, textAreaW);
+                        const bodyX = align === 'center' ? w / 2 : (align === 'right' ? w - margins : textX);
+                        doc.text(bodyLines, bodyX, bodyY, { align, lineHeightFactor: 1.6 });
+                    }
+
+                    // Page number
+                    doc.setFontSize(8); doc.setTextColor(150);
+                    doc.text(`${i + 1}`, w - margins, h - 8, { align: 'right' });
+                }
+
+                // Branding
+                doc.setFontSize(7); doc.setTextColor(130);
+                doc.text('ppt.yahya.in · A Project by Yahya Mundewadi', margins, doc.internal.pageSize.getHeight() - 4);
+
+                doc.save(`${pptData.topic.replace(/\s+/g, '_')}_DESIGNED_${type.toUpperCase()}.pdf`);
+                showToast('PDF downloaded ✓');
+            } catch (err) { console.error(err); showToast('PDF export error — see console'); }
+        }
+
+        // ── PPTX EXPORT ──────────────────────────────────────────────────
+        async function exportPPTX(type) {
+            flushCurrentEdits();
+            showToast('Building PPTX...');
+            try {
+                const pptx = new PptxGenJS();
+                const isMobile = type === 'mobile';
+
+                if (isMobile) {
+                    pptx.defineLayout({ name: 'MOBILE_PORTRAIT', width: 5.625, height: 10.0 });
+                    pptx.layout = 'MOBILE_PORTRAIT';
+                } else {
+                    pptx.layout = 'LAYOUT_16x9';
+                }
+
+                const PW = isMobile ? 5.625 : 10;
+                const PH = isMobile ? 10.0 : 5.625;
+
+                for (let i = 0; i < slideStates.length; i++) {
+                    const s = slideStates[i];
+                    const thm = getEffectiveTheme(s);
+                    const slide = pptx.addSlide();
+
+                    // Background color
+                    const bgHex = thm.bg.replace('#', '');
+                    slide.background = { fill: bgHex };
+
+                    // Image if present
+                    if (s.image && s.layout !== 'text-only') {
+                        let imgX = 0, imgY = 0, imgW = PW * 0.42, imgH = PH;
+                        if (s.layout === 'image-right') { imgX = PW * 0.58; imgW = PW * 0.42; }
+                        else if (s.layout === 'image-left') { imgX = 0; imgW = PW * 0.42; }
+                        else if (s.layout === 'image-bottom') { imgX = 0; imgY = PH * 0.55; imgW = PW; imgH = PH * 0.45; }
+                        try {
+                            slide.addImage({ data: s.image, x: imgX, y: imgY, w: imgW, h: imgH, sizing: { type: 'crop', w: imgW, h: imgH } });
+                        } catch (e) { console.warn('PPTX image error', e); }
+                    }
+
+                    const hasImgSide = s.image && (s.layout === 'image-right' || s.layout === 'image-left');
+                    const textW = hasImgSide ? PW * 0.52 : PW * 0.88;
+                    const textXRight = hasImgSide && s.layout === 'image-right' ? PW * 0.06 : PW * 0.06;
+                    const textXLeft = hasImgSide && s.layout === 'image-left' ? PW * 0.46 : PW * 0.06;
+                    const textX = s.layout === 'image-left' ? textXLeft : textXRight;
+                    const headColor = thm.heading.replace('#', '');
+                    const bodyColor = thm.body.replace('#', '');
+
+                    const pptAlign = i === 0 ? 'center' : (s.align || 'left');
+
+                    if (i === 0) {
+                        // Title slide
+                        slide.addText(s.heading, { x: '5%', y: '30%', w: '90%', h: isMobile ? 2 : 1.8, fontSize: isMobile ? 30 : 40, color: headColor, bold: true, align: 'center', valign: 'middle', wrap: true });
+                        slide.addText(`By ${pptData.userName}`, { x: '5%', y: isMobile ? '55%' : '58%', w: '90%', h: 0.6, fontSize: isMobile ? 14 : 18, color: bodyColor, align: 'center' });
+                        slide.addText('ppt.yahya.in · A Project by Yahya Mundewadi', { x: '5%', y: '90%', w: '90%', h: 0.3, fontSize: 8, color: bodyColor, align: 'center' });
+                    } else {
+                        const headY = s.layout === 'image-bottom' ? 0.2 : 0.25;
+                        const bodyY = s.layout === 'image-bottom' ? headY + 0.8 : headY + (isMobile ? 1.0 : 0.8);
+                        slide.addText(s.heading, { x: textX, y: headY, w: textW, h: isMobile ? 1.5 : 1.2, fontSize: isMobile ? 22 : 28, color: headColor, bold: true, valign: 'top', align: pptAlign, wrap: true });
+                        slide.addText(s.body, { x: textX, y: bodyY, w: textW, h: isMobile ? PH * 0.55 : PH * 0.55, fontSize: isMobile ? 14 : 17, color: bodyColor, valign: 'top', align: pptAlign, lineSpacing: isMobile ? 22 : 26, wrap: true });
+                    }
+                }
+
+                await pptx.writeFile({ fileName: `${pptData.topic.replace(/\s+/g, '_')}_DESIGNED_${type.toUpperCase()}.pptx` });
+                showToast('PPTX downloaded ✓');
+            } catch (err) { console.error(err); showToast('PPTX export error — see console'); }
+        }
+    </script>
+</body>
+
+</html>
