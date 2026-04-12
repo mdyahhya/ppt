@@ -2236,6 +2236,7 @@
                 syncPanelToSlide();
                 refreshThumb(currentSlideIdx);
                 buildMobileThumbs();
+                if (currentMobileSheet === 'image') openMobileSheet('image');
                 showToast('Image added ✓');
             };
             reader.readAsDataURL(file);
@@ -2330,6 +2331,7 @@
             syncPanelToSlide();
             refreshThumb(currentSlideIdx);
             buildMobileThumbs();
+            if (currentMobileSheet === 'image') openMobileSheet('image');
             showToast('Image removed ✓');
         }
 
