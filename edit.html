@@ -1551,11 +1551,9 @@
                             <span>JPG, PNG, GIF · Any size</span>
                         </div>
                         <div id="imgPreviewZone" class="img-preview-wrap hidden">
-                            <img id="imgPreviewEl" src="" alt="Slide image">
-                            <div style="position:absolute;top:6px;right:6px;display:flex;gap:4px;">
-                                <button onclick="openCropModal()" class="img-remove-btn" style="background:var(--accent);white-space:nowrap;display:flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:1;margin-bottom:0;"><path d="M6.13 1L6 16a2 2 0 0 0 2 2h15"/><path d="M1 6.13L16 6a2 2 0 0 1 2 2v15"/></svg> Crop</button>
-                                <button class="img-remove-btn" onclick="removeSlideImage()" style="background:rgba(0,0,0,0.6);white-space:nowrap;">✕ Remove</button>
-                            </div>
+                            <img id="imgPreviewEl" src="" alt="Slide image" style="width:100%;height:140px;object-fit:cover;border-radius:8px;">
+                            <button onclick="openCropModal()" class="img-remove-btn" style="position:absolute;top:8px;left:8px;background:var(--accent);white-space:nowrap;display:flex;align-items:center;gap:4px;width:auto;padding:6px 12px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:1;margin-bottom:0;"><path d="M6.13 1L6 16a2 2 0 0 0 2 2h15"/><path d="M1 6.13L16 6a2 2 0 0 1 2 2v15"/></svg> Crop</button>
+                            <button class="img-remove-btn" onclick="removeSlideImage()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.6);white-space:nowrap;width:auto;padding:6px 12px;">✕ Remove</button>
                         </div>
                     </div>
                     <hr class="sep">
