@@ -1572,9 +1572,29 @@
                     <hr class="sep">
                     <div class="tool-section">
                         <div class="tool-section-label">Image Layout</div>
-                        <p style="font-size:12px;color:var(--text3);margin-bottom:10px;">Go to the Design tab to change
-                            image position (left, right, bottom).</p>
-                        <div class="tool-section-label" style="margin-top:8px;">Image Object Fit</div>
+                        <div class="layout-grid" id="layoutGridImage">
+                            <button class="layout-btn active" data-layout="text-only"
+                                onclick="applyLayout('text-only', this)">
+                                <svg viewBox="0 0 28 20"><rect x="2" y="2" width="24" height="16" rx="2" /><line x1="6" y1="7" x2="22" y2="7" /><line x1="6" y1="10" x2="22" y2="10" /><line x1="6" y1="13" x2="18" y2="13" /></svg>
+                                Text Only
+                            </button>
+                            <button class="layout-btn" data-layout="image-background"
+                                onclick="applyLayout('image-background', this)">
+                                <svg viewBox="0 0 28 20"><rect x="2" y="2" width="24" height="16" rx="2" fill="currentColor" opacity="0.3" /><line x1="6" y1="10" x2="22" y2="10" /></svg>
+                                Image Background
+                            </button>
+                            <button class="layout-btn" data-layout="image-right"
+                                onclick="applyLayout('image-right', this)">
+                                <svg viewBox="0 0 28 20"><rect x="2" y="2" width="14" height="16" rx="1" /><rect x="18" y="2" width="8" height="16" rx="1" fill="currentColor" opacity="0.3" /></svg>
+                                Image Right
+                            </button>
+                            <button class="layout-btn" data-layout="image-left"
+                                onclick="applyLayout('image-left', this)">
+                                <svg viewBox="0 0 28 20"><rect x="2" y="2" width="8" height="16" rx="1" fill="currentColor" opacity="0.3" /><rect x="12" y="2" width="14" height="16" rx="1" /></svg>
+                                Image Left
+                            </button>
+                        </div>
+                        <div class="tool-section-label" style="margin-top:16px;">Image Object Fit</div>
                         <div style="display:flex;gap:8px;margin-top:6px;">
                             <button onclick="setImgFit('cover')" id="fitCover"
                                 style="flex:1;padding:8px;background:rgba(16,163,127,0.12);border:1px solid var(--accent);color:var(--accent);border-radius:8px;cursor:pointer;font-size:11px;font-weight:600;">Cover</button>
@@ -2125,8 +2145,10 @@
         // ── LAYOUT ───────────────────────────────────────────────────────
         function applyLayout(layout, btnEl) {
             slideStates[currentSlideIdx].layout = layout;
-            document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
-            if (btnEl) btnEl.classList.add('active');
+            // Sync all layout buttons in all grids (Design and Image tabs)
+            document.querySelectorAll('.layout-btn').forEach(b => {
+                b.classList.toggle('active', b.getAttribute('data-layout') === layout);
+            });
             renderCanvas();
         }
 
@@ -2477,6 +2499,29 @@
             }
 
             html += '</div>';
+
+            // Layout
+            html += '<hr class="sep">';
+            html += '<div class="tool-section"><div class="tool-section-label">Slide Layout</div>';
+            html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">';
+            const layouts = [
+                { id: 'text-only', label: 'Text Only' },
+                { id: 'image-background', label: 'Image Background' },
+                { id: 'image-right', label: 'Image Right' },
+                { id: 'image-left', label: 'Image Left' }
+            ];
+            layouts.forEach(l => {
+                const isActive = s.layout === l.id;
+                html += `
+                    <button onclick="applyLayoutFromSheet('${l.id}')" style="
+                        padding:12px 8px;background:${isActive ? 'rgba(16,163,127,0.12)' : 'var(--surface2)'};
+                        border:1px solid ${isActive ? 'var(--accent)' : 'var(--border)'};
+                        color:${isActive ? 'var(--accent)' : 'var(--text2)'};
+                        border-radius:10px;cursor:pointer;font-size:12px;font-weight:600;
+                    ">${l.label}</button>
+                `;
+            });
+            html += '</div></div>';
 
             // Object fit
             html += '<hr class="sep">';
