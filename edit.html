@@ -305,25 +305,35 @@
         .slide-layout-full .slide-image-zone {
             position: absolute;
             inset: 0;
+            z-index: 1;
         }
 
         .slide-layout-full .slide-text-zone {
             position: relative;
             z-index: 2;
-            padding: 6% 7%;
+            width: 100%;
             height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
         }
 
+        .slide-layout-left,
         .slide-layout-right {
             display: flex;
             flex-direction: row;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 50/50 Split */
+        .slide-layout-left .slide-text-zone,
+        .slide-layout-left .slide-image-zone,
+        .slide-layout-right .slide-text-zone,
+        .slide-layout-right .slide-image-zone {
+            flex: 0 0 50%;
+            height: 100%;
+            position: relative;
         }
 
         .slide-text-zone {
-            flex: 0 0 50%;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -333,12 +343,10 @@
         }
 
         .slide-image-zone {
-            flex: 0 0 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            position: relative;
             z-index: 1;
         }
 
@@ -1989,8 +1997,9 @@
                 inner.appendChild(textZone);
                 inner.appendChild(imgZone);
             } else {
+                // Background image or text only
+                if (imgZone) inner.appendChild(imgZone);
                 inner.appendChild(textZone);
-                if (!isTitle && !isTextOnly && !isBgImage && imgZone) inner.appendChild(imgZone);
             }
 
             canvas.appendChild(inner);
