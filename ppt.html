@@ -179,6 +179,53 @@
             background: rgba(220, 38, 38, 0.1);
         }
 
+        .my-ppts-btn-top {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .my-ppts-btn-top:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
+        .my-ppt-item {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .my-ppt-item:hover {
+            background: var(--bg-panel);
+        }
+
+        .my-ppt-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .my-ppt-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
         .sidebar-footer {
             margin-top: auto;
             padding-top: 12px;
@@ -941,13 +988,17 @@
 
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <button class="new-chat-btn" onclick="startNewChat()">
+        <button class="new-chat-btn" onclick="startNewChat(true)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
             New chat
+        </button>
+        <button class="new-chat-btn" onclick="openMyPPTs()" style="margin-top:-8px; margin-bottom: 8px; color: var(--accent-green);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            My PPTs
         </button>
         <div class="sidebar-section" id="sidebarHistory"></div>
         <div class="sidebar-footer">
@@ -989,23 +1040,46 @@
         </div>
     </div>
 
+    <!-- My PPTs Modal -->
+    <div class="modal-overlay" id="myPptsModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>📂 My Generated Presentations</h3>
+                <button class="modal-close" onclick="closeMyPptsModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-slide-area" id="myPptsArea" style="background:#fff;"></div>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <div class="main-content">
         <div class="top-nav" id="topNav">
-            <div style="display:flex;align-items:center;gap:8px;">
-                <button class="mobile-menu-btn" onclick="openSidebar()" aria-label="Open menu">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round">
-                        <line x1="3" y1="6" x2="21" y2="6" />
-                        <line x1="3" y1="12" x2="21" y2="12" />
-                        <line x1="3" y1="18" x2="21" y2="18" />
-                    </svg>
-                </button>
-                <div class="model-selector">
-                    AI PPT Maker by Yahya
-                    <span
-                        style="font-size:13px;font-weight:500;color:var(--accent-green);background:rgba(16,163,127,0.1);padding:2px 8px;border-radius:12px;margin-left:8px;">v2.0</span>
+            <div style="display:flex;align-items:center;gap:8px;width:100%;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <button class="mobile-menu-btn" onclick="openSidebar()" aria-label="Open menu">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round">
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <line x1="3" y1="12" x2="21" y2="12" />
+                            <line x1="3" y1="18" x2="21" y2="18" />
+                        </svg>
+                    </button>
+                    <div class="model-selector">
+                        AI PPT Maker by Yahya
+                        <span
+                            style="font-size:13px;font-weight:500;color:var(--accent-green);background:rgba(16,163,127,0.1);padding:2px 8px;border-radius:12px;margin-left:8px;">v2.0</span>
+                    </div>
                 </div>
+                <button onclick="openMyPPTs()" class="my-ppts-btn-top">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    My PPTs
+                </button>
             </div>
         </div>
 
@@ -1135,7 +1209,15 @@
             }
         }
 
-        function startNewChat() {
+        function startNewChat(force = false) {
+            if (!force && chatHistoryDb.length > 0) {
+                const latest = chatHistoryDb[0];
+                // Reuse latest chat if it's essentially empty (at start step with no history or just the system intro)
+                if (latest.state && latest.state.step === 0 && latest.state.uiMessages.length <= 1) {
+                    loadChat(latest.id);
+                    return;
+                }
+            }
             currentChatId = Date.now().toString();
             state = { step: 0, userName: '', topic: '', tone: '', slideCount: 0, points: [], content: {}, customInstructions: '', conversationHistory: [], uiMessages: [] };
             dom.chatMessages.innerHTML = '';
@@ -1144,6 +1226,49 @@
             renderSidebar();
             setTimeout(() => addMessage('system', "Hi! Let's build a presentation. Please type **'start'** when you're ready to provide your details."), 200);
             saveState();
+        }
+
+        function openMyPPTs() {
+            const area = document.getElementById('myPptsArea');
+            area.innerHTML = '';
+            const ppts = chatHistoryDb.filter(c => c.state && c.state.points && c.state.points.length > 0);
+            
+            if (ppts.length === 0) {
+                area.innerHTML = '<div style="padding:40px; text-align:center; color:var(--text-muted);">No presentations generated yet.</div>';
+            } else {
+                ppts.forEach(p => {
+                    const item = document.createElement('div');
+                    item.className = 'my-ppt-item';
+                    item.innerHTML = `
+                        <div class="my-ppt-info">
+                            <h4>${p.title}</h4>
+                            <p>${p.state.points.length + 1} slides · ${new Date(p.timestamp).toLocaleDateString()}</p>
+                        </div>
+                        <button class="action-btn edit-btn" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; width:auto; height:auto;">Open Editor</button>
+                    `;
+                    item.onclick = () => {
+                        const editPayload = {
+                            topic: p.state.topic,
+                            userName: p.state.userName,
+                            tone: p.state.tone,
+                            points: p.state.points,
+                            content: p.state.content,
+                            timestamp: Date.now()
+                        };
+                        localStorage.setItem('ppt_edit_state', JSON.stringify(editPayload));
+                        window.location.href = 'edit.html';
+                    };
+                    area.appendChild(item);
+                });
+            }
+            document.getElementById('myPptsModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            closeSidebar();
+        }
+
+        function closeMyPptsModal() {
+            document.getElementById('myPptsModal').classList.remove('open');
+            document.body.style.overflow = '';
         }
 
         dom.chatInput.addEventListener('input', () => {
@@ -1345,7 +1470,7 @@
                         <div class="slide-card-header" style="color:#888;">TITLE SLIDE</div>
                         <h4 style="font-size:22px;color:#fff;">${state.topic}</h4>
                         <p style="color:#aaa;margin-top:8px;">By <strong style="color:#ccc;">${state.userName.split('\n').map(n => n.trim()).filter(n => n).join(', ')}</strong><br>
-                        <span style="font-size:11px;opacity:0.5;">ppt.yahya.in</span></p>
+                        <span style="font-size:11px;opacity:0.5;">ppt.yahya.in · A Project by Yahya Mundewadi</span></p>
                     </div>
             `;
 
@@ -1381,34 +1506,33 @@
                             <span class="btn-sub">PC · 16:9 Widescreen</span>
                         </a>
                     </div>
-                    <div class="action-btns-row">
-                        <a onclick="exportPDF('mobile')" class="action-btn pdf-btn" style="cursor:pointer;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-                            Mobile PDF
-                            <span class="btn-sub">Portrait · WhatsApp-ready</span>
-                        </a>
-                        <a onclick="exportPPTX('pc')" class="action-btn ppt-btn" style="cursor:pointer;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                            Plain PPTX
-                            <span class="btn-sub">Editable · No design</span>
-                        </a>
+                        <div class="action-btns-row">
+                            <a onclick="exportPPTX('pc')" class="action-btn ppt-btn" style="cursor:pointer;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                                Plain PPTX
+                                <span class="btn-sub">Editable · No design</span>
+                            </a>
+                        </div>
+                        <p style="font-size:12px;color:var(--text-muted);margin-top:16px;text-align:center;">💡 Use <strong>Edit & Design PPT</strong> to add themes, images and custom layout before exporting.</p>
                     </div>
-                    <p style="font-size:12px;color:var(--text-muted);margin-top:16px;text-align:center;">💡 Use <strong>Edit & Design PPT</strong> to add themes, images and custom layout before exporting.</p>
-                </div>
-            `;
+                `;
+                addMessage('system', html, true);
+            }
 
-            addMessage('system', html, true);
-        }
-
-        // ── PREVIEW MODAL ────────────────────────────────────────────
+            // ── PREVIEW MODAL ────────────────────────────────────────────
         function openPreviewModal() {
             const area = document.getElementById('modalSlideArea');
+            if (!area) {
+                // If the area doesn't exist (maybe accidentally deleted), we can't show preview
+                // But in our case, modalSlideArea should be in previewModal div
+                return;
+            }
             area.innerHTML = '';
 
             // Title slide
             const titleSlide = document.createElement('div');
             titleSlide.className = 'modal-slide title-slide';
-            titleSlide.innerHTML = `<div class="slide-num">SLIDE 1 — TITLE</div><h3>${state.topic}</h3><p>By ${state.userName.split('\n').map(n => n.trim()).filter(n => n).join(', ')}\nppt.yahya.in : A Project by Yahya Mundewadi</p>`;
+            titleSlide.innerHTML = `<div class="slide-num">SLIDE 1 — TITLE</div><h3>${state.topic}</h3><p>By ${state.userName.split('\n').map(n => n.trim()).filter(n => n).join(', ')}<br>ppt.yahya.in · A Project by Yahya Mundewadi</p>`;
             area.appendChild(titleSlide);
 
             state.points.forEach((pt, idx) => {
@@ -1428,8 +1552,11 @@
         }
 
         // Close modal on overlay click
-        document.getElementById('previewModal').addEventListener('click', function (e) {
-            if (e.target === this) closePreviewModal();
+        document.addEventListener('click', function (e) {
+            const pm = document.getElementById('previewModal');
+            if (pm && e.target === pm) closePreviewModal();
+            const mm = document.getElementById('myPptsModal');
+            if (mm && e.target === mm) closeMyPptsModal();
         });
 
         // ── EDIT PAGE ────────────────────────────────────────────────
