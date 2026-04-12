@@ -1552,9 +1552,9 @@
                         </div>
                         <div id="imgPreviewZone" class="img-preview-wrap hidden">
                             <img id="imgPreviewEl" src="" alt="Slide image">
-                            <div style="position:absolute;top:6px;right:6px;display:flex;gap:4px;">
-                                <button onclick="openCropModal()" class="img-remove-btn" style="background:var(--accent);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:1;"><path d="M6.13 1L6 16a2 2 0 0 0 2 2h15"/><path d="M1 6.13L16 6a2 2 0 0 1 2 2v15"/></svg> Crop</button>
-                                <button class="img-remove-btn" onclick="removeSlideImage()">✕ Remove</button>
+                            <div style="position:absolute;top:6px;right:6px;display:flex;gap:4px;flex-direction:row-reverse;">
+                                <button class="img-remove-btn" onclick="removeSlideImage()" style="background:rgba(0,0,0,0.6);white-space:nowrap;">✕ Remove</button>
+                                <button onclick="openCropModal()" class="img-remove-btn" style="background:var(--accent);white-space:nowrap;display:flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:1;margin-bottom:0;"><path d="M6.13 1L6 16a2 2 0 0 0 2 2h15"/><path d="M1 6.13L16 6a2 2 0 0 1 2 2v15"/></svg> Crop</button>
                             </div>
                         </div>
                     </div>
@@ -1985,7 +1985,6 @@
                     img.style.objectFit = s.imgFit || 'cover';
                     img.style.transform = `scale(${(s.imgZoom || 100) / 100})`;
                     imgZone.appendChild(img);
-                    imgZone.innerHTML += `<div class="img-edit-overlay" onclick="openCropModal()">Click to Crop</div>`;
                 } else {
                     imgZone.innerHTML = `
                         <div class="slide-image-placeholder" onclick="openMobileSheet('image');triggerImageUpload()">
@@ -2326,10 +2325,16 @@
         }
 
         function removeSlideImage() {
-            slideStates[currentSlideIdx].image = null;
-            slideStates[currentSlideIdx].imgZoom = 100;
-            applyLayout('text-only', document.querySelector('[data-layout="text-only"]'));
-            showToast('Image removed');
+            const s = slideStates[currentSlideIdx];
+            s.image = null;
+            s.imgZoom = 100;
+            s.layout = 'text-only';
+            
+            renderCanvas();
+            syncPanelToSlide();
+            refreshThumb(currentSlideIdx);
+            buildMobileThumbs();
+            showToast('Image removed ✓');
         }
 
         // ── TABS (Desktop) ──────────────────────────────────────────────
