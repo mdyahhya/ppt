@@ -1930,96 +1930,89 @@
 
             // Get person name
             const displayName = pptData.userName || 'Unknown';
+            const isTitle = (currentSlideIdx === 0);
 
-            if (currentSlideIdx === 0) {
-                // Title slide
-                const inner = document.createElement('div');
-                inner.className = 'title-slide-inner';
-                inner.style.background = thm.gradient || thm.bg;
+            const isTextOnly = s.layout === 'text-only';
+            const isBgImage = s.layout === 'image-background';
+            const isRight = s.layout === 'image-right';
+            const isLeft = s.layout === 'image-left';
 
-                // Format multi-line names
+            if (isBgImage && s.image) {
+                canvas.style.backgroundImage = `url(${s.image})`;
+                canvas.style.backgroundSize = s.imgFit || 'cover';
+                canvas.style.backgroundPosition = 'center';
+                canvas.style.backgroundRepeat = 'no-repeat';
+            }
+
+            const inner = document.createElement('div');
+            inner.className = 'slide-canvas-inner';
+            if (isRight) inner.className += ' slide-layout-right';
+            else if (isLeft) inner.className += ' slide-layout-left';
+            else inner.className += ' slide-layout-full';
+
+            // Text zone
+            const textZone = document.createElement('div');
+            textZone.className = 'slide-text-zone';
+            
+            // For background image, ensure text is readable
+            if (isBgImage && s.image) {
+                textZone.style.background = 'rgba(255,255,255,0.7)';
+                textZone.style.borderRadius = '16px';
+                textZone.style.margin = '40px';
+                textZone.style.backdropFilter = 'blur(8px)';
+                textZone.style.padding = '40px';
+                textZone.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
+            }
+
+            if (isTitle) {
                 const nameHtml = displayName.split('\n').map(n => n.trim()).filter(n => n).join('<br>');
-
-                inner.innerHTML = `
-                <textarea class="slide-heading" style="font-size:${s.headSize}px;color:${thm.heading};text-align:${s.align};background:transparent;font-weight:800;" rows="2" oninput="onHeadingInput(this)">${s.heading}</textarea>
-                <div class="title-slide-name" style="color:${thm.body};">By ${nameHtml}</div>
-                <div class="title-slide-brand" style="color:${thm.body};">ppt.yahya.in · A Project by Yahya Mundewadi</div>
-            `;
-                canvas.appendChild(inner);
+                textZone.innerHTML = `
+                    <textarea class="slide-heading" style="font-size:${s.headSize}px;color:${thm.heading};text-align:${s.align};background:transparent;font-weight:800;" rows="2" oninput="onHeadingInput(this)">${s.heading}</textarea>
+                    <div class="title-slide-name" style="color:${thm.body};text-align:${s.align};">By ${nameHtml}</div>
+                    <div class="title-slide-brand" style="color:${thm.body};text-align:${s.align};">ppt.yahya.in · A Project by Yahya Mundewadi</div>
+                `;
             } else {
-                const isTextOnly = s.layout === 'text-only';
-                const isBgImage = s.layout === 'image-background';
-                const isRight = s.layout === 'image-right';
-                const isLeft = s.layout === 'image-left';
-
-                if (isBgImage && s.image) {
-                    canvas.style.backgroundImage = `url(${s.image})`;
-                    canvas.style.backgroundSize = s.imgFit || 'cover';
-                    canvas.style.backgroundPosition = 'center';
-                    canvas.style.backgroundRepeat = 'no-repeat';
-                }
-
-                const inner = document.createElement('div');
-                inner.className = 'slide-canvas-inner';
-                if (isRight) inner.className += ' slide-layout-right';
-                else if (isLeft) inner.className += ' slide-layout-left';
-                else inner.className += ' slide-layout-full';
-
-                // Text zone
-                const textZone = document.createElement('div');
-                textZone.className = 'slide-text-zone';
-                
-                // For background image, ensure text is readable
-                if (isBgImage && s.image) {
-                    textZone.style.background = 'rgba(255,255,255,0.7)';
-                    textZone.style.borderRadius = '16px';
-                    textZone.style.margin = '40px';
-                    textZone.style.backdropFilter = 'blur(8px)';
-                    textZone.style.padding = '40px';
-                    textZone.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
-                }
-
                 textZone.innerHTML = `
                     <textarea class="slide-heading" style="font-size:${s.headSize}px;color:${thm.heading};text-align:${s.align};" rows="2" oninput="onHeadingInput(this)">${s.heading}</textarea>
                     <div style="height:${Math.round(s.headSize * 0.5)}px;"></div>
                     <textarea class="slide-body" style="font-size:${s.bodySize}px;color:${thm.body};text-align:${s.align};" rows="6" oninput="onBodyInput(this)">${s.body}</textarea>
                 `;
-
-                // Image zone
-                let imgZone = null;
-                if (!isTextOnly && !isBgImage) {
-                    imgZone = document.createElement('div');
-                    imgZone.className = 'slide-image-zone';
-
-                    if (s.image) {
-                        const img = document.createElement('img');
-                        img.src = s.image;
-                        img.style.objectFit = s.imgFit || 'cover';
-                        imgZone.appendChild(img);
-                    } else {
-                        imgZone.innerHTML = `
-                            <div class="slide-image-placeholder" onclick="openMobileSheet('image');triggerImageUpload()">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="${thm.body}" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                                <span style="color:${thm.body};">Click to add image</span>
-                            </div>
-                        `;
-                    }
-                }
-
-                // Append in correct order
-                if (isLeft && imgZone) {
-                    inner.appendChild(imgZone);
-                    inner.appendChild(textZone);
-                } else if (isRight && imgZone) {
-                    inner.appendChild(textZone);
-                    inner.appendChild(imgZone);
-                } else {
-                    inner.appendChild(textZone);
-                }
-
-                canvas.appendChild(inner);
             }
 
+            // Image zone
+            let imgZone = null;
+            if (!isTextOnly && !isBgImage) {
+                imgZone = document.createElement('div');
+                imgZone.className = 'slide-image-zone';
+
+                if (s.image) {
+                    const img = document.createElement('img');
+                    img.src = s.image;
+                    img.style.objectFit = s.imgFit || 'cover';
+                    imgZone.appendChild(img);
+                } else {
+                    imgZone.innerHTML = `
+                        <div class="slide-image-placeholder" onclick="openMobileSheet('image');triggerImageUpload()">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="${thm.body}" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            <span style="color:${thm.body};">Click to add image</span>
+                        </div>
+                    `;
+                }
+            }
+
+            // Append in correct order
+            if (isLeft && imgZone) {
+                inner.appendChild(imgZone);
+                inner.appendChild(textZone);
+            } else if (isRight && imgZone) {
+                inner.appendChild(textZone);
+                inner.appendChild(imgZone);
+            } else {
+                inner.appendChild(textZone);
+                if (!isTitle && !isTextOnly && !isBgImage && imgZone) inner.appendChild(imgZone);
+            }
+
+            canvas.appendChild(inner);
             autoResizeTextareas();
         }
 
