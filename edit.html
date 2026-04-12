@@ -12,6 +12,8 @@
         rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <style>
         *,
         *::before,
@@ -321,6 +323,8 @@
             flex-direction: row;
             width: 100%;
             height: 100%;
+            gap: 0;
+            align-items: stretch;
         }
 
         /* 50/50 Split */
@@ -1548,7 +1552,10 @@
                         </div>
                         <div id="imgPreviewZone" class="img-preview-wrap hidden">
                             <img id="imgPreviewEl" src="" alt="Slide image">
-                            <button class="img-remove-btn" onclick="removeSlideImage()">✕ Remove</button>
+                            <div style="position:absolute;top:6px;right:6px;display:flex;gap:4px;">
+                                <button onclick="openCropModal()" class="img-remove-btn" style="background:var(--accent);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:1;"><path d="M6.13 1L6 16a2 2 0 0 0 2 2h15"/><path d="M1 6.13L16 6a2 2 0 0 1 2 2v15"/></svg> Crop</button>
+                                <button class="img-remove-btn" onclick="removeSlideImage()">✕ Remove</button>
+                            </div>
                         </div>
                     </div>
                     <hr class="sep">
@@ -1978,7 +1985,7 @@
                     img.style.objectFit = s.imgFit || 'cover';
                     img.style.transform = `scale(${(s.imgZoom || 100) / 100})`;
                     imgZone.appendChild(img);
-                    imgZone.innerHTML += `<div class="img-edit-overlay" onclick="openMobileSheet('image')">Crop / Zoom</div>`;
+                    imgZone.innerHTML += `<div class="img-edit-overlay" onclick="openCropModal()">Click to Crop</div>`;
                 } else {
                     imgZone.innerHTML = `
                         <div class="slide-image-placeholder" onclick="openMobileSheet('image');triggerImageUpload()">
@@ -2247,6 +2254,62 @@
             const mobDisp = document.getElementById('mobValZoom');
             if (mobDisp) mobDisp.textContent = val + '%';
             renderCanvas();
+        }
+
+        // ── CROPPER SYSTEM ──────────────────────────────────────────────
+        let cropper = null;
+        function openCropModal() {
+            const s = slideStates[currentSlideIdx];
+            if (!s.image) return;
+            
+            document.getElementById('cropModal').style.display = 'flex';
+            const cropImg = document.getElementById('cropperImage');
+            cropImg.src = s.image;
+
+            if (cropper) cropper.destroy();
+            
+            // Wait for image to load before initializing cropper
+            cropImg.onload = () => {
+                cropper = new Cropper(cropImg, {
+                    aspectRatio: (s.layout === 'image-left' || s.layout === 'image-right') ? 0.88 : NaN,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 1,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                });
+            };
+        }
+
+        function closeCropModal() {
+            document.getElementById('cropModal').style.display = 'none';
+            if (cropper) cropper.destroy();
+            cropper = null;
+        }
+
+        function applyCrop() {
+            if (!cropper) return;
+            const canvas = cropper.getCroppedCanvas({
+                maxWidth: 2048,
+                maxHeight: 2048,
+                fillColor: '#fff',
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high',
+            });
+            
+            const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            slideStates[currentSlideIdx].image = croppedDataUrl;
+            
+            renderCanvas();
+            syncPanelToSlide();
+            refreshThumb(currentSlideIdx);
+            closeCropModal();
+            showToast('Image cropped ✓');
         }
 
         function resetImgCrop() {
@@ -2780,6 +2843,22 @@
             } catch (err) { console.error(err); showToast('PPTX error'); }
         }
     </script>
-</body>
 
+    <!-- CROP MODAL -->
+    <div id="cropModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:var(--surface); width:100%; max-width:900px; border-radius:16px; overflow:hidden; display:flex; flex-direction:column; max-height:90vh;">
+            <div style="padding:16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="font-size:16px; font-weight:700; color:var(--text);">Crop & Adjust Image</h3>
+                <button onclick="closeCropModal()" style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--text3);">&times;</button>
+            </div>
+            <div style="flex:1; overflow:hidden; background:#000; display:flex; align-items:center; justify-content:center;">
+                <img id="cropperImage" style="max-width:100%;">
+            </div>
+            <div style="padding:16px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:12px;">
+                <button onclick="closeCropModal()" style="padding:10px 20px; border-radius:8px; border:1px solid var(--border); background:var(--surface); cursor:pointer; font-weight:600; color:var(--text2);">Cancel</button>
+                <button onclick="applyCrop()" style="padding:10px 24px; border-radius:8px; border:none; background:var(--accent); color:white; cursor:pointer; font-weight:700;">Apply Crop</button>
+            </div>
+        </div>
+    </div>
+</body>
 </html>
