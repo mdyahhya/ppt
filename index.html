@@ -2057,7 +2057,7 @@
                         style="display:none; position:absolute; inset:4px; border-radius:50%; background:linear-gradient(135deg,#4F8EF7,#7C5CFC); z-index:2; align-items:center; justify-content:center; font-size:42px; font-weight:900; color:#fff;">
                         YM</div>
                 </div>
-                <div class="dev-name">Yahya Mundewadi</div>
+                <div class="dev-name" onclick="handleAdminTrigger()" style="cursor:pointer; user-select:none;">Yahya Mundewadi</div>
                 <div class="dev-role">Full-Stack AI Engineer</div>
                 <div class="dev-links">
                     <a href="https://yahya.in" target="_blank" class="dev-link">
@@ -2105,18 +2105,14 @@
                     <span class="skill-tag">Open Source</span>
                 </div>
 
-                <div class="dev-stats">
+                <div class="dev-stats" id="mainHeroStats">
                     <div class="dev-stat">
-                        <span class="dev-stat-num">10+</span>
+                        <span class="dev-stat-num count-num" data-target="10">0</span>
                         <div class="dev-stat-label">AI projects shipped</div>
                     </div>
                     <div class="dev-stat">
-                        <span class="dev-stat-num">30s</span>
+                        <span class="dev-stat-num count-num" data-target="30">0</span>
                         <div class="dev-stat-label">Avg. generation time</div>
-                    </div>
-                    <div class="dev-stat">
-                        <span class="dev-stat-num">100%</span>
-                        <div class="dev-stat-label">Free to use</div>
                     </div>
                 </div>
             </div>
@@ -2262,6 +2258,12 @@
     </div>
 
     <script>
+        // ── INITIALIZATION ──
+        window.onload = () => {
+            trackVisit();
+            animateAllCounters(); // Start hero animations immediately
+        };
+
         const SUPABASE_URL = 'https://nghfugykhrpxxlxkiyji.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5naGZ1Z3lraHJweHhseGtpeWppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTk2MzQsImV4cCI6MjA5MTQ3NTYzNH0.EgFu1Uj6EyE6scGJMYM1sN0DRUO9H-IexaG7XLnfGKc';
         const { createClient } = supabase;
@@ -2315,120 +2317,10 @@
             if (!error) loadAdminReviews();
         }
 
-        // ── TASKBAR & NAV ──
-        function setTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector(`.tab-btn[onclick="setTab('${tab}')"]`).classList.add('active');
-            document.getElementById('tab-reviews').style.display = tab === 'reviews' ? 'block' : 'none';
-            document.getElementById('tab-suggestions').style.display = tab === 'suggestions' ? 'block' : 'none';
-            if (tab === 'reviews') loadComments();
-        }
+        // ── TRACKING ──
 
-        // ── STARS ──
-        let currentRating = 5;
-        function setupStars() {
-            const stars = document.querySelectorAll('.star');
-            stars.forEach(s => {
-                s.addEventListener('click', () => {
-                    currentRating = parseInt(s.dataset.value);
-                    updateStarsDisplay();
-                });
-            });
-        }
-
-        function updateStarsDisplay() {
-            document.querySelectorAll('.star').forEach(s => {
-                s.classList.toggle('selected', parseInt(s.dataset.value) <= currentRating);
-            });
-        }
-
-        // ── COMMENTS ──
-        async function loadComments() {
-            const list = document.getElementById('commentsList');
-            const { data, error } = await _supabase
-                .from('comments')
-                .select('*')
-                .eq('is_visible', true)
-                .order('created_at', { ascending: false });
-
-            if (error) return;
-
-            if (data.length === 0) {
-                list.innerHTML = '<div style="opacity:0.5; padding:20px; text-align:center;">Be the first to leave a review!</div>';
-                return;
-            }
-
-            const myCommentId = localStorage.getItem('my_comment_id');
-            list.innerHTML = data.map(c => `
-                <div class="comment-card">
-                    <div class="comment-header">
-                        <div class="comment-meta">
-                            ${c.name} 
-                            <span class="stars-display">${'★'.repeat(c.rating)}${'☆'.repeat(5 - c.rating)}</span>
-                        </div>
-                        ${c.id == myCommentId ? `<span class="comment-edit-btn" onclick='startEdit(${JSON.stringify(c).replace(/'/g, "&apos;")})'>Edit My Review</span>` : ''}
-                    </div>
-                    <p style="font-size:14px; line-height:1.5; color:var(--text-secondary);">${c.comment}</p>
-                </div>
-            `).join('');
-        }
-
-        document.getElementById('commentForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('editCommentId').value;
-            const btn = document.getElementById('comSubmit');
-            btn.disabled = true;
-
-            const payload = {
-                name: document.getElementById('comName').value,
-                email: document.getElementById('comEmail').value || null,
-                comment: document.getElementById('comText').value,
-                rating: currentRating,
-                is_visible: true
-            };
-
-            let res;
-            if (id) {
-                res = await _supabase.from('comments').update(payload).eq('id', id);
-            } else {
-                res = await _supabase.from('comments').insert(payload).select();
-            }
-
-            if (!res.error) {
-                if (!id && res.data) localStorage.setItem('my_comment_id', res.data[0].id);
-                cancelEdit();
-                loadComments();
-            }
-            btn.disabled = false;
-        });
-
-        function startEdit(c) {
-            document.getElementById('editCommentId').value = c.id;
-            document.getElementById('comName').value = c.name;
-            document.getElementById('comEmail').value = c.email || '';
-            document.getElementById('comText').value = c.comment;
-            currentRating = c.rating;
-            updateStarsDisplay();
-            document.getElementById('commentFormTitle').innerText = 'Update your review';
-            document.getElementById('comSubmit').innerText = 'Save Changes';
-            document.getElementById('comCancel').style.display = 'inline-block';
-        }
-
-        function cancelEdit() {
-            document.getElementById('editCommentId').value = '';
-            document.getElementById('commentForm').reset();
-            document.getElementById('commentFormTitle').innerText = 'Add your review';
-            document.getElementById('comSubmit').innerText = 'Post Review';
-            document.getElementById('comCancel').style.display = 'none';
-            currentRating = 5;
-            updateStarsDisplay();
-        }
-
-        // ── ANALYTICS (Single Row Dashboard) ──
         async function trackVisit() {
-            try {
-                await _supabase.rpc('update_analytics', { metric: 'visit' });
-            } catch (e) { }
+            try { await _supabase.rpc('update_analytics', { metric: 'visit' }); } catch (e) { }
         }
 
         async function trackClick(name) {
@@ -2444,14 +2336,15 @@
         // ── MODALS ──
         function openModal(id) {
             window.history.pushState({ modal: id }, "");
-            document.getElementById(id).classList.add('open');
+            document.getElementById(id).style.display = 'flex';
+            setTimeout(() => document.getElementById(id).classList.add('open'), 10);
             document.body.style.overflow = 'hidden';
             if (id === 'aboutModal') animateAllCounters('#aboutModal');
-            if (id === 'reviewsModal') loadComments();
         }
 
         function closeModal(id) {
             document.getElementById(id).classList.remove('open');
+            setTimeout(() => { document.getElementById(id).style.display = 'none'; }, 300);
             document.body.style.overflow = '';
         }
 
@@ -2459,48 +2352,18 @@
             document.querySelectorAll('.full-modal').forEach(m => closeModal(m.id));
         });
 
-        // ── FORM ──
-        document.getElementById('reviewForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('revSubmit');
-            btn.disabled = true;
-            btn.innerText = 'Sending...';
-
-            const payload = {
-                name: document.getElementById('revName').value,
-                email: document.getElementById('revEmail').value || null,
-                message: document.getElementById('revMessage').value
-            };
-
-            const { error } = await _supabase.from('reviews').insert(payload);
-
-            if (error) {
-                alert('Error sending suggestion. Please try again.');
-            } else {
-                alert('Thank you! Your feedback has been received.');
-                document.getElementById('reviewForm').reset();
-                setTab('reviews');
-            }
-            btn.disabled = false;
-            btn.innerText = 'Send Suggestion';
-        });
-
         // ── ANIMATIONS ──
         function animateCounter(el) {
-            const targetStr = el.getAttribute('data-target');
-            const target = parseInt(targetStr);
-            const duration = 2400;
-            const start = 0;
+            const target = parseInt(el.getAttribute('data-target'));
+            const duration = 2000;
             let startTime = null;
 
             function step(timestamp) {
                 if (!startTime) startTime = timestamp;
                 const progress = Math.min((timestamp - startTime) / duration, 1);
-                const current = Math.floor(progress * (target - start) + start);
+                const current = Math.floor(progress * target);
                 el.innerText = current.toLocaleString();
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
+                if (progress < 1) window.requestAnimationFrame(step);
             }
             window.requestAnimationFrame(step);
         }
@@ -2511,11 +2374,11 @@
             counters.forEach(animateCounter);
         }
 
+        // ── INIT ──
         window.addEventListener('load', () => {
             trackVisit();
             animateAllCounters();
 
-            // Track main buttons
             const navCta = document.querySelector('.nav-cta');
             if (navCta) navCta.addEventListener('click', () => trackClick('header_launch_app'));
 
