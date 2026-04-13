@@ -1294,13 +1294,13 @@
         <div
             style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin-bottom:18px;color:#64748B;font-size:clamp(14px, 1.8vw, 19px);font-weight:600;">
             <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:center;">
-                <div class="counter-badge">
+                <!-- <div class="counter-badge">
                     <span class="hero-eyebrow-dot" style="background: #10A37F;"></span>
                     <span class="count-num" data-target="398">0</span> Active Users
-                </div>
+                </div> -->
                 <div class="counter-badge" style="background: rgba(124, 92, 252, 0.1); color: #7C5CFC;">
                     <span class="hero-eyebrow-dot" style="background: #7C5CFC;"></span>
-                    <span class="count-num" data-target="5683">0</span> Total Visitors
+                    <span class="count-num" data-target="5683">0</span> Visitors
                 </div>
             </div>
             <div style="display:flex; align-items:center; gap:8px; opacity:0.75; font-size:0.85em;">
@@ -2195,25 +2195,30 @@
             <!-- Tab: Reviews -->
             <div id="tab-reviews">
                 <div class="section-label" style="display:inline-block;">Community</div>
-                <h2 style="font-size:28px; font-weight:900; margin-bottom:12px;">Expert Feedback</h2>
-                
+                <h2 style="font-size:28px; font-weight:900; margin-bottom:12px;">User Feedback</h2>
+
                 <div id="commentsList" style="margin-bottom:40px; min-height:100px;">
                     <!-- Comments load here -->
                     <div style="opacity:0.5; padding:20px; text-align:center;">Loading reviews...</div>
                 </div>
 
                 <div style="border-top:1px solid var(--border); padding-top:40px;">
-                    <h3 id="commentFormTitle" style="font-size:22px; font-weight:800; margin-bottom:8px;">Add your review</h3>
-                    <p style="color:var(--muted); font-size:14px; margin-bottom:20px;">Share your experience with the world.</p>
-                    
+                    <h3 id="commentFormTitle" style="font-size:22px; font-weight:800; margin-bottom:8px;">Add your
+                        review</h3>
+                    <p style="color:var(--muted); font-size:14px; margin-bottom:20px;">Share your experience with the
+                        world.</p>
+
                     <form id="commentForm" style="display:flex; flex-direction:column; gap:16px;">
                         <input type="hidden" id="editCommentId">
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                            <input type="text" id="comName" required placeholder="Display Name *" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2);">
-                            <input type="email" id="comEmail" placeholder="Email (Optional)" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2);">
+                            <input type="text" id="comName" required placeholder="Display Name *"
+                                style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2);">
+                            <input type="email" id="comEmail" placeholder="Email (Optional)"
+                                style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2);">
                         </div>
                         <div>
-                            <span style="font-size:14px; font-weight:700; display:block; margin-bottom:8px;">Your Rating:</span>
+                            <span style="font-size:14px; font-weight:700; display:block; margin-bottom:8px;">Your
+                                Rating:</span>
                             <div class="stars-input" id="starRating">
                                 <span class="star" data-value="1">★</span>
                                 <span class="star" data-value="2">★</span>
@@ -2222,10 +2227,14 @@
                                 <span class="star" data-value="5">★</span>
                             </div>
                         </div>
-                        <textarea id="comText" required placeholder="What do you think of AI PPT Maker?" rows="3" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2); resize:vertical;"></textarea>
+                        <textarea id="comText" required placeholder="What do you think of AI PPT Maker?" rows="3"
+                            style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2); resize:vertical;"></textarea>
                         <div style="display:flex; gap:12px; align-items:center;">
-                            <button type="submit" class="btn-primary" id="comSubmit" style="margin:0; padding:12px 28px;">Post Review</button>
-                            <button type="button" id="comCancel" style="display:none; background:none; border:none; text-decoration:underline; cursor:pointer;" onclick="cancelEdit()">Cancel Edit</button>
+                            <button type="submit" class="btn-primary" id="comSubmit"
+                                style="margin:0; padding:12px 28px;">Post Review</button>
+                            <button type="button" id="comCancel"
+                                style="display:none; background:none; border:none; text-decoration:underline; cursor:pointer;"
+                                onclick="cancelEdit()">Cancel Edit</button>
                         </div>
                     </form>
                 </div>
@@ -2237,11 +2246,15 @@
                 <h2 style="font-size:28px; font-weight:900; margin-bottom:12px;">Have a suggestion?</h2>
                 <form id="reviewForm" style="margin-top:20px; display:flex; flex-direction:column; gap:20px;">
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                        <input type="text" id="revName" required placeholder="Your Name *" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2);">
-                        <input type="email" id="revEmail" placeholder="Email (Optional)" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2);">
+                        <input type="text" id="revName" required placeholder="Your Name *"
+                            style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2);">
+                        <input type="email" id="revEmail" placeholder="Email (Optional)"
+                            style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2);">
                     </div>
-                    <textarea id="revMessage" required placeholder="I would love it if the app could..." rows="5" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2); resize:vertical;"></textarea>
-                    <button type="submit" class="btn-primary" id="revSubmit" style="margin:0; width:100%;">Send Suggestion</button>
+                    <textarea id="revMessage" required placeholder="I would love it if the app could..." rows="5"
+                        style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2); resize:vertical;"></textarea>
+                    <button type="submit" class="btn-primary" id="revSubmit" style="margin:0; width:100%;">Send
+                        Suggestion</button>
                 </form>
             </div>
         </div>
@@ -2257,7 +2270,10 @@
                         <img src="yahya.jpeg" alt="Yahya Mundewadi">
                     </div>
                     <div class="dev-name">Yahya Mundewadi</div>
-                    <div class="dev-role">Software Engineer & Creator</div>
+                    <div class="dev-role">
+                        AI Engineer & Creator -
+                        <a href="https://yahya.in" target="_blank">yahya.in</a>
+                    </div>
                     <div class="counter-badge" style="margin-top:8px;">
                         <span class="count-num" data-target="5683">0</span> Total Visitors
                     </div>
@@ -2327,9 +2343,9 @@
                 .select('*')
                 .eq('is_visible', true)
                 .order('created_at', { ascending: false });
-            
+
             if (error) return;
-            
+
             if (data.length === 0) {
                 list.innerHTML = '<div style="opacity:0.5; padding:20px; text-align:center;">Be the first to leave a review!</div>';
                 return;
@@ -2341,7 +2357,7 @@
                     <div class="comment-header">
                         <div class="comment-meta">
                             ${c.name} 
-                            <span class="stars-display">${'★'.repeat(c.rating)}${'☆'.repeat(5-c.rating)}</span>
+                            <span class="stars-display">${'★'.repeat(c.rating)}${'☆'.repeat(5 - c.rating)}</span>
                         </div>
                         ${c.id == myCommentId ? `<span class="comment-edit-btn" onclick='startEdit(${JSON.stringify(c).replace(/'/g, "&apos;")})'>Edit My Review</span>` : ''}
                     </div>
@@ -2405,7 +2421,7 @@
         async function trackVisit() {
             try {
                 await _supabase.rpc('update_analytics', { metric: 'visit' });
-            } catch(e) {}
+            } catch (e) { }
         }
 
         async function trackClick(name) {
@@ -2415,12 +2431,12 @@
                 } else if (name.includes('reviews')) {
                     await _supabase.rpc('update_analytics', { metric: 'review' });
                 }
-            } catch(e) {}
+            } catch (e) { }
         }
 
         // ── MODALS ──
         function openModal(id) {
-            window.history.pushState({modal: id}, ""); 
+            window.history.pushState({ modal: id }, "");
             document.getElementById(id).classList.add('open');
             document.body.style.overflow = 'hidden';
             if (id === 'aboutModal') animateAllCounters('#aboutModal');
