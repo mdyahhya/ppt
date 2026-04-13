@@ -368,7 +368,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 40px 60px;
+            padding: 20px 50px; /* Reduced vertical padding globally */
             overflow: hidden;
             z-index: 2;
         }
@@ -2104,14 +2104,18 @@
             if (isTitle) {
                 const nameHtml = displayName.split('\n').map(n => n.trim()).filter(n => n).join('<br>');
                 textZone.innerHTML = `
-                    <textarea class="slide-heading" style="font-size:${s.headSize}px;color:${thm.heading};text-align:${textAlign};background:transparent;font-weight:800;" rows="2" oninput="onHeadingInput(this)">${s.heading}</textarea>
-                    <div class="title-slide-name" style="color:${thm.body};text-align:${textAlign};">By ${nameHtml}</div>
-                    <div class="title-slide-brand" style="color:${thm.body};text-align:${textAlign};">ppt.yahya.in · A Project by Yahya Mundewadi</div>
+                    <textarea class="slide-heading" style="font-size:${isTextOnly ? s.headSize : Math.min(s.headSize, 28)}px;color:${thm.heading};text-align:${textAlign};background:transparent;font-weight:800;" rows="2" oninput="onHeadingInput(this)">${s.heading}</textarea>
+                    <div class="title-slide-name" style="color:${thm.body};text-align:${textAlign}; margin-top:8px;">By ${nameHtml}</div>
+                    <div class="title-slide-brand" style="color:${thm.body};text-align:${textAlign}; margin-top:4px;">ppt.yahya.in · A Project by Yahya Mundewadi</div>
                 `;
             } else {
+                // If image added, reduce heading size to match body better and reduce gap
+                const finalHeadSize = isTextOnly ? s.headSize : Math.min(s.headSize, 22);
+                const finalGap = isTextOnly ? Math.round(s.headSize * 0.4) : 8; // Very small gap for image slides
+                
                 textZone.innerHTML = `
-                    <textarea class="slide-heading" style="font-size:${s.headSize}px;color:${thm.heading};text-align:${s.align};" rows="2" oninput="onHeadingInput(this)">${s.heading}</textarea>
-                    <div style="height:${Math.round(s.headSize * 0.5)}px;"></div>
+                    <textarea class="slide-heading" style="font-size:${finalHeadSize}px;color:${thm.heading};text-align:${s.align};" rows="2" oninput="onHeadingInput(this)">${s.heading}</textarea>
+                    <div style="height:${finalGap}px;"></div>
                     <textarea class="slide-body" style="font-size:${s.bodySize}px;color:${thm.body};text-align:${s.align};" rows="6" oninput="onBodyInput(this)">${s.body}</textarea>
                 `;
             }
