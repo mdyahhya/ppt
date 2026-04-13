@@ -2401,26 +2401,21 @@
             updateStarsDisplay();
         }
 
-        // ── ANALYTICS ──
+        // ── ANALYTICS (Single Row Increments) ──
         async function trackVisit() {
             try {
-                await _supabase.from('analytics').insert({
-                    event_type: 'page_view',
-                    event_name: 'home_visit',
-                    page_path: window.location.pathname,
-                    user_agent: navigator.userAgent
-                });
-            } catch (e) { }
+                // Call the SQL function to increment global visitor count
+                await _supabase.rpc('increment_stat', { stat_type: 'visitors' });
+            } catch(e) {}
         }
 
         async function trackClick(name) {
             try {
-                await _supabase.from('analytics').insert({
-                    event_type: 'click',
-                    event_name: name,
-                    page_path: window.location.pathname
-                });
-            } catch (e) { }
+                // We track clicks that lead to the chat/app
+                if (name.includes('ai') || name.includes('launch') || name.includes('start')) {
+                    await _supabase.rpc('increment_stat', { stat_type: 'chat' });
+                }
+            } catch(e) {}
         }
 
         // ── MODALS ──
