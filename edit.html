@@ -368,7 +368,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 20px 50px; /* Reduced vertical padding globally */
+            padding: 10px 40px; /* Slashed vertical padding for maximum space */
             overflow: hidden;
             z-index: 2;
         }
@@ -1864,14 +1864,15 @@
                 buildThumbs();
                 buildMobileThumbs();
                 
-                // CRITICAL: Explicitly select and render the first slide with a fresh state
-                currentSlideIdx = 0;
+                // CRITICAL: Select and render the first slide. 
+                // We DON'T set currentSlideIdx to 0 here manually. 
+                // Keeping it at -1 ensures selectSlide(0) skips the 'save' step 
+                // and doesn't grab the old text from the screen.
                 selectSlide(0);
                 
-                // Force a deep DOM refresh
+                // Force a deep DOM refresh to ensure visual sync
                 setTimeout(() => {
                     renderCanvas(); 
-                    buildThumbs(); // Re-sync thumbnails to be safe
                 }, 10);
                 
                 document.getElementById('noDataState').style.display = 'none';
@@ -2111,7 +2112,7 @@
             } else {
                 // If image added, reduce heading size to match body better and reduce gap
                 const finalHeadSize = isTextOnly ? s.headSize : Math.min(s.headSize, 22);
-                const finalGap = isTextOnly ? Math.round(s.headSize * 0.4) : 8; // Very small gap for image slides
+                const finalGap = isTextOnly ? Math.round(s.headSize * 0.25) : 4; // Tiny gap for better fit
                 
                 textZone.innerHTML = `
                     <textarea class="slide-heading" style="font-size:${finalHeadSize}px;color:${thm.heading};text-align:${s.align};" rows="2" oninput="onHeadingInput(this)">${s.heading}</textarea>
