@@ -1759,60 +1759,89 @@
 
         function initSelector() {
             try {
-                const rawHistory = localStorage.getItem('chatHistory') || '[]';
+                const rawHistory = localStorage.getItem('ppt_chats') || '[]';
                 const history = JSON.parse(rawHistory);
+                // Filter items that have generated points/slides
                 const ppts = history.filter(h => h.state && h.state.points && h.state.points.length > 0);
 
                 const selector = document.getElementById('pptStudioSelector');
-                selector.innerHTML = ppts.map(p => `
-                    <option value="${p.id}">${p.title || 'Untitled Presentation'}</option>
-                `).join('') || '<option value="">No PPTs found</option>';
+                if (ppts.length === 0) {
+                    showNoData();
+                    return;
+                }
 
-                // Try to load state from session or just use most recent
+                selector.innerHTML = ppts.map(p => `
+                    <option value="${p.id}">${p.title || p.state.topic || 'Untitled Presentation'}</option>
+                `).join('');
+
+                // 1. Try to load from "active session" (set when clicking 'Open Editor' in Chat)
                 const rawState = localStorage.getItem('ppt_edit_state');
                 if (rawState) {
                     const saved = JSON.parse(rawState);
-                    const exists = ppts.find(p => p.id === saved.id);
+                    // Match by topic or ID if available (ppt_edit_state from Chat might not have ID)
+                    const exists = ppts.find(p => p.id === saved.id || p.state.topic === saved.topic);
                     if (exists) {
-                        pptData = saved;
-                        selector.value = saved.id;
-                        initEditor();
+                        loadFromHistoryItem(exists);
+                        selector.value = exists.id;
                         return;
                     }
                 }
 
-                // Default to most recent if no active session
-                if (ppts.length > 0) {
-                    handlePptSwitch(ppts[0].id);
-                } else {
-                    showNoData();
-                }
+                // 2. Default to most recent if no session or session PPT not found
+                handlePptSwitch(ppts[0].id);
             } catch (e) {
-                console.error("Editor Init Error:", e);
+                console.error("Studio Sync Error:", e);
                 showNoData();
             }
         }
 
         function handlePptSwitch(id) {
-            const rawHistory = localStorage.getItem('chatHistory') || '[]';
+            const rawHistory = localStorage.getItem('ppt_chats') || '[]';
             const history = JSON.parse(rawHistory);
             const item = history.find(h => h.id == id);
-            
+            if (item) loadFromHistoryItem(item);
+        }
+
+        function loadFromHistoryItem(item) {
             if (item && item.state) {
                 pptData = {
                     id: item.id,
-                    topic: item.title,
+                    topic: item.state.topic || item.title || "My AI Presentation",
                     points: item.state.points,
                     content: item.state.content,
                     userName: item.state.userName || 'User'
                 };
-                // Save to active state
+                
+                // Save this as the active "edit state" so refresh works
                 localStorage.setItem('ppt_edit_state', JSON.stringify(pptData));
                 
-                // Reset slide states
+                // Redraw UI
+                document.getElementById('noDataState').style.display = 'none';
+                document.getElementById('thumbsPanel').classList.remove('hidden');
+                document.getElementById('canvasArea').classList.remove('hidden');
+                document.getElementById('toolsPanel').classList.remove('hidden');
+                
+                const title = document.getElementById('topbarTitle');
+                title.innerHTML = `Studio Editor`;
+                
+                // Reset internal slide states for the new data
                 slideStates = [];
                 currentSlideIdx = 0;
-                initEditor();
+                
+                const totalSlides = pptData.points.length + 1;
+                for (let i = 0; i < totalSlides; i++) {
+                    if (i === 0) {
+                        slideStates.push({ heading: pptData.topic, body: `By ${pptData.userName}`, theme: 'charcoal', layout: 'text-only', image: null, headSize: 40, bodySize: 18, align: 'center', imgFit: 'cover', imgPosX: 50, imgPosY: 50 });
+                    } else {
+                        const idx = i - 1;
+                        slideStates.push({ heading: pptData.points[idx], body: (pptData.content[idx] || '').replace(/\*/g, ''), theme: 'white', layout: 'text-only', image: null, headSize: 32, bodySize: 16, align: 'left', imgFit: 'cover', imgPosX: 50, imgPosY: 50 });
+                    }
+                }
+
+                buildThemeGrid();
+                buildThumbs();
+                buildMobileThumbs();
+                selectSlide(0);
             }
         }
 
