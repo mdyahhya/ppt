@@ -1360,9 +1360,12 @@
             Studio Editor
         </div>
         <div class="ppt-select-wrap">
-            <select id="pptStudioSelector" class="ppt-studio-select" onchange="handlePptSwitch(this.value)">
-                <option value="">Select a Presentation...</option>
-            </select>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1px; white-space:nowrap;">My PPTs:</span>
+                <select id="pptStudioSelector" class="ppt-studio-select" onchange="handlePptSwitch(this.value)">
+                    <option value="">Select a Presentation...</option>
+                </select>
+            </div>
         </div>
         <div class="export-group">
             <button class="exp-btn pptx" onclick="exportPPTX('pc')">
@@ -1815,33 +1818,60 @@
                 // Save this as the active "edit state" so refresh works
                 localStorage.setItem('ppt_edit_state', JSON.stringify(pptData));
                 
-                // Redraw UI
-                document.getElementById('noDataState').style.display = 'none';
-                document.getElementById('thumbsPanel').classList.remove('hidden');
-                document.getElementById('canvasArea').classList.remove('hidden');
-                document.getElementById('toolsPanel').classList.remove('hidden');
-                
-                const title = document.getElementById('topbarTitle');
-                title.innerHTML = `Studio Editor`;
-                
-                // Reset internal slide states for the new data
+                // CRITICAL: Reset internal slide states COMPLETELY for the new data
                 slideStates = [];
                 currentSlideIdx = 0;
                 
+                // Rebuild slide states from scratch
                 const totalSlides = pptData.points.length + 1;
                 for (let i = 0; i < totalSlides; i++) {
                     if (i === 0) {
-                        slideStates.push({ heading: pptData.topic, body: `By ${pptData.userName}`, theme: 'charcoal', layout: 'text-only', image: null, headSize: 40, bodySize: 18, align: 'center', imgFit: 'cover', imgPosX: 50, imgPosY: 50 });
+                        // Ensure heading is the NEW topic
+                        slideStates.push({ 
+                            heading: pptData.topic || "Presentation Title", 
+                            body: `By ${pptData.userName || 'User'}`, 
+                            theme: 'charcoal', 
+                            layout: 'text-only', 
+                            image: null, 
+                            headSize: 40, 
+                            bodySize: 18, 
+                            align: 'center', 
+                            imgFit: 'cover', 
+                            imgPosX: 50, 
+                            imgPosY: 50 
+                        });
                     } else {
                         const idx = i - 1;
-                        slideStates.push({ heading: pptData.points[idx], body: (pptData.content[idx] || '').replace(/\*/g, ''), theme: 'white', layout: 'text-only', image: null, headSize: 32, bodySize: 16, align: 'left', imgFit: 'cover', imgPosX: 50, imgPosY: 50 });
+                        slideStates.push({ 
+                            heading: pptData.points[idx] || "Slide Title", 
+                            body: (pptData.content[idx] || '').replace(/\*/g, ''), 
+                            theme: 'white', 
+                            layout: 'text-only', 
+                            image: null, 
+                            headSize: 32, 
+                            bodySize: 16, 
+                            align: 'left', 
+                            imgFit: 'cover', 
+                            imgPosX: 50, 
+                            imgPosY: 50 
+                        });
                     }
                 }
 
                 buildThemeGrid();
                 buildThumbs();
                 buildMobileThumbs();
+                
+                // Explicitly select and render the first slide
                 selectSlide(0);
+                setTimeout(() => {
+                    renderCanvas(); // Double tap render to ensure DOM sync
+                }, 50);
+                
+                document.getElementById('noDataState').style.display = 'none';
+                document.getElementById('thumbsPanel').classList.remove('hidden');
+                document.getElementById('canvasArea').classList.remove('hidden');
+                document.getElementById('toolsPanel').classList.remove('hidden');
             }
         }
 
