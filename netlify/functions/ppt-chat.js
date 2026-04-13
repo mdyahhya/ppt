@@ -35,10 +35,10 @@ exports.handler = async (event) => {
         }
 
         const { messages, systemPrompt } = body;
-        const API_KEY = process.env.GROQ_API_KEY;
+        const API_KEY = process.env.API_KEY;
 
         if (!API_KEY) {
-            throw new Error('GROQ_API_KEY is not set in Netlify environment variables');
+            throw new Error('API_KEY is not set in Netlify environment variables');
         }
 
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
