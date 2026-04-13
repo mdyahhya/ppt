@@ -2250,9 +2250,15 @@
                 <h2 style="margin:0;">Review Moderator</h2>
                 <button onclick="loadAdminReviews()" style="background:var(--bg2); border:1px solid var(--border); padding:8px 16px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer;">Refresh List</button>
             </div>
-            <div id="adminReviewList" style="display:grid; gap:12px;">
-                <!-- Loaded via JS -->
-                 <p style="text-align:center; opacity:0.5;">Loading reviews...</p>
+            <div id="adminReviewList" style="display:grid; gap:12px; margin-top:16px;">
+                <p style="text-align:center; opacity:0.5;">Loading content...</p>
+            </div>
+
+            <div style="margin-top:40px; border-top:1px solid var(--border); padding-top:32px;">
+                <h2 style="margin-bottom:16px;">Feature Suggestions</h2>
+                <div id="adminSuggestionList" style="display:grid; gap:12px;">
+                    <p style="text-align:center; opacity:0.5;">Loading suggestions...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -2296,20 +2302,39 @@
         }
 
         async function loadAdminReviews() {
-            const list = document.getElementById('adminReviewList');
-            const { data, error } = await _supabase.from('comments').select('*').order('created_at', { ascending: false });
-            if (error) { list.innerHTML = 'Error loading.'; return; }
-            list.innerHTML = data.map(r => `
-                <div style="background:var(--bg2); padding:16px; border-radius:14px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-                    <div style="flex:1;">
-                        <div style="font-weight:700; font-size:14px;">${r.name} <span style="color:#FFB800;">${'★'.repeat(r.rating)}</span></div>
-                        <div style="font-size:13px; color:var(--muted); margin-top:4px;">${r.comment}</div>
+            const revList = document.getElementById('adminReviewList');
+            const sugList = document.getElementById('adminSuggestionList');
+
+            // Fetch Reviews
+            const { data: reviews, error: rErr } = await _supabase.from('comments').select('*').order('created_at', { ascending: false });
+            if (!rErr) {
+                revList.innerHTML = reviews.map(r => `
+                    <div style="background:var(--bg2); padding:16px; border-radius:14px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+                        <div style="flex:1;">
+                            <div style="font-weight:700; font-size:14px;">${r.name} <span style="color:#FFB800;">${'★'.repeat(r.rating)}</span></div>
+                            <div style="font-size:13px; color:var(--muted); margin-top:4px;">${r.comment}</div>
+                        </div>
+                        <button onclick="toggleVisibility(${r.id}, ${r.is_visible})" style="padding:8px 16px; border-radius:10px; border:none; cursor:pointer; font-weight:700; font-size:12px; background:${r.is_visible ? '#10A37F' : '#64748B'}; color:white; min-width:80px;">
+                            ${r.is_visible ? 'VISIBLE' : 'HIDDEN'}
+                        </button>
                     </div>
-                    <button onclick="toggleVisibility(${r.id}, ${r.is_visible})" style="padding:8px 16px; border-radius:10px; border:none; cursor:pointer; font-weight:700; font-size:12px; background:${r.is_visible ? '#10A37F' : '#64748B'}; color:white; min-width:80px;">
-                        ${r.is_visible ? 'VISIBLE' : 'HIDDEN'}
-                    </button>
-                </div>
-            `).join('');
+                `).join('') || '<p style="text-align:center; opacity:0.5;">No reviews yet.</p>';
+            }
+
+            // Fetch Suggestions
+            const { data: sugs, error: sErr } = await _supabase.from('reviews').select('*').order('created_at', { ascending: false });
+            if (!sErr) {
+                sugList.innerHTML = sugs.map(s => `
+                    <div style="background:var(--bg2); padding:16px; border-radius:14px; border:1px solid var(--border);">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                            <span style="font-weight:700; font-size:14px; color:var(--accent);">${s.name}</span>
+                            <span style="font-size:11px; color:var(--muted);">${new Date(s.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <div style="font-size:13px; color:var(--text); line-height:1.4;">${s.message}</div>
+                        ${s.email ? `<div style="font-size:11px; color:var(--muted); margin-top:8px; opacity:0.7;">Contact: ${s.email}</div>` : ''}
+                    </div>
+                `).join('') || '<p style="text-align:center; opacity:0.5;">No suggestions yet.</p>';
+            }
         }
 
         async function toggleVisibility(id, current) {
