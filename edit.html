@@ -107,6 +107,33 @@
             margin-left: 6px;
         }
 
+        /* PPT Selector */
+        .ppt-select-wrap {
+            flex: 1;
+            margin: 0 16px;
+            max-width: 380px;
+        }
+
+        .ppt-studio-select {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text2);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .ppt-studio-select:hover {
+            border-color: var(--accent);
+            background: var(--surface);
+        }
+
         .export-group {
             display: flex;
             gap: 6px;
@@ -1330,7 +1357,12 @@
             <span class="back-text">Back</span>
         </a>
         <div class="topbar-title" id="topbarTitle">
-            Edit Presentation <span>Loading...</span>
+            Studio Editor
+        </div>
+        <div class="ppt-select-wrap">
+            <select id="pptStudioSelector" class="ppt-studio-select" onchange="handlePptSwitch(this.value)">
+                <option value="">Select a Presentation...</option>
+            </select>
         </div>
         <div class="export-group">
             <button class="exp-btn pptx" onclick="exportPPTX('pc')">
@@ -1722,14 +1754,67 @@
 
         // ── INIT ─────────────────────────────────────────────────────────
         window.onload = () => {
-            try {
-                const raw = localStorage.getItem('ppt_edit_state');
-                if (!raw) { showNoData(); return; }
-                pptData = JSON.parse(raw);
-                if (!pptData.points || !pptData.content) { showNoData(); return; }
-                initEditor();
-            } catch (e) { showNoData(); }
+            initSelector();
         };
+
+        function initSelector() {
+            try {
+                const rawHistory = localStorage.getItem('chatHistory') || '[]';
+                const history = JSON.parse(rawHistory);
+                const ppts = history.filter(h => h.state && h.state.points && h.state.points.length > 0);
+
+                const selector = document.getElementById('pptStudioSelector');
+                selector.innerHTML = ppts.map(p => `
+                    <option value="${p.id}">${p.title || 'Untitled Presentation'}</option>
+                `).join('') || '<option value="">No PPTs found</option>';
+
+                // Try to load state from session or just use most recent
+                const rawState = localStorage.getItem('ppt_edit_state');
+                if (rawState) {
+                    const saved = JSON.parse(rawState);
+                    const exists = ppts.find(p => p.id === saved.id);
+                    if (exists) {
+                        pptData = saved;
+                        selector.value = saved.id;
+                        initEditor();
+                        return;
+                    }
+                }
+
+                // Default to most recent if no active session
+                if (ppts.length > 0) {
+                    handlePptSwitch(ppts[0].id);
+                } else {
+                    showNoData();
+                }
+            } catch (e) {
+                console.error("Editor Init Error:", e);
+                showNoData();
+            }
+        }
+
+        function handlePptSwitch(id) {
+            const rawHistory = localStorage.getItem('chatHistory') || '[]';
+            const history = JSON.parse(rawHistory);
+            const item = history.find(h => h.id == id);
+            
+            if (item && item.state) {
+                pptData = {
+                    id: item.id,
+                    topic: item.title,
+                    points: item.state.points,
+                    content: item.state.content,
+                    userName: item.state.userName || 'User'
+                };
+                // Save to active state
+                localStorage.setItem('ppt_edit_state', JSON.stringify(pptData));
+                
+                // Reset slide states
+                slideStates = [];
+                currentSlideIdx = 0;
+                initEditor();
+            }
+        }
 
         function showNoData() {
             document.getElementById('noDataState').style.display = 'flex';
