@@ -15,6 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         *,
         *::before,
@@ -1040,6 +1041,115 @@
                 width: 100%;
             }
         }
+
+        /* ── BOTTOM TASKBAR ── */
+        .bottom-taskbar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 480px;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 32px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .taskbar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: var(--muted);
+            text-decoration: none;
+            flex: 1;
+            height: 100%;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: none;
+        }
+
+        .taskbar-item:hover, .taskbar-item.active {
+            color: var(--accent);
+        }
+
+        .taskbar-item svg {
+            width: 22px;
+            height: 22px;
+            transition: transform 0.2s;
+        }
+
+        .taskbar-item:hover svg {
+            transform: translateY(-2px);
+        }
+
+        .taskbar-item span {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── MODALS ── */
+        .full-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 40px 5% 100px;
+        }
+
+        .full-modal.open {
+            display: flex;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* ── COUNTER STYLING ── */
+        .counter-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent);
+            background: rgba(79, 142, 247, 0.1);
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+
+        .count-num {
+            font-variant-numeric: tabular-nums;
+        }
     </style>
 </head>
 
@@ -1095,10 +1205,15 @@
         </p>
 
         <div
-            style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:18px;color:#64748B;font-size:clamp(14px, 1.8vw, 19px);font-weight:600;">
-            Powered by Claude AI
-            <img src="claude.png" alt="Claude icon"
-                style="width:clamp(22px, 2.2vw, 24px);height:clamp(22px, 2.2vw, 24px);border-radius:3px;">
+            style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin-bottom:18px;color:#64748B;font-size:clamp(14px, 1.8vw, 19px);font-weight:600;">
+            <div class="counter-badge">
+                <span class="hero-eyebrow-dot"></span>
+                <span class="count-num" data-target="598">0</span> Active Users 
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; opacity:0.75; font-size:0.85em;">
+                <span>Powered by Claude AI</span>
+                <img src="claude.png" alt="Claude icon" style="width:20px;height:20px;border-radius:3px;">
+            </div>
         </div>
 
         <div class="hero-btns">
@@ -1933,6 +2048,191 @@
                 target="_blank">yahya.in</a></p>
     </footer>
 
-</body>
+    <!-- BOTTOM TASKBAR -->
+    <nav class="bottom-taskbar">
+        <button class="taskbar-item" onclick="location.href='ppt.html';trackClick('taskbar_ai')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            <span>AI</span>
+        </button>
+        <button class="taskbar-item" onclick="location.href='ppt.html';trackClick('taskbar_studio')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            <span>Studio</span>
+        </button>
+        <button class="taskbar-item" onclick="openModal('aboutModal');trackClick('taskbar_about')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>About</span>
+        </button>
+        <button class="taskbar-item" onclick="openModal('reviewsModal');trackClick('taskbar_reviews')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+            <span>Reviews</span>
+        </button>
+    </nav>
 
+    <!-- REVIEWS MODAL -->
+    <div id="reviewsModal" class="full-modal">
+        <button class="close-modal" onclick="closeModal('reviewsModal')">&times;</button>
+        <div class="section-inner" style="max-width:600px; padding-top:20px;">
+            <div class="section-label">Feedback</div>
+            <h2 class="section-title">Suggestions & Reviews</h2>
+            <p class="section-sub">Have an idea or found a bug? Tell me how I can make this better for you.</p>
+            
+            <form id="reviewForm" style="margin-top:40px; display:flex; flex-direction:column; gap:20px;">
+                <div>
+                    <label style="display:block; font-size:13px; font-weight:700; margin-bottom:8px;">Full Name *</label>
+                    <input type="text" id="revName" required style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2); outline:none; font-family:inherit;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:13px; font-weight:700; margin-bottom:8px;">Email Address *</label>
+                    <input type="email" id="revEmail" required style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2); outline:none; font-family:inherit;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:13px; font-weight:700; margin-bottom:8px;">Your Message *</label>
+                    <textarea id="revMessage" required rows="5" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2); outline:none; resize:vertical; font-family:inherit;"></textarea>
+                </div>
+                <button type="submit" class="btn-primary" id="revSubmit" style="margin-top:10px;">Send Suggestion</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ABOUT MODAL -->
+    <div id="aboutModal" class="full-modal">
+        <button class="close-modal" onclick="closeModal('aboutModal')">&times;</button>
+        <div class="section-inner">
+            <div class="dev-inner" style="margin-top:40px;">
+                <div class="dev-photo-col">
+                    <div class="dev-photo-wrap">
+                        <img src="yahya.jpeg" alt="Yahya Mundewadi">
+                    </div>
+                    <div class="dev-name">Yahya Mundewadi</div>
+                    <div class="dev-role">Software Engineer & Creator</div>
+                    <div class="counter-badge" style="margin-top:8px;">
+                        <span class="count-num" data-target="5683">0</span> Total Visitors
+                    </div>
+                </div>
+                <div class="dev-info">
+                    <h2>The Engineer & <br><span class="grad-text">Digital Architect</span></h2>
+                    <p class="dev-bio">
+                        Hey! I'm Yahya Mundewadi, the developer behind this AI PPT tool. I specialize in building highly agentic, AI-driven applications that solve real-world problems. This project was born out of a desire to make professional presentation design accessible to everyone, instantly, using the latest LLM orchestration technologies.
+                    </p>
+                    <div class="dev-skills">
+                        <span class="skill-tag">Product Design</span>
+                        <span class="skill-tag">Full-Stack Dev</span>
+                        <span class="skill-tag">LLM Orchestration</span>
+                        <span class="skill-tag">Cloud Infrastructure</span>
+                    </div>
+                    <div class="dev-links">
+                        <a href="https://yahya.in" class="dev-link" target="_blank">Portfolio</a>
+                        <a href="https://github.com/yahyamun" class="dev-link" target="_blank">GitHub</a>
+                        <a href="https://linkedin.com/in/yahyamun" class="dev-link" target="_blank">LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://nghfugykhrpxxlxkiyji.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5naGZ1Z3lraHJweHhseGtpeWppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTk2MzQsImV4cCI6MjA5MTQ3NTYzNH0.EgFu1Uj6EyE6scGJMYM1sN0DRUO9H-IexaG7XLnfGKc';
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ── ANALYTICS ──
+        async function trackVisit() {
+            try {
+                await _supabase.from('analytics').insert({
+                    event_type: 'page_view',
+                    event_name: 'home_visit',
+                    page_path: window.location.pathname,
+                    user_agent: navigator.userAgent
+                });
+            } catch(e) {}
+        }
+
+        async function trackClick(name) {
+            try {
+                await _supabase.from('analytics').insert({
+                    event_type: 'click',
+                    event_name: name,
+                    page_path: window.location.pathname
+                });
+            } catch(e) {}
+        }
+
+        // ── MODALS ──
+        function openModal(id) {
+            document.getElementById(id).classList.add('open');
+            document.body.style.overflow = 'hidden';
+            if (id === 'aboutModal') animateAllCounters('#aboutModal');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        // ── FORM ──
+        document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('revSubmit');
+            btn.disabled = true;
+            btn.innerText = 'Sending...';
+
+            const payload = {
+                name: document.getElementById('revName').value,
+                email: document.getElementById('revEmail').value,
+                message: document.getElementById('revMessage').value
+            };
+
+            const { error } = await _supabase.from('reviews').insert(payload);
+            
+            if (error) {
+                alert('Error sending suggestion. Please try again.');
+            } else {
+                alert('Thank you! Your feedback has been received.');
+                document.getElementById('reviewForm').reset();
+                closeModal('reviewsModal');
+            }
+            btn.disabled = false;
+            btn.innerText = 'Send Suggestion';
+        });
+
+        // ── ANIMATIONS ──
+        function animateCounter(el) {
+            const targetStr = el.getAttribute('data-target');
+            const target = parseInt(targetStr);
+            const duration = 2400;
+            const start = 0;
+            let startTime = null;
+
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = Math.min((timestamp - startTime) / duration, 1);
+                const current = Math.floor(progress * (target - start) + start);
+                el.innerText = current.toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            }
+            window.requestAnimationFrame(step);
+        }
+
+        function animateAllCounters(parentSelector = '') {
+            const container = parentSelector ? document.querySelector(parentSelector) : document;
+            const counters = container.querySelectorAll('.count-num');
+            counters.forEach(animateCounter);
+        }
+
+        window.addEventListener('load', () => {
+            trackVisit();
+            animateAllCounters();
+            
+            // Track main buttons
+            const navCta = document.querySelector('.nav-cta');
+            if (navCta) navCta.addEventListener('click', () => trackClick('header_launch_app'));
+            
+            const heroBtn = document.querySelector('.btn-primary');
+            if (heroBtn) heroBtn.addEventListener('click', () => trackClick('hero_start_now'));
+        });
+    </script>
+</body>
 </html>
