@@ -1045,23 +1045,37 @@
         /* ── BOTTOM TASKBAR ── */
         .bottom-taskbar {
             position: fixed;
-            bottom: 20px;
+            bottom: 24px;
             left: 50%;
             transform: translateX(-50%);
             width: 90%;
-            max-width: 480px;
-            height: 64px;
-            background: rgba(255, 255, 255, 0.82);
+            max-width: 440px;
+            height: 68px;
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(0, 0, 0, 0.08);
-            border-radius: 32px;
+            border-radius: 34px;
             z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: space-around;
             padding: 0 10px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        @media (max-width: 600px) {
+            .bottom-taskbar {
+                bottom: 0;
+                width: 100%;
+                max-width: none;
+                border-radius: 20px 20px 0 0;
+                border: 1px solid var(--border);
+                border-bottom: none;
+                height: 76px;
+                padding-bottom: env(safe-area-inset-bottom, 12px);
+                background: #fff;
+            }
         }
 
         .taskbar-item {
@@ -1080,7 +1094,8 @@
             background: none;
         }
 
-        .taskbar-item:hover, .taskbar-item.active {
+        .taskbar-item:hover,
+        .taskbar-item.active {
             color: var(--accent);
         }
 
@@ -1147,6 +1162,77 @@
             margin-top: 10px;
         }
 
+        /* ── TABS ── */
+        .modal-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: rgba(79, 142, 247, 0.1);
+            color: var(--accent);
+        }
+
+        .comment-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .comment-meta {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .comment-edit-btn {
+            font-size: 11px;
+            color: var(--accent);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .stars-display {
+            color: #FFB800;
+            font-size: 14px;
+        }
+
+        .stars-input {
+            display: flex;
+            gap: 4px;
+            font-size: 24px;
+            color: #ccc;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        .star.selected {
+            color: #FFB800;
+        }
+
         .count-num {
             font-variant-numeric: tabular-nums;
         }
@@ -1201,14 +1287,21 @@
         </h1>
 
         <p class="hero-sub">
-            Just describe your topic. Our AI writes, structures, and exports every slide as a ready-to-use PPTX or PDF. You can add images and edit just like Microsoft Powerpoint.
+            Just describe your topic. Our AI writes, structures, and exports every slide as a ready-to-use PPTX or PDF.
+            You can add images and edit just like Microsoft Powerpoint.
         </p>
 
         <div
-            style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin-bottom:18px;color:#64748B;font-size:clamp(14px, 1.8vw, 19px);font-weight:600;">
-            <div class="counter-badge">
-                <span class="hero-eyebrow-dot"></span>
-                <span class="count-num" data-target="598">0</span> Active Users 
+            style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin-bottom:18px;color:#64748B;font-size:clamp(14px, 1.8vw, 19px);font-weight:600;">
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:center;">
+                <div class="counter-badge">
+                    <span class="hero-eyebrow-dot" style="background: #10A37F;"></span>
+                    <span class="count-num" data-target="398">0</span> Active Users
+                </div>
+                <div class="counter-badge" style="background: rgba(124, 92, 252, 0.1); color: #7C5CFC;">
+                    <span class="hero-eyebrow-dot" style="background: #7C5CFC;"></span>
+                    <span class="count-num" data-target="5683">0</span> Total Visitors
+                </div>
             </div>
             <div style="display:flex; align-items:center; gap:8px; opacity:0.75; font-size:0.85em;">
                 <span>Powered by Claude AI</span>
@@ -1884,7 +1977,8 @@
         <div class="section-inner">
             <div class="section-label">Export</div>
             <h2 class="section-title">Multiple formats,<br>every device</h2>
-            <p class="hero-sub">Generate stunning, ready-to-use PowerPoint presentations in seconds. You can add images and edit just like Microsoft Powerpoint.</p>
+            <p class="hero-sub">Generate stunning, ready-to-use PowerPoint presentations in seconds. You can add images
+                and edit just like Microsoft Powerpoint.</p>
 
             <div class="formats-row">
                 <div class="format-card">
@@ -2051,19 +2145,40 @@
     <!-- BOTTOM TASKBAR -->
     <nav class="bottom-taskbar">
         <button class="taskbar-item" onclick="location.href='ppt.html';trackClick('taskbar_ai')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path
+                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                </path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
             <span>AI</span>
         </button>
-        <button class="taskbar-item" onclick="location.href='ppt.html';trackClick('taskbar_studio')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+        <button class="taskbar-item" onclick="location.href='edit.html';trackClick('taskbar_studio')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="3" y1="9" x2="21" y2="9"></line>
+                <line x1="9" y1="21" x2="9" y2="9"></line>
+            </svg>
             <span>Studio</span>
         </button>
         <button class="taskbar-item" onclick="openModal('aboutModal');trackClick('taskbar_about')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
             <span>About</span>
         </button>
         <button class="taskbar-item" onclick="openModal('reviewsModal');trackClick('taskbar_reviews')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path
+                    d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                </path>
+            </svg>
             <span>Reviews</span>
         </button>
     </nav>
@@ -2071,26 +2186,64 @@
     <!-- REVIEWS MODAL -->
     <div id="reviewsModal" class="full-modal">
         <button class="close-modal" onclick="closeModal('reviewsModal')">&times;</button>
-        <div class="section-inner" style="max-width:600px; padding-top:20px;">
-            <div class="section-label">Feedback</div>
-            <h2 class="section-title">Suggestions & Reviews</h2>
-            <p class="section-sub">Have an idea or found a bug? Tell me how I can make this better for you.</p>
-            
-            <form id="reviewForm" style="margin-top:40px; display:flex; flex-direction:column; gap:20px;">
-                <div>
-                    <label style="display:block; font-size:13px; font-weight:700; margin-bottom:8px;">Full Name *</label>
-                    <input type="text" id="revName" required style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2); outline:none; font-family:inherit;">
+        <div class="section-inner" style="max-width:700px; padding-top:20px;">
+            <div class="modal-tabs">
+                <button class="tab-btn active" onclick="setTab('reviews')">Reviews</button>
+                <button class="tab-btn" onclick="setTab('suggestions')">Suggestions</button>
+            </div>
+
+            <!-- Tab: Reviews -->
+            <div id="tab-reviews">
+                <div class="section-label" style="display:inline-block;">Community</div>
+                <h2 style="font-size:28px; font-weight:900; margin-bottom:12px;">Expert Feedback</h2>
+                
+                <div id="commentsList" style="margin-bottom:40px; min-height:100px;">
+                    <!-- Comments load here -->
+                    <div style="opacity:0.5; padding:20px; text-align:center;">Loading reviews...</div>
                 </div>
-                <div>
-                    <label style="display:block; font-size:13px; font-weight:700; margin-bottom:8px;">Email Address *</label>
-                    <input type="email" id="revEmail" required style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2); outline:none; font-family:inherit;">
+
+                <div style="border-top:1px solid var(--border); padding-top:40px;">
+                    <h3 id="commentFormTitle" style="font-size:22px; font-weight:800; margin-bottom:8px;">Add your review</h3>
+                    <p style="color:var(--muted); font-size:14px; margin-bottom:20px;">Share your experience with the world.</p>
+                    
+                    <form id="commentForm" style="display:flex; flex-direction:column; gap:16px;">
+                        <input type="hidden" id="editCommentId">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                            <input type="text" id="comName" required placeholder="Display Name *" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2);">
+                            <input type="email" id="comEmail" placeholder="Email (Optional)" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2);">
+                        </div>
+                        <div>
+                            <span style="font-size:14px; font-weight:700; display:block; margin-bottom:8px;">Your Rating:</span>
+                            <div class="stars-input" id="starRating">
+                                <span class="star" data-value="1">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="5">★</span>
+                            </div>
+                        </div>
+                        <textarea id="comText" required placeholder="What do you think of AI PPT Maker?" rows="3" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2); resize:vertical;"></textarea>
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <button type="submit" class="btn-primary" id="comSubmit" style="margin:0; padding:12px 28px;">Post Review</button>
+                            <button type="button" id="comCancel" style="display:none; background:none; border:none; text-decoration:underline; cursor:pointer;" onclick="cancelEdit()">Cancel Edit</button>
+                        </div>
+                    </form>
                 </div>
-                <div>
-                    <label style="display:block; font-size:13px; font-weight:700; margin-bottom:8px;">Your Message *</label>
-                    <textarea id="revMessage" required rows="5" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2); outline:none; resize:vertical; font-family:inherit;"></textarea>
-                </div>
-                <button type="submit" class="btn-primary" id="revSubmit" style="margin-top:10px;">Send Suggestion</button>
-            </form>
+            </div>
+
+            <!-- Tab: Suggestions -->
+            <div id="tab-suggestions" style="display:none;">
+                <div class="section-label" style="display:inline-block;">Future</div>
+                <h2 style="font-size:28px; font-weight:900; margin-bottom:12px;">Have a suggestion?</h2>
+                <form id="reviewForm" style="margin-top:20px; display:flex; flex-direction:column; gap:20px;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <input type="text" id="revName" required placeholder="Your Name *" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2);">
+                        <input type="email" id="revEmail" placeholder="Email (Optional)" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2);">
+                    </div>
+                    <textarea id="revMessage" required placeholder="I would love it if the app could..." rows="5" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2); resize:vertical;"></textarea>
+                    <button type="submit" class="btn-primary" id="revSubmit" style="margin:0; width:100%;">Send Suggestion</button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -2112,7 +2265,10 @@
                 <div class="dev-info">
                     <h2>The Engineer & <br><span class="grad-text">Digital Architect</span></h2>
                     <p class="dev-bio">
-                        Hey! I'm Yahya Mundewadi, the developer behind this AI PPT tool. I specialize in building highly agentic, AI-driven applications that solve real-world problems. This project was born out of a desire to make professional presentation design accessible to everyone, instantly, using the latest LLM orchestration technologies.
+                        Hey! I'm Yahya Mundewadi, the developer behind this AI PPT tool. I specialize in building highly
+                        agentic, AI-driven applications that solve real-world problems. This project was born out of a
+                        desire to make professional presentation design accessible to everyone, instantly, using the
+                        latest LLM orchestration technologies.
                     </p>
                     <div class="dev-skills">
                         <span class="skill-tag">Product Design</span>
@@ -2136,6 +2292,115 @@
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // ── TABS ──
+        function setTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.tab-btn[onclick="setTab('${tab}')"]`).classList.add('active');
+            document.getElementById('tab-reviews').style.display = tab === 'reviews' ? 'block' : 'none';
+            document.getElementById('tab-suggestions').style.display = tab === 'suggestions' ? 'block' : 'none';
+            if (tab === 'reviews') loadComments();
+        }
+
+        // ── STARS ──
+        let currentRating = 5;
+        function setupStars() {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(s => {
+                s.addEventListener('click', () => {
+                    currentRating = parseInt(s.dataset.value);
+                    updateStarsDisplay();
+                });
+            });
+        }
+
+        function updateStarsDisplay() {
+            document.querySelectorAll('.star').forEach(s => {
+                s.classList.toggle('selected', parseInt(s.dataset.value) <= currentRating);
+            });
+        }
+
+        // ── COMMENTS ──
+        async function loadComments() {
+            const list = document.getElementById('commentsList');
+            const { data, error } = await _supabase
+                .from('comments')
+                .select('*')
+                .eq('is_visible', true)
+                .order('created_at', { ascending: false });
+            
+            if (error) return;
+            
+            if (data.length === 0) {
+                list.innerHTML = '<div style="opacity:0.5; padding:20px; text-align:center;">Be the first to leave a review!</div>';
+                return;
+            }
+
+            const myCommentId = localStorage.getItem('my_comment_id');
+            list.innerHTML = data.map(c => `
+                <div class="comment-card">
+                    <div class="comment-header">
+                        <div class="comment-meta">
+                            ${c.name} 
+                            <span class="stars-display">${'★'.repeat(c.rating)}${'☆'.repeat(5-c.rating)}</span>
+                        </div>
+                        ${c.id == myCommentId ? `<span class="comment-edit-btn" onclick='startEdit(${JSON.stringify(c).replace(/'/g, "&apos;")})'>Edit My Review</span>` : ''}
+                    </div>
+                    <p style="font-size:14px; line-height:1.5; color:var(--text-secondary);">${c.comment}</p>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('commentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editCommentId').value;
+            const btn = document.getElementById('comSubmit');
+            btn.disabled = true;
+
+            const payload = {
+                name: document.getElementById('comName').value,
+                email: document.getElementById('comEmail').value || null,
+                comment: document.getElementById('comText').value,
+                rating: currentRating,
+                is_visible: true
+            };
+
+            let res;
+            if (id) {
+                res = await _supabase.from('comments').update(payload).eq('id', id);
+            } else {
+                res = await _supabase.from('comments').insert(payload).select();
+            }
+
+            if (!res.error) {
+                if (!id && res.data) localStorage.setItem('my_comment_id', res.data[0].id);
+                cancelEdit();
+                loadComments();
+            }
+            btn.disabled = false;
+        });
+
+        function startEdit(c) {
+            document.getElementById('editCommentId').value = c.id;
+            document.getElementById('comName').value = c.name;
+            document.getElementById('comEmail').value = c.email || '';
+            document.getElementById('comText').value = c.comment;
+            currentRating = c.rating;
+            updateStarsDisplay();
+            document.getElementById('commentFormTitle').innerText = 'Update your review';
+            document.getElementById('comSubmit').innerText = 'Save Changes';
+            document.getElementById('comCancel').style.display = 'inline-block';
+        }
+
+        function cancelEdit() {
+            document.getElementById('editCommentId').value = '';
+            document.getElementById('commentForm').reset();
+            document.getElementById('commentFormTitle').innerText = 'Add your review';
+            document.getElementById('comSubmit').innerText = 'Post Review';
+            document.getElementById('comCancel').style.display = 'none';
+            currentRating = 5;
+            updateStarsDisplay();
+        }
+
         // ── ANALYTICS ──
         async function trackVisit() {
             try {
@@ -2145,7 +2410,7 @@
                     page_path: window.location.pathname,
                     user_agent: navigator.userAgent
                 });
-            } catch(e) {}
+            } catch (e) { }
         }
 
         async function trackClick(name) {
@@ -2155,20 +2420,26 @@
                     event_name: name,
                     page_path: window.location.pathname
                 });
-            } catch(e) {}
+            } catch (e) { }
         }
 
         // ── MODALS ──
         function openModal(id) {
+            window.history.pushState({modal: id}, ""); 
             document.getElementById(id).classList.add('open');
             document.body.style.overflow = 'hidden';
             if (id === 'aboutModal') animateAllCounters('#aboutModal');
+            if (id === 'reviewsModal') loadComments();
         }
 
         function closeModal(id) {
             document.getElementById(id).classList.remove('open');
             document.body.style.overflow = '';
         }
+
+        window.addEventListener('popstate', (e) => {
+            document.querySelectorAll('.full-modal').forEach(m => closeModal(m.id));
+        });
 
         // ── FORM ──
         document.getElementById('reviewForm').addEventListener('submit', async (e) => {
@@ -2179,18 +2450,18 @@
 
             const payload = {
                 name: document.getElementById('revName').value,
-                email: document.getElementById('revEmail').value,
+                email: document.getElementById('revEmail').value || null,
                 message: document.getElementById('revMessage').value
             };
 
             const { error } = await _supabase.from('reviews').insert(payload);
-            
+
             if (error) {
                 alert('Error sending suggestion. Please try again.');
             } else {
                 alert('Thank you! Your feedback has been received.');
                 document.getElementById('reviewForm').reset();
-                closeModal('reviewsModal');
+                setTab('reviews');
             }
             btn.disabled = false;
             btn.innerText = 'Send Suggestion';
@@ -2225,14 +2496,15 @@
         window.addEventListener('load', () => {
             trackVisit();
             animateAllCounters();
-            
+
             // Track main buttons
             const navCta = document.querySelector('.nav-cta');
             if (navCta) navCta.addEventListener('click', () => trackClick('header_launch_app'));
-            
+
             const heroBtn = document.querySelector('.btn-primary');
             if (heroBtn) heroBtn.addEventListener('click', () => trackClick('hero_start_now'));
         });
     </script>
 </body>
+
 </html>
