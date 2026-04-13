@@ -367,8 +367,8 @@
         .slide-text-zone {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            padding: 5px 40px; /* Slashed to ultra-compact for maximum space */
+            justify-content: flex-start; /* Changed from center to top-align */
+            padding: 10px 40px; /* Slim padding */
             overflow: hidden;
             z-index: 2;
         }
@@ -2103,6 +2103,12 @@
             }
 
             const textAlign = (isTitle && s.layout === 'text-only') ? 'center' : (s.align || 'left');
+            if (isTitle && s.layout === 'text-only') {
+                textZone.style.justifyContent = 'center'; // Keep title slide centered
+                textZone.style.textAlign = 'center';
+            } else {
+                textZone.style.justifyContent = 'flex-start'; // Normal slides start from top
+            }
 
             if (isTitle) {
                 const nameHtml = displayName.split('\n').map(n => n.trim()).filter(n => n).join('<br>');
