@@ -1293,20 +1293,28 @@
 
         <div
             style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;margin-bottom:18px;color:#64748B;font-size:clamp(14px, 1.8vw, 19px);font-weight:600;">
+
+            <!-- Single line with both counters -->
             <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:center;">
-                <!-- <div class="counter-badge">
+
+                <div class="counter-badge">
                     <span class="hero-eyebrow-dot" style="background: #10A37F;"></span>
-                    <span class="count-num" data-target="398">0</span> Active Users
-                </div> -->
+                    <span class="count-num" data-target="398">0</span> PPTs
+                </div>
+
                 <div class="counter-badge" style="background: rgba(124, 92, 252, 0.1); color: #7C5CFC;">
                     <span class="hero-eyebrow-dot" style="background: #7C5CFC;"></span>
                     <span class="count-num" data-target="5683">0</span> Visitors
                 </div>
+
             </div>
+
+            <!-- Powered by -->
             <div style="display:flex; align-items:center; gap:8px; opacity:0.75; font-size:0.85em;">
                 <span>Powered by Claude AI</span>
                 <img src="claude.png" alt="Claude icon" style="width:20px;height:20px;border-radius:3px;">
             </div>
+
         </div>
 
         <div class="hero-btns">
@@ -2172,7 +2180,7 @@
             </svg>
             <span>About</span>
         </button>
-        <button class="taskbar-item" onclick="openModal('reviewsModal');trackClick('taskbar_reviews')">
+        <button class="taskbar-item" onclick="location.href='reviews.html';trackClick('taskbar_reviews')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round">
                 <path
@@ -2183,82 +2191,7 @@
         </button>
     </nav>
 
-    <!-- REVIEWS MODAL -->
-    <div id="reviewsModal" class="full-modal">
-        <button class="close-modal" onclick="closeModal('reviewsModal')">&times;</button>
-        <div class="section-inner" style="max-width:700px; padding-top:20px;">
-            <div class="modal-tabs">
-                <button class="tab-btn active" onclick="setTab('reviews')">Reviews</button>
-                <button class="tab-btn" onclick="setTab('suggestions')">Suggestions</button>
-            </div>
-
-            <!-- Tab: Reviews -->
-            <div id="tab-reviews">
-                <div class="section-label" style="display:inline-block;">Community</div>
-                <h2 style="font-size:28px; font-weight:900; margin-bottom:12px;">User Feedback</h2>
-
-                <div id="commentsList" style="margin-bottom:40px; min-height:100px;">
-                    <!-- Comments load here -->
-                    <div style="opacity:0.5; padding:20px; text-align:center;">Loading reviews...</div>
-                </div>
-
-                <div style="border-top:1px solid var(--border); padding-top:40px;">
-                    <h3 id="commentFormTitle" style="font-size:22px; font-weight:800; margin-bottom:8px;">Add your
-                        review</h3>
-                    <p style="color:var(--muted); font-size:14px; margin-bottom:20px;">Share your experience with the
-                        world.</p>
-
-                    <form id="commentForm" style="display:flex; flex-direction:column; gap:16px;">
-                        <input type="hidden" id="editCommentId">
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                            <input type="text" id="comName" required placeholder="Display Name *"
-                                style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2);">
-                            <input type="email" id="comEmail" placeholder="Email (Optional)"
-                                style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2);">
-                        </div>
-                        <div>
-                            <span style="font-size:14px; font-weight:700; display:block; margin-bottom:8px;">Your
-                                Rating:</span>
-                            <div class="stars-input" id="starRating">
-                                <span class="star" data-value="1">★</span>
-                                <span class="star" data-value="2">★</span>
-                                <span class="star" data-value="3">★</span>
-                                <span class="star" data-value="4">★</span>
-                                <span class="star" data-value="5">★</span>
-                            </div>
-                        </div>
-                        <textarea id="comText" required placeholder="What do you think of AI PPT Maker?" rows="3"
-                            style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2); resize:vertical;"></textarea>
-                        <div style="display:flex; gap:12px; align-items:center;">
-                            <button type="submit" class="btn-primary" id="comSubmit"
-                                style="margin:0; padding:12px 28px;">Post Review</button>
-                            <button type="button" id="comCancel"
-                                style="display:none; background:none; border:none; text-decoration:underline; cursor:pointer;"
-                                onclick="cancelEdit()">Cancel Edit</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Tab: Suggestions -->
-            <div id="tab-suggestions" style="display:none;">
-                <div class="section-label" style="display:inline-block;">Future</div>
-                <h2 style="font-size:28px; font-weight:900; margin-bottom:12px;">Have a suggestion?</h2>
-                <form id="reviewForm" style="margin-top:20px; display:flex; flex-direction:column; gap:20px;">
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                        <input type="text" id="revName" required placeholder="Your Name *"
-                            style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2);">
-                        <input type="email" id="revEmail" placeholder="Email (Optional)"
-                            style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2);">
-                    </div>
-                    <textarea id="revMessage" required placeholder="I would love it if the app could..." rows="5"
-                        style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--border); background:var(--bg2); resize:vertical;"></textarea>
-                    <button type="submit" class="btn-primary" id="revSubmit" style="margin:0; width:100%;">Send
-                        Suggestion</button>
-                </form>
-            </div>
-        </div>
-    </div>
+    <!-- No more reviewsModal here - shifted to standalone reviews.html -->
 
     <!-- ABOUT MODAL -->
     <div id="aboutModal" class="full-modal">
@@ -2269,7 +2202,7 @@
                     <div class="dev-photo-wrap">
                         <img src="yahya.jpeg" alt="Yahya Mundewadi">
                     </div>
-                    <div class="dev-name">Yahya Mundewadi</div>
+                    <div class="dev-name" id="adminTrigger" onclick="handleAdminTrigger()" style="cursor:pointer; user-select:none;">Yahya Mundewadi</div>
                     <div class="dev-role">
                         AI Engineer & Creator -
                         <a href="https://yahya.in" target="_blank">yahya.in</a>
@@ -2302,13 +2235,87 @@
         </div>
     </div>
 
+    <!-- SECRET ADMIN LOGIN MODAL -->
+    <div id="adminLoginModal" class="full-modal" style="display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.85);">
+        <div class="section-inner" style="max-width:380px; text-align:center;">
+            <h2 style="margin-bottom:8px;">Admin Login</h2>
+            <p style="color:var(--muted); font-size:14px; margin-bottom:24px;">Confirm your identity to moderate content.</p>
+            <input type="tel" id="adminPass" maxlength="4" placeholder="••••" style="width:100%; max-width:180px; padding:18px; border-radius:18px; border:2px solid var(--border); margin-bottom:20px; font-size:28px; text-align:center; letter-spacing:8px; font-family:monospace; background:var(--bg2);">
+            <button onclick="checkAdminPassword()" class="btn-primary" style="width:100%; margin:0; padding:16px;">Verify PIN</button>
+            <button onclick="closeModal('adminLoginModal')" style="margin-top:16px; background:none; border:none; color:var(--muted); cursor:pointer;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL MODAL -->
+    <div id="adminPanelModal" class="full-modal">
+        <button class="close-modal" onclick="closeModal('adminPanelModal')">&times;</button>
+        <div class="section-inner" style="max-width:800px; padding-top:40px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:32px;">
+                <h2 style="margin:0;">Review Moderator</h2>
+                <button onclick="loadAdminReviews()" style="background:var(--bg2); border:1px solid var(--border); padding:8px 16px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer;">Refresh List</button>
+            </div>
+            <div id="adminReviewList" style="display:grid; gap:12px;">
+                <!-- Loaded via JS -->
+                 <p style="text-align:center; opacity:0.5;">Loading reviews...</p>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://nghfugykhrpxxlxkiyji.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5naGZ1Z3lraHJweHhseGtpeWppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTk2MzQsImV4cCI6MjA5MTQ3NTYzNH0.EgFu1Uj6EyE6scGJMYM1sN0DRUO9H-IexaG7XLnfGKc';
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ── TABS ──
+        // ── ADMIN PANEL LOGIC ──
+        let lastClickTime = 0;
+        function handleAdminTrigger() {
+            const now = Date.now();
+            if (now - lastClickTime < 300) { // Double tap detect
+                openModal('adminLoginModal');
+            }
+            lastClickTime = now;
+        }
+
+        async function checkAdminPassword() {
+            const input = document.getElementById('adminPass').value;
+            if (input.length !== 4) { alert('Enter a 4-digit PIN'); return; }
+            const { data, error } = await _supabase.from('config').select('value').eq('key', 'admin_password').single();
+            if (error || !data) { alert('System error'); return; }
+            if (input === data.value) {
+                closeModal('adminLoginModal');
+                document.getElementById('adminPass').value = ''; // Clear for security
+                openModal('adminPanelModal');
+                loadAdminReviews();
+            } else {
+                alert('Invalid PIN access denied.');
+                document.getElementById('adminPass').value = '';
+            }
+        }
+
+        async function loadAdminReviews() {
+            const list = document.getElementById('adminReviewList');
+            const { data, error } = await _supabase.from('comments').select('*').order('created_at', { ascending: false });
+            if (error) { list.innerHTML = 'Error loading.'; return; }
+            list.innerHTML = data.map(r => `
+                <div style="background:var(--bg2); padding:16px; border-radius:14px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+                    <div style="flex:1;">
+                        <div style="font-weight:700; font-size:14px;">${r.name} <span style="color:#FFB800;">${'★'.repeat(r.rating)}</span></div>
+                        <div style="font-size:13px; color:var(--muted); margin-top:4px;">${r.comment}</div>
+                    </div>
+                    <button onclick="toggleVisibility(${r.id}, ${r.is_visible})" style="padding:8px 16px; border-radius:10px; border:none; cursor:pointer; font-weight:700; font-size:12px; background:${r.is_visible ? '#10A37F' : '#64748B'}; color:white; min-width:80px;">
+                        ${r.is_visible ? 'VISIBLE' : 'HIDDEN'}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        async function toggleVisibility(id, current) {
+            const { error } = await _supabase.from('comments').update({ is_visible: !current }).eq('id', id);
+            if (!error) loadAdminReviews();
+        }
+
+        // ── TASKBAR & NAV ──
         function setTab(tab) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelector(`.tab-btn[onclick="setTab('${tab}')"]`).classList.add('active');
