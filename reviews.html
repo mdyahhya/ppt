@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Reviews & Feedback | AI PPT Maker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg: #FFFFFF;
+            --bg2: #F8FAFC;
+            --border: rgba(0, 0, 0, 0.08);
+            --text: #0F172A;
+            --muted: #475569;
+            --accent: #4F8EF7;
+            --accent2: #7C5CFC;
+        }
+
+        body {
+            background: var(--bg2);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            margin: 0; padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px 120px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 32px;
+            transition: color 0.2s;
+        }
+        .back-btn:hover { color: var(--text); }
+
+        .section-inner {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.02);
+        }
+
+        .modal-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: rgba(79, 142, 247, 0.1);
+            color: var(--accent);
+        }
+
+        .comment-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            transition: transform 0.2s;
+        }
+        .comment-card:hover { transform: translateY(-2px); }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .comment-meta {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .stars-display { color: #FFB800; font-size: 16px; margin-left: 6px; }
+
+        .comment-edit-btn {
+            font-size: 12px;
+            color: var(--accent);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .stars-input {
+            display: flex;
+            gap: 8px;
+            font-size: 36px;
+            color: #E2E8F0;
+            cursor: pointer;
+            margin: 12px 0 24px;
+            user-select: none;
+        }
+
+        .star.selected { color: #FFB800; }
+
+        input, textarea {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: var(--bg2);
+            font-family: inherit;
+            font-size: 15px;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.23s;
+        }
+
+        input:focus, textarea:focus { 
+            border-color: var(--accent); 
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(79, 142, 247, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4F8EF7, #7C5CFC);
+            color: white;
+            border: none;
+            padding: 18px 36px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 8px 20px rgba(79,142,247,0.3);
+        }
+
+        .btn-primary:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 12px 24px rgba(79,142,247,0.4); 
+            opacity: 0.95;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 0 0 100px; }
+            .section-inner { padding: 24px; border-radius: 0; border: none; }
+            .back-btn { margin: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="index.html" class="back-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Back to Home
+        </a>
+
+        <div class="section-inner">
+            <div class="modal-tabs">
+                <button class="tab-btn active" id="btn-reviews" onclick="setTab('reviews')">User Reviews</button>
+                <button class="tab-btn" id="btn-suggestions" onclick="setTab('suggestions')">Feature Suggestions</button>
+            </div>
+
+            <!-- Tab: Reviews -->
+            <div id="tab-reviews">
+                <h2 style="font-size:36px; font-weight:900; margin-bottom:12px; letter-spacing:-1px;">User Feedback</h2>
+                <div id="commentsList" style="margin-bottom:48px;">
+                    <div style="opacity:0.5; padding:40px; text-align:center;">Loading reviews...</div>
+                </div>
+
+                <div style="border-top:1px solid var(--border); padding-top:40px;">
+                    <h3 id="commentFormTitle" style="font-size:24px; font-weight:800; margin-bottom:8px;">Add your review</h3>
+                    <p style="color:var(--muted); font-size:15px; margin-bottom:24px;">Share your experience with the world.</p>
+                    
+                    <form id="commentForm" style="display:flex; flex-direction:column; gap:20px;">
+                        <input type="hidden" id="editCommentId">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                            <input type="text" id="comName" required placeholder="Display Name *">
+                            <input type="email" id="comEmail" placeholder="Email (Optional)">
+                        </div>
+                        <div>
+                            <span style="font-size:14px; font-weight:700;">Your Rating:</span>
+                            <div class="stars-input" id="starRating">
+                                <span class="star" data-value="1">★</span>
+                                <span class="star" data-value="2">★</span>
+                                <span class="star" data-value="3">★</span>
+                                <span class="star" data-value="4">★</span>
+                                <span class="star" data-value="5">★</span>
+                            </div>
+                        </div>
+                        <textarea id="comText" required placeholder="What do you think of AI PPT Maker?" rows="3"></textarea>
+                        <div style="display:flex; gap:16px; align-items:center;">
+                            <button type="submit" class="btn-primary" id="comSubmit">Post Review</button>
+                            <button type="button" id="comCancel" style="display:none; background:none; border:none; text-decoration:underline; cursor:pointer; color:var(--muted);" onclick="cancelEdit()">Cancel Edit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tab: Suggestions -->
+            <div id="tab-suggestions" style="display:none;">
+                <h2 style="font-size:36px; font-weight:900; margin-bottom:12px; letter-spacing:-1px;">Have a suggestion?</h2>
+                <p style="color:var(--muted); margin-bottom:32px;">I'm constantly improving. Tell me what features you want next.</p>
+                <form id="reviewForm" style="display:flex; flex-direction:column; gap:20px;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                        <input type="text" id="revName" required placeholder="Your Name *">
+                        <input type="email" id="revEmail" placeholder="Email (Optional)">
+                    </div>
+                    <textarea id="revMessage" required placeholder="I would love it if the app could..." rows="6"></textarea>
+                    <button type="submit" class="btn-primary" id="revSubmit">Send Suggestion</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://nghfugykhrpxxlxkiyji.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5naGZ1Z3lraHJweHhseGtpeWppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTk2MzQsImV4cCI6MjA5MTQ3NTYzNH0.EgFu1Uj6EyE6scGJMYM1sN0DRUO9H-IexaG7XLnfGKc';
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentRating = 5;
+
+        // STAR RATING LOGIC
+        const stars = document.querySelectorAll('.star');
+        stars.forEach(s => {
+            s.addEventListener('click', () => {
+                currentRating = parseInt(s.dataset.value);
+                updateStarsDisplay();
+            });
+        });
+
+        function updateStarsDisplay() {
+            stars.forEach(s => {
+                s.classList.toggle('selected', parseInt(s.dataset.value) <= currentRating);
+            });
+        }
+        updateStarsDisplay();
+
+        function setTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${tab}`).classList.add('active');
+            document.getElementById('tab-reviews').style.display = tab === 'reviews' ? 'block' : 'none';
+            document.getElementById('tab-suggestions').style.display = tab === 'suggestions' ? 'block' : 'none';
+            if (tab === 'reviews') loadComments();
+        }
+
+        async function loadComments() {
+            const list = document.getElementById('commentsList');
+            const { data, error } = await _supabase.from('comments')
+                .select('*')
+                .eq('is_visible', true)
+                .order('created_at', { ascending: false });
+            
+            if (error || !data || data.length === 0) {
+                list.innerHTML = '<div style="opacity:0.5; padding:20px; text-align:center;">Be the first to leave a review!</div>';
+                return;
+            }
+            
+            const myId = localStorage.getItem('my_comment_id');
+            list.innerHTML = data.map(c => `
+                <div class="comment-card">
+                    <div class="comment-header">
+                        <div class="comment-meta">
+                            ${c.name} <span class="stars-display">${'★'.repeat(c.rating)}${'☆'.repeat(5-c.rating)}</span>
+                        </div>
+                        ${c.id == myId ? `<span class="comment-edit-btn" onclick='startEdit(${JSON.stringify(c).replace(/'/g, "&apos;")})'>Edit My Review</span>` : ''}
+                    </div>
+                    <p style="margin:0; color:var(--muted); font-size:15.5px;">${c.comment}</p>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('commentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editCommentId').value;
+            const payload = {
+                name: document.getElementById('comName').value,
+                email: document.getElementById('comEmail').value || null,
+                comment: document.getElementById('comText').value,
+                rating: currentRating,
+                is_visible: true
+            };
+            
+            let res;
+            if (id) {
+                res = await _supabase.from('comments').update(payload).eq('id', id);
+            } else {
+                res = await _supabase.from('comments').insert(payload).select();
+            }
+
+            if (!res.error) {
+                if (!id && res.data) localStorage.setItem('my_comment_id', res.data[0].id);
+                cancelEdit();
+                loadComments();
+                alert('Review posted successfully!');
+                // Track review view/submission
+                try { await _supabase.rpc('update_analytics', { metric: 'review' }); } catch(err){}
+            }
+        });
+
+        function startEdit(c) {
+            document.getElementById('editCommentId').value = c.id;
+            document.getElementById('comName').value = c.name;
+            document.getElementById('comEmail').value = c.email || '';
+            document.getElementById('comText').value = c.comment;
+            currentRating = c.rating;
+            updateStarsDisplay();
+            document.getElementById('commentFormTitle').innerText = 'Update your review';
+            document.getElementById('comSubmit').innerText = 'Save Changes';
+            document.getElementById('comCancel').style.display = 'inline-block';
+            window.scrollTo({ top: document.getElementById('commentForm').offsetTop - 100, behavior: 'smooth' });
+        }
+
+        function cancelEdit() {
+            document.getElementById('editCommentId').value = '';
+            document.getElementById('commentForm').reset();
+            document.getElementById('commentFormTitle').innerText = 'Add your review';
+            document.getElementById('comSubmit').innerText = 'Post Review';
+            document.getElementById('comCancel').style.display = 'none';
+            currentRating = 5;
+            updateStarsDisplay();
+        }
+
+        document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = { 
+                name: document.getElementById('revName').value, 
+                email: document.getElementById('revEmail').value || null, 
+                message: document.getElementById('revMessage').value 
+            };
+            const { error } = await _supabase.from('reviews').insert(payload);
+            if (!error) {
+                alert('Suggestion sent! Switching to reviews tab.');
+                document.getElementById('reviewForm').reset();
+                setTab('reviews');
+            }
+        });
+
+        loadComments();
+    </script>
+</body>
+</html>
