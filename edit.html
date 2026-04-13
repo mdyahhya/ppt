@@ -1818,9 +1818,11 @@
                 // Save this as the active "edit state" so refresh works
                 localStorage.setItem('ppt_edit_state', JSON.stringify(pptData));
                 
-                // CRITICAL: Reset internal slide states COMPLETELY for the new data
+                // CRITICAL FIX: Reset currentSlideIdx to -1 to prevent selectSlide 
+                // from saving the OLD slide's DOM text into the NEW slide state.
+                currentSlideIdx = -1; 
+                
                 slideStates = [];
-                currentSlideIdx = 0;
                 
                 // Rebuild slide states from scratch
                 const totalSlides = pptData.points.length + 1;
@@ -1862,11 +1864,15 @@
                 buildThumbs();
                 buildMobileThumbs();
                 
-                // Explicitly select and render the first slide
+                // CRITICAL: Explicitly select and render the first slide with a fresh state
+                currentSlideIdx = 0;
                 selectSlide(0);
+                
+                // Force a deep DOM refresh
                 setTimeout(() => {
-                    renderCanvas(); // Double tap render to ensure DOM sync
-                }, 50);
+                    renderCanvas(); 
+                    buildThumbs(); // Re-sync thumbnails to be safe
+                }, 10);
                 
                 document.getElementById('noDataState').style.display = 'none';
                 document.getElementById('thumbsPanel').classList.remove('hidden');
@@ -2007,8 +2013,8 @@
 
         // ── SELECT SLIDE ─────────────────────────────────────────────────
         function selectSlide(idx) {
-            // Save current text edits to state
-            if (currentSlideIdx >= 0 && slideStates[currentSlideIdx]) {
+            // Save current text edits to state (Only if we have a valid previous slide)
+            if (currentSlideIdx !== -1 && slideStates[currentSlideIdx]) {
                 const headEl = document.querySelector('.slide-heading');
                 const bodyEl = document.querySelector('.slide-body');
                 if (headEl) slideStates[currentSlideIdx].heading = headEl.value;
