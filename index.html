@@ -2401,19 +2401,19 @@
             updateStarsDisplay();
         }
 
-        // ── ANALYTICS (Single Row Increments) ──
+        // ── ANALYTICS (Single Row Dashboard) ──
         async function trackVisit() {
             try {
-                // Call the SQL function to increment global visitor count
-                await _supabase.rpc('increment_stat', { stat_type: 'visitors' });
+                await _supabase.rpc('update_analytics', { metric: 'visit' });
             } catch(e) {}
         }
 
         async function trackClick(name) {
             try {
-                // We track clicks that lead to the chat/app
                 if (name.includes('ai') || name.includes('launch') || name.includes('start')) {
-                    await _supabase.rpc('increment_stat', { stat_type: 'chat' });
+                    await _supabase.rpc('update_analytics', { metric: 'chat' });
+                } else if (name.includes('reviews')) {
+                    await _supabase.rpc('update_analytics', { metric: 'review' });
                 }
             } catch(e) {}
         }
