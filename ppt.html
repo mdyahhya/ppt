@@ -1394,16 +1394,18 @@
                 state.points.forEach((p, i) => { listHTML += `<div>S${i + 1}: ${p}</div>`; });
                 listHTML += `</div>`;
 
-                return `Here is your slide architecture:<br>${listHTML}<br>Type **"Proceed"** to generate content, or **"Redo"** to change the number of slides.`;
+                return `Here is your slide architecture:<br>${listHTML}<br>Type **"Ok"** to generate content, or **"Redo"** to change the number of slides.`;
             }
             if (state.step === 5) {
-                if (input.includes('proceed') || input.includes('yes') || input.includes('ok')) {
-                    state.step = 7;
-                    addMessage('system', `<div class="status-animate"><span class="spin"></span>Got it! Starting slide generation now...</div>`, true);
-                    return generateAndRenderContent();
-                } else {
+                if (input.includes('redo') || input.includes('change')) {
                     state.step = 4;
                     return `Okay, let's redo. How many slides do you need? (Type 1 for Quick, 2 for Standard, 3 for Comprehensive)`;
+                } else {
+                    // Default to Proceed for anything else
+                    state.step = 7;
+                    const startMsg = addMessage('system', `<div class="status-animate"><span class="spin"></span>Got it! Starting slide generation now...</div>`, true);
+                    // Pass the message reference to be updated
+                    return generateAndRenderContent(startMsg);
                 }
             }
 
@@ -1439,9 +1441,11 @@
             'Polishing bullet points...', 'Almost there — finalizing slides...'
         ];
 
-        async function generateAndRenderContent() {
+        async function generateAndRenderContent(initialMsg) {
             let phraseIdx = 0;
-            const animBubble = rawAddMessage('system', `<div class="status-animate"><span class="spin"></span>${generationPhrases[0]}</div>`, true);
+            // Use the initial message bubble if provided, otherwise create a new one
+            const animBubble = initialMsg || rawAddMessage('system', `<div class="status-animate"><span class="spin"></span>${generationPhrases[0]}</div>`, true);
+            
             const phraseTimer = setInterval(() => {
                 phraseIdx = (phraseIdx + 1) % generationPhrases.length;
                 if (animBubble) animBubble.innerHTML = `<div class="status-animate"><span class="spin"></span>${generationPhrases[phraseIdx]}</div>`;
