@@ -354,12 +354,17 @@
             align-items: stretch;
         }
 
-        /* 50/50 Split */
-        .slide-layout-left .slide-text-zone,
+        /* 30/70 Split */
         .slide-layout-left .slide-image-zone,
-        .slide-layout-right .slide-text-zone,
         .slide-layout-right .slide-image-zone {
-            flex: 0 0 50%;
+            flex: 0 0 30%;
+            height: 100%;
+            position: relative;
+        }
+
+        .slide-layout-left .slide-text-zone,
+        .slide-layout-right .slide-text-zone {
+            flex: 0 0 70%;
             height: 100%;
             position: relative;
         }
@@ -2921,8 +2926,8 @@
                     const hasImgSide = s.image && (s.layout === 'image-right' || s.layout === 'image-left');
                     if (s.image && s.layout !== 'text-only') {
                         try {
-                            let imgX = 0, imgY = 0, imgW = w / 2, imgH = h;
-                            if (s.layout === 'image-right') imgX = w / 2;
+                            let imgX = 0, imgY = 0, imgW = w * 0.3, imgH = h;
+                            if (s.layout === 'image-right') imgX = w * 0.7;
                             else if (s.layout === 'image-background') imgW = w;
                             doc.addImage(s.image, 'JPEG', imgX, imgY, imgW, imgH, undefined, 'FAST');
                         } catch (e) {}
@@ -2933,9 +2938,9 @@
                     const hexBody = thm.body.replace('#', '');
                     const rb2 = parseInt(hexBody.substring(0, 2), 16), gb2 = parseInt(hexBody.substring(2, 4), 16), bb2 = parseInt(hexBody.substring(4, 6), 16);
 
-                    const textAreaW = hasImgSide ? textWidth * 0.45 : textWidth;
-                    const textX = (s.layout === 'image-left') ? margins + w/2 : margins;
-                    const headY = (i === 0) ? h * 0.35 : margins + 16;
+                    const textAreaW = hasImgSide ? textWidth * 0.65 : textWidth;
+                    const textX = (s.layout === 'image-left') ? margins + w * 0.3 : margins;
+                    const headY = (i === 0) ? h * 0.35 : margins + 8; // Reduced top space
                     
                     doc.setFont('Helvetica', 'bold');
                     doc.setFontSize(i === 0 ? 36 : 28);
@@ -2950,13 +2955,13 @@
                         doc.setFont('Helvetica', 'normal');
                         doc.setFontSize(18);
                         doc.setTextColor(rb2, gb2, bb2);
-                        doc.text(byLine, headX, headY + headLines.length * 12 + 12, { align });
+                        doc.text(byLine, headX, headY + headLines.length * 10 + 8, { align }); // Tightened gap
                     } else if (s.body) {
                         doc.setFont('Helvetica', 'normal');
                         doc.setFontSize(17);
                         doc.setTextColor(rb2, gb2, bb2);
                         const bodyLines = doc.splitTextToSize(s.body, textAreaW);
-                        doc.text(bodyLines, headX, headY + headLines.length * 12 + 10, { align, lineHeightFactor: 1.5 });
+                        doc.text(bodyLines, headX, headY + headLines.length * 10 + 6, { align, lineHeightFactor: 1.5 }); // Tightened gap
                     }
                     doc.setFontSize(7); doc.setTextColor(170);
                     doc.text('ppt.yahya.in · A Project by Yahya Mundewadi', margins, h - 8);
