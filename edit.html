@@ -387,10 +387,9 @@
         }
 
         .slide-image-zone img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: 50% 50%;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
             display: block;
             transition: object-position 0.1s;
         }
@@ -1845,7 +1844,7 @@
                             headSize: 40, 
                             bodySize: 18, 
                             align: 'center', 
-                            imgFit: 'cover', 
+                            imgFit: 'contain', 
                             imgPosX: 50, 
                             imgPosY: 50 
                         });
@@ -1860,7 +1859,7 @@
                             headSize: 32, 
                             bodySize: 16, 
                             align: 'left', 
-                            imgFit: 'cover', 
+                            imgFit: 'contain', 
                             imgPosX: 50, 
                             imgPosY: 50 
                         });
@@ -1909,10 +1908,10 @@
             const totalSlides = pptData.points.length + 1; // +1 for title
             for (let i = 0; i < totalSlides; i++) {
                 if (i === 0) {
-                    slideStates.push({ heading: pptData.topic, body: `By ${displayName}`, theme: 'charcoal', layout: 'text-only', image: null, headSize: 40, bodySize: 18, align: 'center', imgFit: 'cover', imgPosX: 50, imgPosY: 50 });
+                    slideStates.push({ heading: pptData.topic, body: `By ${displayName}`, theme: 'charcoal', layout: 'text-only', image: null, headSize: 40, bodySize: 18, align: 'center', imgFit: 'contain', imgPosX: 50, imgPosY: 50 });
                 } else {
                     const idx = i - 1;
-                    slideStates.push({ heading: pptData.points[idx], body: (pptData.content[idx] || '').replace(/\*/g, ''), theme: 'white', layout: 'text-only', image: null, headSize: 32, bodySize: 16, align: 'left', imgFit: 'cover', imgPosX: 50, imgPosY: 50 });
+                    slideStates.push({ heading: pptData.points[idx], body: (pptData.content[idx] || '').replace(/\*/g, ''), theme: 'white', layout: 'text-only', image: null, headSize: 32, bodySize: 16, align: 'left', imgFit: 'contain', imgPosX: 50, imgPosY: 50 });
                 }
             }
 
@@ -2143,7 +2142,7 @@
                 if (s.image) {
                     const img = document.createElement('img');
                     img.src = s.image;
-                    img.style.objectFit = s.imgFit || 'cover';
+                    img.style.objectFit = s.imgFit || 'contain';
                     img.style.transform = `scale(${(s.imgZoom || 100) / 100})`;
                     imgZone.appendChild(img);
                 } else {
@@ -2248,7 +2247,7 @@
 
             const fitCover = document.getElementById('fitCover');
             const fitContain = document.getElementById('fitContain');
-            const isCover = (s.imgFit || 'cover') === 'cover';
+            const isCover = (s.imgFit || 'contain') === 'cover';
             fitCover.style.background = isCover ? 'rgba(16,163,127,0.12)' : 'var(--surface2)';
             fitCover.style.borderColor = isCover ? 'var(--accent)' : 'var(--border)';
             fitCover.style.color = isCover ? 'var(--accent)' : 'var(--text2)';
@@ -2785,7 +2784,7 @@
 
             // Object fit
             html += '<hr class="sep">';
-            const isCover = (s.imgFit || 'cover') === 'cover';
+            const isCover = (s.imgFit || 'contain') === 'cover';
             html += `
                 <div class="tool-section">
                     <div class="tool-section-label">Image Fit</div>
