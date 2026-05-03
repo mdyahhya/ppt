@@ -18,8 +18,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
-    <!-- Supabase SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         * {
@@ -51,7 +49,9 @@
             display: flex;
         }
 
-        svg { fill: currentColor; }
+        svg {
+            fill: currentColor;
+        }
 
         /* Sidebar */
         .sidebar {
@@ -84,13 +84,20 @@
         }
 
         .new-chat-btn svg {
-            width: 16px; height: 16px;
-            min-width: 16px; min-height: 16px;
+            width: 16px;
+            height: 16px;
+            min-width: 16px;
+            min-height: 16px;
             flex-shrink: 0;
         }
 
-        .new-chat-btn:hover { background: var(--hover-bg); }
-        .new-chat-btn:active { transform: scale(0.98); }
+        .new-chat-btn:hover {
+            background: var(--hover-bg);
+        }
+
+        .new-chat-btn:active {
+            transform: scale(0.98);
+        }
 
         .sidebar-section {
             display: flex;
@@ -99,8 +106,14 @@
             overflow-y: auto;
         }
 
-        .sidebar-section::-webkit-scrollbar { width: 4px; }
-        .sidebar-section::-webkit-scrollbar-thumb { background: #CCC; border-radius: 4px; }
+        .sidebar-section::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar-section::-webkit-scrollbar-thumb {
+            background: #CCC;
+            border-radius: 4px;
+        }
 
         .time-label {
             font-size: 12px;
@@ -128,8 +141,13 @@
             flex: 1;
         }
 
-        .history-item:hover { background: var(--hover-bg); }
-        .history-item.active { background: #E5E5E5; }
+        .history-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .history-item.active {
+            background: #E5E5E5;
+        }
 
         .delete-chat-btn {
             background: transparent;
@@ -137,7 +155,8 @@
             color: var(--text-muted);
             cursor: pointer;
             opacity: 0.45;
-            width: 24px; height: 24px;
+            width: 24px;
+            height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -145,9 +164,20 @@
             transition: opacity 0.15s, color 0.15s, background 0.15s;
         }
 
-        @media (hover: none) { .delete-chat-btn { opacity: 1; } }
-        .history-item:hover .delete-chat-btn { opacity: 1; }
-        .delete-chat-btn:hover { color: #DC2626; background: rgba(220, 38, 38, 0.1); }
+        @media (hover: none) {
+            .delete-chat-btn {
+                opacity: 1;
+            }
+        }
+
+        .history-item:hover .delete-chat-btn {
+            opacity: 1;
+        }
+
+        .delete-chat-btn:hover {
+            color: #DC2626;
+            background: rgba(220, 38, 38, 0.1);
+        }
 
         .my-ppts-btn-top {
             display: flex;
@@ -164,7 +194,10 @@
             transition: all 0.2s;
         }
 
-        .my-ppts-btn-top:hover { background: var(--hover-bg); color: var(--text-primary); }
+        .my-ppts-btn-top:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
 
         .my-ppt-item {
             padding: 12px;
@@ -178,9 +211,20 @@
             transition: background 0.2s;
         }
 
-        .my-ppt-item:hover { background: var(--bg-panel); }
-        .my-ppt-info h4 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
-        .my-ppt-info p { font-size: 12px; color: var(--text-muted); }
+        .my-ppt-item:hover {
+            background: var(--bg-panel);
+        }
+
+        .my-ppt-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .my-ppt-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
 
         .sidebar-footer {
             margin-top: auto;
@@ -188,52 +232,53 @@
             border-top: 1px solid var(--border-light);
         }
 
-        /* User profile area in sidebar */
-        .user-profile-sidebar {
+        .user-profile {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 10px;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
             cursor: pointer;
             transition: background 0.2s;
-            width: 100%;
-            border: none;
-            background: transparent;
-            text-align: left;
         }
 
-        .user-profile-sidebar:hover { background: var(--hover-bg); }
+        .user-profile:hover {
+            background: var(--hover-bg);
+        }
 
-        .sidebar-avatar {
-            width: 34px; height: 34px;
+        .user-avatar {
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: var(--text-primary);
-            color: white;
+            background: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
             flex-shrink: 0;
-            overflow: hidden;
-            border: 1.5px solid var(--border);
         }
 
-        .sidebar-avatar img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-
-        .sidebar-user-text {
+        .user-info {
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            flex: 1;
+            margin-top: 1px;
         }
 
-        .sidebar-user-name {
+        .user-name {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .user-email {
             font-size: 13px;
             font-weight: 600;
             color: var(--text-primary);
@@ -241,32 +286,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
-        .sidebar-user-email {
-            font-size: 11px;
-            color: var(--text-muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .sidebar-sign-in-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 12px;
-            border-radius: 10px;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.2s;
-        }
-
-        .sidebar-sign-in-btn:hover { background: var(--hover-bg); color: var(--text-primary); }
 
         /* Main Content */
         .main-content {
@@ -289,7 +308,9 @@
             transition: border-color 0.2s;
         }
 
-        .top-nav.scrolled { border-bottom: 1px solid var(--border); }
+        .top-nav.scrolled {
+            border-bottom: 1px solid var(--border);
+        }
 
         .model-selector {
             font-size: 18px;
@@ -305,8 +326,14 @@
             scroll-behavior: smooth;
         }
 
-        .chat-container::-webkit-scrollbar { width: 8px; }
-        .chat-container::-webkit-scrollbar-thumb { background: #CCC; border-radius: 4px; }
+        .chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #CCC;
+            border-radius: 4px;
+        }
 
         .empty-state {
             height: 100%;
@@ -319,12 +346,20 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .empty-state .chatgpt-logo {
-            width: 72px; height: 72px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             background: var(--text-primary);
             color: white;
@@ -335,7 +370,10 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
-        .empty-state h2 { font-size: 24px; font-weight: 600; }
+        .empty-state h2 {
+            font-size: 24px;
+            font-weight: 600;
+        }
 
         .chat-messages {
             display: flex;
@@ -352,8 +390,15 @@
         }
 
         @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .msg-container {
@@ -363,11 +408,17 @@
             width: 100%;
         }
 
-        .message-row.user { justify-content: center; }
-        .message-row.user .msg-container { flex-direction: row-reverse; }
+        .message-row.user {
+            justify-content: center;
+        }
+
+        .message-row.user .msg-container {
+            flex-direction: row-reverse;
+        }
 
         .avatar {
-            width: 30px; height: 30px;
+            width: 30px;
+            height: 30px;
             border-radius: 4px;
             display: flex;
             align-items: center;
@@ -405,30 +456,59 @@
             color: var(--text-primary);
         }
 
-        .message-row.system .message-bubble { padding-top: 4px; }
-        .message-bubble strong { font-weight: 600; color: var(--text-primary); }
+        .message-row.system .message-bubble {
+            padding-top: 4px;
+        }
+
+        .message-bubble strong {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
 
         /* Typing Dots */
-        .pulse-dots { display: flex; gap: 4px; align-items: center; height: 24px; }
+        .pulse-dots {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            height: 24px;
+        }
+
         .pulse-dots span {
-            width: 6px; height: 6px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: var(--text-secondary);
             animation: pulse-dot 1.5s infinite;
         }
-        .pulse-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .pulse-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        .pulse-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .pulse-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
 
         @keyframes pulse-dot {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
-            30% { transform: translateY(-4px); opacity: 1; }
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+
+            30% {
+                transform: translateY(-4px);
+                opacity: 1;
+            }
         }
 
         /* Input Area */
         .input-area {
             padding: 0 24px 24px;
             padding-bottom: max(24px, env(safe-area-inset-bottom, 24px));
-            background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 50%);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 50%);
             position: absolute;
             bottom: 0;
             width: 100%;
@@ -444,12 +524,12 @@
             border-radius: 20px;
             transition: border-color 0.2s, box-shadow 0.2s;
             padding: 6px 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
         }
 
         .input-wrapper:focus-within {
             border-color: #CCC;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
         }
 
         .chat-input {
@@ -466,13 +546,16 @@
             font-family: inherit;
         }
 
-        .chat-input::placeholder { color: var(--text-muted); }
+        .chat-input::placeholder {
+            color: var(--text-muted);
+        }
 
         .send-btn {
             background: var(--text-primary);
             color: white;
             border: none;
-            width: 32px; height: 32px;
+            width: 32px;
+            height: 32px;
             border-radius: 8px;
             margin-bottom: 4px;
             margin-left: 8px;
@@ -483,10 +566,26 @@
             transition: opacity 0.2s, transform 0.1s;
         }
 
-        .send-btn:hover:not(:disabled) { transform: scale(1.05); }
-        .send-btn:active:not(:disabled) { transform: scale(0.95); }
-        .send-btn:disabled { background: #E5E5E5; color: #A3A3A3; cursor: not-allowed; transform: none; }
-        .send-btn svg { width: 16px; height: 16px; stroke-width: 3; }
+        .send-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+        }
+
+        .send-btn:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
+        .send-btn:disabled {
+            background: #E5E5E5;
+            color: #A3A3A3;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .send-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 3;
+        }
 
         .disclaimer {
             text-align: center;
@@ -496,7 +595,11 @@
         }
 
         /* Slide preview cards */
-        .preview-grid { display: grid; gap: 16px; margin-top: 20px; }
+        .preview-grid {
+            display: grid;
+            gap: 16px;
+            margin-top: 20px;
+        }
 
         .slide-card {
             background: #FFFFFF;
@@ -504,11 +607,14 @@
             border-radius: 12px;
             padding: 12px 20px;
             border-left: 3px solid var(--accent-green);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .slide-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .slide-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
 
         .slide-card-header {
             font-size: 12px;
@@ -519,21 +625,42 @@
             margin-bottom: 4px;
         }
 
-        .slide-card h4 { font-size: 18px; font-weight: 700; margin-bottom: 6px; color: var(--text-primary); line-height: 1.3; }
-        .slide-card p { font-size: 14.5px; color: var(--text-secondary); line-height: 1.6; }
+        .slide-card h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
 
-        /* Download zone */
+        .slide-card p {
+            font-size: 14.5px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Download zone — 3 action buttons */
         .download-zone {
             background: #FFFFFF;
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 28px;
             margin-top: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
         }
 
-        .download-zone h3 { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
-        .download-zone p { color: var(--text-secondary); font-size: 13px; margin-bottom: 22px; }
+        .download-zone h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .download-zone p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-bottom: 22px;
+        }
 
         .action-btns-row {
             display: grid;
@@ -542,7 +669,9 @@
             margin-bottom: 12px;
         }
 
-        .action-btns-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+        .action-btns-row.triple {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
 
         .action-btn {
             display: flex;
@@ -563,9 +692,23 @@
             text-align: center;
         }
 
-        .action-btn:hover { background: #EAEAEA; transform: translateY(-1px); border-color: #CCC; }
-        .action-btn svg { flex-shrink: 0; }
-        .action-btn .btn-sub { font-size: 11px; opacity: 0.65; font-weight: 400; display: block; margin-top: 2px; }
+        .action-btn:hover {
+            background: #EAEAEA;
+            transform: translateY(-1px);
+            border-color: #CCC;
+        }
+
+        .action-btn svg {
+            flex-shrink: 0;
+        }
+
+        .action-btn .btn-sub {
+            font-size: 11px;
+            opacity: 0.65;
+            font-weight: 400;
+            display: block;
+            margin-top: 2px;
+        }
 
         .action-btn.edit-btn {
             background: linear-gradient(135deg, #0D0D0D 0%, #1a1a2e 100%);
@@ -573,8 +716,14 @@
             border-color: #0D0D0D;
         }
 
-        .action-btn.edit-btn:hover { background: linear-gradient(135deg, #1a1a1a 0%, #16213e 100%); box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
-        .action-btn.edit-btn .btn-sub { opacity: 0.7; }
+        .action-btn.edit-btn:hover {
+            background: linear-gradient(135deg, #1a1a1a 0%, #16213e 100%);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        }
+
+        .action-btn.edit-btn .btn-sub {
+            opacity: 0.7;
+        }
 
         .action-btn.preview-btn {
             background: linear-gradient(135deg, #10A37F 0%, #0d8a6b 100%);
@@ -582,16 +731,32 @@
             border-color: #10A37F;
         }
 
-        .action-btn.preview-btn:hover { background: linear-gradient(135deg, #0d8a6b 0%, #0a7a5f 100%); box-shadow: 0 4px 16px rgba(16,163,127,0.3); }
-        .action-btn.preview-btn .btn-sub { opacity: 0.8; }
-        .action-btn.ppt-btn:hover { background: rgba(249,115,22,0.05); border-color: rgba(249,115,22,0.3); color: #C2410C; }
-        .action-btn.pdf-btn:hover { background: rgba(239,68,68,0.05); border-color: rgba(239,68,68,0.3); color: #B91C1C; }
+        .action-btn.preview-btn:hover {
+            background: linear-gradient(135deg, #0d8a6b 0%, #0a7a5f 100%);
+            box-shadow: 0 4px 16px rgba(16, 163, 127, 0.3);
+        }
+
+        .action-btn.preview-btn .btn-sub {
+            opacity: 0.8;
+        }
+
+        .action-btn.ppt-btn:hover {
+            background: rgba(249, 115, 22, 0.05);
+            border-color: rgba(249, 115, 22, 0.3);
+            color: #C2410C;
+        }
+
+        .action-btn.pdf-btn:hover {
+            background: rgba(239, 68, 68, 0.05);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #B91C1C;
+        }
 
         /* Slide Preview Modal */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0, 0, 0, 0.85);
             z-index: 1000;
             display: flex;
             align-items: center;
@@ -601,7 +766,10 @@
             transition: opacity 0.3s;
         }
 
-        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
 
         .modal-box {
             width: 90vw;
@@ -614,10 +782,12 @@
             flex-direction: column;
             transform: scale(0.95);
             transition: transform 0.3s;
-            box-shadow: 0 24px 80px rgba(0,0,0,0.4);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
         }
 
-        .modal-overlay.open .modal-box { transform: scale(1); }
+        .modal-overlay.open .modal-box {
+            transform: scale(1);
+        }
 
         .modal-header {
             display: flex;
@@ -627,7 +797,10 @@
             border-bottom: 1px solid var(--border);
         }
 
-        .modal-header h3 { font-size: 16px; font-weight: 700; }
+        .modal-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+        }
 
         .modal-close {
             background: transparent;
@@ -641,16 +814,24 @@
             align-items: center;
         }
 
-        .modal-close:hover { background: var(--hover-bg); color: var(--text-primary); }
+        .modal-close:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
 
-        .modal-slide-area { flex: 1; overflow-y: auto; padding: 24px; background: #f5f5f5; }
+        .modal-slide-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            background: #f5f5f5;
+        }
 
         .modal-slide {
             background: white;
             border-radius: 12px;
             padding: 32px 36px;
             margin-bottom: 16px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
             border-left: 4px solid var(--accent-green);
         }
 
@@ -663,18 +844,51 @@
             margin-bottom: 10px;
         }
 
-        .modal-slide h3 { font-size: 22px; font-weight: 700; margin-bottom: 12px; line-height: 1.3; }
-        .modal-slide p { font-size: 15px; color: var(--text-secondary); line-height: 1.7; white-space: pre-wrap; }
+        .modal-slide h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
 
-        .modal-slide.title-slide { background: #212121; color: white; border-left-color: #10A37F; }
-        .modal-slide.title-slide .slide-num { color: rgba(255,255,255,0.5); }
-        .modal-slide.title-slide h3 { color: white; font-size: 28px; }
-        .modal-slide.title-slide p { color: rgba(255,255,255,0.6); }
+        .modal-slide p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .modal-slide.title-slide {
+            background: #212121;
+            color: white;
+            border-left-color: #10A37F;
+        }
+
+        .modal-slide.title-slide .slide-num {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .modal-slide.title-slide h3 {
+            color: white;
+            font-size: 28px;
+        }
+
+        .modal-slide.title-slide p {
+            color: rgba(255, 255, 255, 0.6);
+        }
 
         /* Status */
-        .status-animate { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-secondary); }
+        .status-animate {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
         .status-animate .spin {
-            width: 14px; height: 14px;
+            width: 14px;
+            height: 14px;
             border: 2px solid var(--border);
             border-top-color: var(--accent-green);
             border-radius: 50%;
@@ -682,20 +896,28 @@
             flex-shrink: 0;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
-        .hidden { display: none !important; }
+        .hidden {
+            display: none !important;
+        }
 
         /* Mobile */
         .sidebar-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0, 0, 0, 0.4);
             z-index: 20;
         }
 
-        .sidebar-overlay.open { display: block; }
+        .sidebar-overlay.open {
+            display: block;
+        }
 
         .mobile-menu-btn {
             display: none;
@@ -707,238 +929,6 @@
             align-items: center;
             justify-content: center;
         }
-
-        /* ── AUTH GATE MODAL ───────────────────────── */
-        .auth-modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.6);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s;
-            padding: 16px;
-        }
-
-        .auth-modal-overlay.open { opacity: 1; pointer-events: all; }
-
-        .auth-modal-box {
-            background: #fff;
-            border-radius: 20px;
-            padding: 36px 32px 28px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 24px 80px rgba(0,0,0,0.25);
-            transform: scale(0.95) translateY(10px);
-            transition: transform 0.25s;
-        }
-
-        .auth-modal-overlay.open .auth-modal-box {
-            transform: scale(1) translateY(0);
-        }
-
-        .auth-modal-icon {
-            width: 56px; height: 56px;
-            border-radius: 14px;
-            background: var(--bg-user-msg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            border: 1px solid var(--border);
-        }
-
-        .auth-modal-box h2 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-            line-height: 1.3;
-        }
-
-        .auth-modal-box .auth-subtitle {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 24px;
-        }
-
-        .google-signin-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            width: 100%;
-            padding: 13px 20px;
-            background: #fff;
-            border: 1.5px solid #DADCE0;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            color: #3C4043;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-        }
-
-        .google-signin-btn:hover {
-            background: #F8F9FA;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-color: #C0C3C8;
-        }
-
-        .google-signin-btn:active { transform: scale(0.98); }
-
-        .auth-skip-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            font-size: 13px;
-            cursor: pointer;
-            margin-top: 14px;
-            padding: 6px 12px;
-            border-radius: 6px;
-            transition: background 0.2s, color 0.2s;
-            display: block;
-            width: 100%;
-            text-align: center;
-        }
-
-        .auth-skip-btn:hover { background: var(--hover-bg); color: var(--text-secondary); }
-
-        .auth-security-note {
-            margin-top: 18px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-            font-size: 11.5px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        /* ── PROFILE MODAL ───────────────────────── */
-        .profile-modal-box {
-            max-width: 440px;
-            width: 100%;
-            background: #fff;
-            border-radius: 20px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transform: scale(0.95);
-            transition: transform 0.3s;
-            box-shadow: 0 24px 80px rgba(0,0,0,0.4);
-            max-height: 90vh;
-        }
-
-        .modal-overlay.open .profile-modal-box { transform: scale(1); }
-
-        .profile-header-band {
-            background: linear-gradient(135deg, #0D0D0D 0%, #1a1a2e 100%);
-            padding: 32px 28px 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .profile-avatar-lg {
-            width: 72px; height: 72px;
-            border-radius: 50%;
-            background: var(--accent-green);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: 700;
-            border: 3px solid rgba(255,255,255,0.15);
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        .profile-avatar-lg img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-
-        .profile-header-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
-            text-align: center;
-        }
-
-        .profile-header-email {
-            font-size: 13px;
-            color: rgba(255,255,255,0.55);
-            text-align: center;
-        }
-
-        .profile-body { padding: 24px 28px; overflow-y: auto; }
-
-        .profile-field-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-bottom: 6px;
-        }
-
-        .profile-field-input {
-            width: 100%;
-            padding: 11px 14px;
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            font-size: 14px;
-            font-family: inherit;
-            color: var(--text-primary);
-            background: var(--bg-panel);
-            outline: none;
-            transition: border-color 0.2s;
-            margin-bottom: 18px;
-        }
-
-        .profile-field-input:focus { border-color: var(--accent-green); background: #fff; }
-
-        .profile-save-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--accent-green);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-bottom: 12px;
-        }
-
-        .profile-save-btn:hover { background: #0d8a6b; transform: translateY(-1px); }
-
-        .profile-signout-btn {
-            width: 100%;
-            padding: 11px;
-            background: transparent;
-            color: #DC2626;
-            border: 1.5px solid rgba(220,38,38,0.2);
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .profile-signout-btn:hover { background: rgba(220,38,38,0.05); border-color: rgba(220,38,38,0.4); }
 
         @media (max-width: 768px) {
             .sidebar {
@@ -952,24 +942,43 @@
                 box-shadow: none;
             }
 
-            .sidebar.open { left: 0; box-shadow: 4px 0 20px rgba(0,0,0,0.12); }
-            .mobile-menu-btn { display: flex; }
+            .sidebar.open {
+                left: 0;
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.12);
+            }
 
-            .message-row { padding: 16px; }
+            .mobile-menu-btn {
+                display: flex;
+            }
 
-            .action-btns-row { grid-template-columns: 1fr 1fr; }
-            .action-btns-row.triple { grid-template-columns: 1fr; }
+            .message-row {
+                padding: 16px;
+            }
 
-            .input-area { padding-left: 12px; padding-right: 12px; }
-            .input-wrapper { border-radius: 16px; }
+            .action-btns-row {
+                grid-template-columns: 1fr 1fr;
+            }
 
-            .modal-box { width: 98vw; }
-            .modal-slide { padding: 20px; }
+            .action-btns-row.triple {
+                grid-template-columns: 1fr;
+            }
 
-            .auth-modal-box { padding: 28px 20px 22px; }
-            .profile-modal-box { width: 98vw; }
-            .profile-header-band { padding: 24px 20px 18px; }
-            .profile-body { padding: 20px; }
+            .input-area {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+
+            .input-wrapper {
+                border-radius: 16px;
+            }
+
+            .modal-box {
+                width: 98vw;
+            }
+
+            .modal-slide {
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -980,13 +989,15 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <button class="new-chat-btn" onclick="startNewChat(true)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
             New chat
         </button>
-        <button class="new-chat-btn" onclick="openMyPPTs()" style="margin-top:-8px; margin-bottom: 8px; color: var(--accent-green);">
+        <button class="new-chat-btn" onclick="openMyPPTs()"
+            style="margin-top:-8px; margin-bottom: 8px; color: var(--accent-green);">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <rect x="3" y="3" width="18" height="18" rx="2" />
                 <path d="M7 8h10M7 12h10M7 16h10" />
@@ -995,64 +1006,24 @@
         </button>
         <div class="sidebar-section" id="sidebarHistory"></div>
         <div class="sidebar-footer">
-            <!-- Signed-in user profile -->
-            <button class="user-profile-sidebar hidden" id="sidebarUserProfile" onclick="openProfileModal()">
-                <div class="sidebar-avatar" id="sidebarAvatar">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
+            <a href="https://yahya.in" target="_blank" style="text-decoration:none;color:inherit;">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 18 22 12 16 6"></polyline>
+                            <polyline points="8 6 2 12 8 18"></polyline>
+                            <line x1="14" y1="4" x2="10" y2="20"></line>
+                        </svg>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name">Developer</span>
+                        <span class="user-email">Yahya Mundewadi</span>
+                        <span
+                            style="font-size:11px;color:var(--accent-green);font-weight:600;margin-top:1px;">yahya.in</span>
+                    </div>
                 </div>
-                <div class="sidebar-user-text">
-                    <span class="sidebar-user-name" id="sidebarUserName">Your Name</span>
-                    <span class="sidebar-user-email" id="sidebarUserEmail">your@email.com</span>
-                </div>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;color:var(--text-muted);">
-                    <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
-                </svg>
-            </button>
-
-            <!-- Sign-in button (shown when logged out) -->
-            <button class="sidebar-sign-in-btn" id="sidebarSignInBtn" onclick="openAuthModal(null)">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
-                </svg>
-                Sign in with Google
-            </button>
-        </div>
-    </div>
-
-    <!-- Auth Gate Modal -->
-    <div class="auth-modal-overlay" id="authModal">
-        <div class="auth-modal-box">
-            <div class="auth-modal-icon">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                    <line x1="12" y1="22.08" x2="12" y2="12"/>
-                </svg>
-            </div>
-            <h2>Save your presentation</h2>
-            <p class="auth-subtitle">Sign in to save your PPT history so you can come back and access your presentations anytime.</p>
-            <button class="google-signin-btn" onclick="signInWithGoogle()">
-                <!-- Official Google icon SVG -->
-                <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                </svg>
-                Continue with Google
-            </button>
-            <button class="auth-skip-btn" id="authSkipBtn" onclick="skipAuthAndDownload()">Skip for now — download without saving</button>
-            <div class="auth-security-note">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-                Only your name &amp; email are stored. No PPT content is shared.
-            </div>
-            <p style="font-size:11px;color:var(--text-muted);margin-top:8px;">You can manage your profile from the side menu.</p>
+            </a>
         </div>
     </div>
 
@@ -1060,15 +1031,12 @@
     <div class="modal-overlay" id="previewModal">
         <div class="modal-box">
             <div class="modal-header">
-                <h3>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:-2px;margin-right:6px;">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                    </svg>
-                    Slide Preview
-                </h3>
+                <h3>📋 Slide Preview</h3>
                 <button class="modal-close" onclick="closePreviewModal()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
                 </button>
             </div>
@@ -1080,57 +1048,16 @@
     <div class="modal-overlay" id="myPptsModal">
         <div class="modal-box">
             <div class="modal-header">
-                <h3>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:-2px;margin-right:6px;">
-                        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h10"/>
-                    </svg>
-                    Studio — Your Presentations
-                </h3>
+                <h3>📂 Studio : Your Generated Presentations</h3>
                 <button class="modal-close" onclick="closeMyPptsModal()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
                 </button>
             </div>
             <div class="modal-slide-area" id="myPptsArea" style="background:#fff;"></div>
-        </div>
-    </div>
-
-    <!-- Profile Modal -->
-    <div class="modal-overlay" id="profileModal">
-        <div class="profile-modal-box">
-            <div class="modal-header" style="border:none;padding:16px 20px 0;">
-                <span></span>
-                <button class="modal-close" onclick="closeProfileModal()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="profile-header-band">
-                <div class="profile-avatar-lg" id="profileAvatarLg">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                    </svg>
-                </div>
-                <div>
-                    <div class="profile-header-name" id="profileHeaderName">Your Name</div>
-                    <div class="profile-header-email" id="profileHeaderEmail">your@email.com</div>
-                </div>
-            </div>
-            <div class="profile-body">
-                <div class="profile-field-label">Display Name</div>
-                <input type="text" class="profile-field-input" id="profileNameInput" placeholder="Enter your name" />
-                <div class="profile-field-label">Email Address</div>
-                <input type="email" class="profile-field-input" id="profileEmailInput" placeholder="your@email.com" readonly style="opacity:0.7;cursor:not-allowed;" />
-                <button class="profile-save-btn" onclick="saveProfileName()">Save Changes</button>
-                <button class="profile-signout-btn" onclick="signOut()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-                    </svg>
-                    Sign Out
-                </button>
-            </div>
         </div>
     </div>
 
@@ -1140,21 +1067,23 @@
             <div style="display:flex;align-items:center;gap:8px;width:100%;justify-content:space-between;">
                 <div style="display:flex;align-items:center;gap:8px;">
                     <button class="mobile-menu-btn" onclick="openSidebar()" aria-label="Open menu">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                            <line x1="3" y1="6" x2="21" y2="6"/>
-                            <line x1="3" y1="12" x2="21" y2="12"/>
-                            <line x1="3" y1="18" x2="21" y2="18"/>
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round">
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <line x1="3" y1="12" x2="21" y2="12" />
+                            <line x1="3" y1="18" x2="21" y2="18" />
                         </svg>
                     </button>
                     <div class="model-selector">
                         AI PPT Maker by Yahya
-                        <span style="font-size:13px;font-weight:500;color:var(--accent-green);background:rgba(16,163,127,0.1);padding:2px 8px;border-radius:12px;margin-left:8px;">v2.0</span>
+                        <span
+                            style="font-size:13px;font-weight:500;color:var(--accent-green);background:rgba(16,163,127,0.1);padding:2px 8px;border-radius:12px;margin-left:8px;">v2.0</span>
                     </div>
                 </div>
                 <button onclick="openMyPPTs()" class="my-ppts-btn-top">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="18" height="18" rx="2"/>
-                        <path d="M7 8h10M7 12h10M7 16h10"/>
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <path d="M7 8h10M7 12h10M7 16h10" />
                     </svg>
                     Studio
                 </button>
@@ -1165,10 +1094,13 @@
             <div style="height:60px;"></div>
             <div class="empty-state" id="emptyState">
                 <div class="chatgpt-logo">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                        <line x1="12" y1="22.08" x2="12" y2="12"/>
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                        </path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
                     </svg>
                 </div>
                 <h2>What presentation are we building today?</h2>
@@ -1181,30 +1113,25 @@
             <div class="input-wrapper">
                 <textarea id="chatInput" class="chat-input" placeholder="Message AI PPT Maker..." rows="1"></textarea>
                 <button id="sendButton" class="send-btn" disabled>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round">
                         <line x1="12" y1="19" x2="12" y2="5"></line>
                         <polyline points="5 12 12 5 19 12"></polyline>
                     </svg>
                 </button>
             </div>
-            <div class="disclaimer">AI PPT Agent can make mistakes. Consider verifying your slide content. A project by Yahya | ppt.yahya.in</div>
+            <div class="disclaimer">AI PPT Agent can make mistakes. Consider verifying your slide content. A project by
+                Yahya | ppt.yahya.in</div>
         </div>
     </div>
 
     <script>
-        // ── SUPABASE INIT ──────────────────────────────────────────
-        const SUPABASE_URL = 'https://nghfugykhrpxxlxkiyji.supabase.co';
-        const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5naGZ1Z3lraHJweHhseGtpeWppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTk2MzQsImV4cCI6MjA5MTQ3NTYzNH0.EgFu1Uj6EyE6scGJMYM1sN0DRUO9H-IexaG7XLnfGKc';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-
         const API_URL = '/.netlify/functions/ppt-chat';
         const botIconSVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`;
         const userIconSVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
 
         let currentChatId = null;
         let chatHistoryDb = JSON.parse(localStorage.getItem('ppt_chats') || '[]');
-        let currentUser = null;
-        let pendingDownloadFn = null;
 
         let state = {
             step: 0, userName: '', topic: '', tone: '', slideCount: 0,
@@ -1227,183 +1154,6 @@
             else dom.topNav.classList.remove('scrolled');
         });
 
-        // ── AUTH HELPERS ───────────────────────────────────────────
-        async function initAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session?.user) {
-                currentUser = session.user;
-                updateSidebarForUser(currentUser);
-            }
-
-            supabase.auth.onAuthStateChange(async (event, session) => {
-                if (session?.user) {
-                    currentUser = session.user;
-                    updateSidebarForUser(currentUser);
-                    // If download was pending, execute it now
-                    if (pendingDownloadFn) {
-                        const fn = pendingDownloadFn;
-                        pendingDownloadFn = null;
-                        closeAuthModal();
-                        await logPptActivity(fn.exportType);
-                        fn.callback();
-                    } else {
-                        closeAuthModal();
-                    }
-                } else {
-                    currentUser = null;
-                    updateSidebarForUser(null);
-                }
-            });
-        }
-
-        function updateSidebarForUser(user) {
-            const profileBtn = document.getElementById('sidebarUserProfile');
-            const signInBtn = document.getElementById('sidebarSignInBtn');
-            const nameEl = document.getElementById('sidebarUserName');
-            const emailEl = document.getElementById('sidebarUserEmail');
-            const avatarEl = document.getElementById('sidebarAvatar');
-
-            if (user) {
-                const displayName = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
-                const avatarUrl = user.user_metadata?.avatar_url || null;
-
-                nameEl.textContent = displayName;
-                emailEl.textContent = user.email;
-
-                if (avatarUrl) {
-                    avatarEl.innerHTML = `<img src="${avatarUrl}" alt="Avatar" />`;
-                } else {
-                    avatarEl.textContent = displayName.charAt(0).toUpperCase();
-                    avatarEl.style.background = 'var(--accent-green)';
-                    avatarEl.style.color = 'white';
-                    avatarEl.style.fontSize = '14px';
-                }
-
-                profileBtn.classList.remove('hidden');
-                signInBtn.classList.add('hidden');
-            } else {
-                profileBtn.classList.add('hidden');
-                signInBtn.classList.remove('hidden');
-            }
-        }
-
-        async function signInWithGoogle() {
-            await supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    redirectTo: 'https://ppt.yahya.in/ppt'
-                }
-            });
-        }
-
-        async function signOut() {
-            await supabase.auth.signOut();
-            closeProfileModal();
-        }
-
-        // ── AUTH MODAL ─────────────────────────────────────────────
-        function openAuthModal(downloadPayload) {
-            pendingDownloadFn = downloadPayload;
-            // Show skip button only when triggered from download
-            const skipBtn = document.getElementById('authSkipBtn');
-            skipBtn.style.display = downloadPayload ? 'block' : 'none';
-            document.getElementById('authModal').classList.add('open');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeAuthModal() {
-            document.getElementById('authModal').classList.remove('open');
-            document.body.style.overflow = '';
-            pendingDownloadFn = null;
-        }
-
-        function skipAuthAndDownload() {
-            const fn = pendingDownloadFn;
-            pendingDownloadFn = null;
-            closeAuthModal();
-            if (fn) fn.callback();
-        }
-
-        // ── PROFILE MODAL ──────────────────────────────────────────
-        function openProfileModal() {
-            if (!currentUser) { openAuthModal(null); return; }
-
-            const displayName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email.split('@')[0];
-            const avatarUrl = currentUser.user_metadata?.avatar_url || null;
-
-            document.getElementById('profileHeaderName').textContent = displayName;
-            document.getElementById('profileHeaderEmail').textContent = currentUser.email;
-            document.getElementById('profileNameInput').value = displayName;
-            document.getElementById('profileEmailInput').value = currentUser.email;
-
-            const avatarLg = document.getElementById('profileAvatarLg');
-            if (avatarUrl) {
-                avatarLg.innerHTML = `<img src="${avatarUrl}" alt="Avatar" />`;
-            } else {
-                avatarLg.innerHTML = `<span style="font-size:28px;font-weight:700;">${displayName.charAt(0).toUpperCase()}</span>`;
-            }
-
-            document.getElementById('profileModal').classList.add('open');
-            document.body.style.overflow = 'hidden';
-            closeSidebar();
-        }
-
-        function closeProfileModal() {
-            document.getElementById('profileModal').classList.remove('open');
-            document.body.style.overflow = '';
-        }
-
-        async function saveProfileName() {
-            const newName = document.getElementById('profileNameInput').value.trim();
-            if (!newName || !currentUser) return;
-
-            const btn = document.querySelector('.profile-save-btn');
-            btn.textContent = 'Saving...';
-            btn.disabled = true;
-
-            try {
-                await supabase.auth.updateUser({ data: { full_name: newName } });
-                // Update profiles table
-                await supabase.from('profiles').update({ display_name: newName }).eq('id', currentUser.id);
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) { currentUser = user; updateSidebarForUser(user); }
-                document.getElementById('profileHeaderName').textContent = newName;
-                btn.textContent = 'Saved!';
-                setTimeout(() => { btn.textContent = 'Save Changes'; btn.disabled = false; }, 1500);
-            } catch (e) {
-                btn.textContent = 'Save Changes';
-                btn.disabled = false;
-            }
-        }
-
-        // ── PPT ACTIVITY LOG ───────────────────────────────────────
-        async function logPptActivity(exportType) {
-            if (!currentUser) return;
-            try {
-                await supabase.from('ppt_logs').insert({
-                    user_id: currentUser.id,
-                    email: currentUser.email,
-                    topic: state.topic,
-                    slide_count: state.points.length + 1,
-                    tone: state.tone,
-                    export_type: exportType
-                });
-            } catch (e) { /* silent */ }
-        }
-
-        // ── DOWNLOAD GATE ──────────────────────────────────────────
-        function gatedDownload(exportType, callback) {
-            if (currentUser) {
-                // Already signed in — log and download
-                logPptActivity(exportType);
-                callback();
-            } else {
-                // Show auth popup with pending download
-                openAuthModal({ exportType, callback });
-            }
-        }
-
-        // ── SIDEBAR / CHAT LOGIC (original, untouched) ─────────────
         function renderSidebar() {
             dom.sidebarHistory.innerHTML = '';
             if (chatHistoryDb.length > 0) {
@@ -1469,6 +1219,7 @@
         function startNewChat(force = false) {
             if (!force && chatHistoryDb.length > 0) {
                 const latest = chatHistoryDb[0];
+                // Reuse latest chat if it's essentially empty (at start step with no history or just the system intro)
                 if (latest.state && latest.state.step === 0 && latest.state.uiMessages.length <= 1) {
                     loadChat(latest.id);
                     return;
@@ -1490,12 +1241,7 @@
             const ppts = chatHistoryDb.filter(c => c.state && c.state.points && c.state.points.length > 0);
 
             if (ppts.length === 0) {
-                area.innerHTML = `<div style="padding:40px;text-align:center;color:var(--text-muted);">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px;opacity:0.4;">
-                        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h10"/>
-                    </svg>
-                    <p>No presentations generated yet.</p>
-                </div>`;
+                area.innerHTML = '<div style="padding:40px; text-align:center; color:var(--text-muted);">No presentations generated yet.</div>';
             } else {
                 ppts.forEach(p => {
                     const item = document.createElement('div');
@@ -1505,10 +1251,17 @@
                             <h4>${p.title}</h4>
                             <p>${p.state.points.length + 1} slides · ${new Date(p.timestamp).toLocaleDateString()}</p>
                         </div>
-                        <button class="action-btn edit-btn" style="padding:6px 12px;font-size:12px;border-radius:6px;width:auto;height:auto;">Open Editor</button>
+                        <button class="action-btn edit-btn" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; width:auto; height:auto;">Open Editor</button>
                     `;
                     item.onclick = () => {
-                        const editPayload = { topic: p.state.topic, userName: p.state.userName, tone: p.state.tone, points: p.state.points, content: p.state.content, timestamp: Date.now() };
+                        const editPayload = {
+                            topic: p.state.topic,
+                            userName: p.state.userName,
+                            tone: p.state.tone,
+                            points: p.state.points,
+                            content: p.state.content,
+                            timestamp: Date.now()
+                        };
                         localStorage.setItem('ppt_edit_state', JSON.stringify(editPayload));
                         window.location.href = 'edit.html';
                     };
@@ -1648,8 +1401,10 @@
                     state.step = 4;
                     return `Okay, let's redo. How many slides do you need? (Type 1 for Quick, 2 for Standard, 3 for Comprehensive)`;
                 } else {
+                    // Default to Proceed for anything else
                     state.step = 7;
                     const startMsg = addMessage('system', `<div class="status-animate"><span class="spin"></span>Got it! Starting slide generation now...</div>`, true);
+                    // Pass the message reference to be updated
                     return generateAndRenderContent(startMsg);
                 }
             }
@@ -1688,8 +1443,9 @@
 
         async function generateAndRenderContent(initialMsg) {
             let phraseIdx = 0;
+            // Use the initial message bubble if provided, otherwise create a new one
             const animBubble = initialMsg || rawAddMessage('system', `<div class="status-animate"><span class="spin"></span>${generationPhrases[0]}</div>`, true);
-
+            
             const phraseTimer = setInterval(() => {
                 phraseIdx = (phraseIdx + 1) % generationPhrases.length;
                 if (animBubble) animBubble.innerHTML = `<div class="status-animate"><span class="spin"></span>${generationPhrases[phraseIdx]}</div>`;
@@ -1717,10 +1473,7 @@
         function renderFinalPreview() {
             let html = `
                 <div style="margin-bottom:20px;">
-                    <h3 style="font-size:20px;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:8px;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                        Generation Complete
-                    </h3>
+                    <h3 style="font-size:20px;font-weight:700;color:var(--text-primary);">✅ Generation Complete</h3>
                     <p style="color:var(--text-secondary);font-size:14px;margin-top:4px;">${state.points.length + 1} slides ready — preview, edit, or download below.</p>
                 </div>
                 <div class="preview-grid">
@@ -1746,7 +1499,7 @@
             html += `</div>
                 <div class="download-zone">
                     <h3>What would you like to do?</h3>
-                    <p>Preview all slides, design your PPT visually, or export directly.</p>
+                    <p>Preview all slides, design your PPT visually, or export directly as PDF.</p>
                     <div class="action-btns-row triple">
                         <a onclick="openPreviewModal()" class="action-btn preview-btn" style="cursor:pointer;">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
@@ -1758,34 +1511,36 @@
                             Edit & Design PPT
                             <span class="btn-sub">Themes · Images · Layout</span>
                         </a>
-                        <a onclick="gatedDownload('pdf', () => exportPDF('pc'))" class="action-btn pdf-btn" style="cursor:pointer;">
+                        <a onclick="exportPDF('pc')" class="action-btn pdf-btn" style="cursor:pointer;">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                             Download PDF
                             <span class="btn-sub">PC · 16:9 Widescreen</span>
                         </a>
                     </div>
-                    <div class="action-btns-row">
-                        <a onclick="gatedDownload('pptx', () => exportPPTX('pc'))" class="action-btn ppt-btn" style="cursor:pointer;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                            Plain PPTX
-                            <span class="btn-sub">Editable · No design</span>
-                        </a>
+                        <div class="action-btns-row">
+                            <a onclick="exportPPTX('pc')" class="action-btn ppt-btn" style="cursor:pointer;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                                Plain PPTX
+                                <span class="btn-sub">Editable · No design</span>
+                            </a>
+                        </div>
+                        <p style="font-size:12px;color:var(--text-muted);margin-top:16px;text-align:center;">💡 Use <strong>Edit & Design PPT</strong> to add themes, images and custom layout before exporting.</p>
                     </div>
-                    <p style="font-size:12px;color:var(--text-muted);margin-top:16px;text-align:center;">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:-1px;margin-right:3px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                        Use <strong>Edit &amp; Design PPT</strong> to add themes, images and custom layout before exporting.
-                    </p>
-                </div>
-            `;
+                `;
             addMessage('system', html, true);
         }
 
-        // ── PREVIEW MODAL ──────────────────────────────────────────
+        // ── PREVIEW MODAL ────────────────────────────────────────────
         function openPreviewModal() {
             const area = document.getElementById('modalSlideArea');
-            if (!area) return;
+            if (!area) {
+                // If the area doesn't exist (maybe accidentally deleted), we can't show preview
+                // But in our case, modalSlideArea should be in previewModal div
+                return;
+            }
             area.innerHTML = '';
 
+            // Title slide
             const titleSlide = document.createElement('div');
             titleSlide.className = 'modal-slide title-slide';
             titleSlide.innerHTML = `<div class="slide-num">SLIDE 1 — TITLE</div><h3>${state.topic}</h3><p>By ${state.userName.split('\n').map(n => n.trim()).filter(n => n).join(', ')}<br>ppt.yahya.in · A Project by Yahya Mundewadi</p>`;
@@ -1807,14 +1562,30 @@
             document.body.style.overflow = '';
         }
 
-        // ── EDIT PAGE ──────────────────────────────────────────────
+        // Close modal on overlay click
+        document.addEventListener('click', function (e) {
+            const pm = document.getElementById('previewModal');
+            if (pm && e.target === pm) closePreviewModal();
+            const mm = document.getElementById('myPptsModal');
+            if (mm && e.target === mm) closeMyPptsModal();
+        });
+
+        // ── EDIT PAGE ────────────────────────────────────────────────
         function openEditPage() {
-            const editPayload = { topic: state.topic, userName: state.userName, tone: state.tone, points: state.points, content: state.content, timestamp: Date.now() };
+            // Serialize full state to localStorage for edit.html to pick up
+            const editPayload = {
+                topic: state.topic,
+                userName: state.userName,
+                tone: state.tone,
+                points: state.points,
+                content: state.content,
+                timestamp: Date.now()
+            };
             localStorage.setItem('ppt_edit_state', JSON.stringify(editPayload));
             window.open('edit.html', '_blank');
         }
 
-        // ── PDF EXPORT ─────────────────────────────────────────────
+        // ── PDF EXPORT ───────────────────────────────────────────────
         async function exportPDF(type) {
             addMessage('system', `Building ${type.toUpperCase()} PDF. Please wait...`);
             try {
@@ -1836,9 +1607,10 @@
                 const startY = (h / 2) - (titleHeight / 2) - 10;
                 doc.text(titleLines, w / 2, startY, { align: 'center' });
                 doc.setFontSize(14); doc.setFont('Helvetica', 'normal'); doc.setTextColor(180);
-                const pdfNames = state.userName.split('\n').map(n => n.trim()).filter(n => n);
-                const pdfBy = pdfNames.length > 1 ? `By ${pdfNames.join(', ')}` : `By ${pdfNames[0] || 'Unknown'}`;
-                doc.text(pdfBy, w / 2, startY + titleHeight + 10, { align: 'center' });
+                // Format multi-line names
+                const pdfNames2 = state.userName.split('\n').map(n => n.trim()).filter(n => n);
+                const pdfBy2 = pdfNames2.length > 1 ? `By ${pdfNames2.join(', ')}` : `By ${pdfNames2[0] || 'Unknown'}`;
+                doc.text(pdfBy2, w / 2, startY + titleHeight + 10, { align: 'center' });
                 doc.setFontSize(8); doc.setTextColor(120);
                 doc.text('ppt.yahya.in : A Project by Yahya Mundewadi', margins, h - 8);
                 renderFooter(null);
@@ -1857,8 +1629,8 @@
                 });
 
                 doc.save(`${state.topic.replace(/\s+/g, '_')}_${type.toUpperCase()}.pdf`);
-                addMessage('system', `PDF exported successfully.`);
-            } catch (err) { addMessage('system', `Error generating PDF.`); }
+                addMessage('system', `✅ PDF exported successfully.`);
+            } catch (err) { addMessage('system', `❌ Error generating PDF.`); }
         }
 
         async function exportPPTX(type) {
@@ -1871,13 +1643,14 @@
 
                 pptx.defineSlideMaster({ title: 'MASTER_SLIDE', background: { fill: 'FFFFFF' }, objects: [] });
 
-                const pptNames = state.userName.split('\n').map(n => n.trim()).filter(n => n);
-                const pptBy = pptNames.length > 1 ? `By ${pptNames.join(', ')}` : `By ${pptNames[0] || 'Unknown'}`;
+                // Format multi-line names for this export too
+                const pptNL2 = state.userName.split('\n').map(n => n.trim()).filter(n => n);
+                const pptBL2 = pptNL2.length > 1 ? `By ${pptNL2.join(', ')}` : `By ${pptNL2[0] || 'Unknown'}`;
 
                 const slide1 = pptx.addSlide();
                 slide1.background = { fill: '212121' };
                 slide1.addText(state.topic, { x: '5%', y: '30%', w: '90%', h: isMobile ? 2.5 : 2, fontSize: isMobile ? 32 : 54, color: 'FFFFFF', bold: true, align: 'center', valign: 'middle', wrap: true });
-                slide1.addText(pptBy, { x: '5%', y: isMobile ? '58%' : '60%', w: '90%', h: 0.8, fontSize: isMobile ? 16 : 24, color: 'B4B4B4', align: 'center' });
+                slide1.addText(pptBL2, { x: '5%', y: isMobile ? '58%' : '60%', w: '90%', h: 0.8, fontSize: isMobile ? 16 : 24, color: 'B4B4B4', align: 'center' });
                 slide1.addText('ppt.yahya.in : A Project by Yahya Mundewadi', { x: '5%', y: '90%', w: '90%', h: 0.4, fontSize: 9, color: '6B7280', align: 'center' });
 
                 state.points.forEach((title, i) => {
@@ -1887,8 +1660,12 @@
                 });
 
                 await pptx.writeFile({ fileName: `${state.topic.replace(/\s+/g, '_')}_${type.toUpperCase()}.pptx` });
-                addMessage('system', `PPTX generated successfully.`);
-            } catch (err) { addMessage('system', `Error building PPTX file: ${err.message || err}`); }
+                addMessage('system', `✅ PPTX generated successfully.`);
+            } catch (err) { addMessage('system', `❌ Error building PPTX file: ${err.message || err}`); }
+        }
+
+        function openEditDesigner() {
+            openEditPage();
         }
 
         dom.sendBtn.addEventListener('click', async () => {
@@ -1906,26 +1683,10 @@
             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!dom.sendBtn.disabled) dom.sendBtn.click(); }
         });
 
-        // Close modals on overlay click
-        document.addEventListener('click', function (e) {
-            const pm = document.getElementById('previewModal');
-            if (pm && e.target === pm) closePreviewModal();
-            const mm = document.getElementById('myPptsModal');
-            if (mm && e.target === mm) closeMyPptsModal();
-            const prm = document.getElementById('profileModal');
-            if (prm && e.target === prm) closeProfileModal();
-            const am = document.getElementById('authModal');
-            if (am && e.target === am) closeAuthModal();
-        });
-
         function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open'); }
         function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open'); }
 
-        window.onload = () => {
-            initAuth();
-            renderSidebar();
-            startNewChat();
-        };
+        window.onload = () => { renderSidebar(); startNewChat(); };
     </script>
 </body>
 
