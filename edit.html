@@ -3191,7 +3191,9 @@
                         let imgX = 0, imgY = 0, imgW = 5, imgH = 5.625;
                         if (s.layout === 'image-right') imgX = 5;
                         else if (s.layout === 'image-background') imgW = 10;
-                        slide.addImage({ data: s.image, x: imgX, y: imgY, w: imgW, h: imgH, sizing: { type: 'crop', w: imgW, h: imgH } });
+                        
+                        const sizingType = s.layout === 'image-background' ? 'crop' : 'contain';
+                        slide.addImage({ data: s.image, x: imgX, y: imgY, w: imgW, h: imgH, sizing: { type: sizingType, w: imgW, h: imgH } });
                     }
 
                     const textW = hasImgSide ? 4.5 : 9, textX = (hasImgSide && s.layout === 'image-left') ? 5.25 : 0.5;
@@ -3221,11 +3223,6 @@
         let lastProcessedUserId = null;
         async function checkUser() {
             if (!sb) return;
-
-            // Clear stale hash from URL to prevent refresh loops
-            if (window.location.hash && window.location.hash.includes('access_token')) {
-                window.history.replaceState(null, null, window.location.pathname);
-            }
 
             const { data: { session } } = await sb.auth.getSession();
             user = session?.user ?? null;
