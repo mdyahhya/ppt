@@ -18,6 +18,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         * {
@@ -230,6 +231,28 @@
             margin-top: auto;
             padding-top: 12px;
             border-top: 1px solid var(--border-light);
+            min-height: 80px;
+        }
+
+        .auth-prompt-sidebar {
+            padding: 12px;
+            text-align: center;
+        }
+
+        .auth-prompt-sidebar button {
+            width: 100%;
+            padding: 10px;
+            background: var(--text-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .user-profile {
@@ -279,12 +302,126 @@
         }
 
         .user-email {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-primary);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        /* Google Button */
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 14px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .google-btn:hover {
+            background: #f8f8f8;
+            border-color: #ccc;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            transform: translateY(-1px);
+        }
+
+        .google-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Popup Styles */
+        .auth-modal-content {
+            padding: 32px;
+            text-align: center;
+        }
+
+        .auth-modal-content h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .auth-modal-content p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .benefit-tag {
+            background: rgba(16, 163, 127, 0.1);
+            color: var(--accent-green);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .profile-edit-form {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent-green);
+        }
+
+        .save-btn {
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: #DC2626;
+            border: 1px solid #FECACA;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 12px;
         }
 
         /* Main Content */
@@ -1005,59 +1142,74 @@
             My PPTs
         </button>
         <div class="sidebar-section" id="sidebarHistory"></div>
-        <div class="sidebar-footer">
-            <a href="https://yahya.in" target="_blank" style="text-decoration:none;color:inherit;">
-                <div class="user-profile">
-                    <div class="user-avatar">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="16 18 22 12 16 6"></polyline>
-                            <polyline points="8 6 2 12 8 18"></polyline>
-                            <line x1="14" y1="4" x2="10" y2="20"></line>
-                        </svg>
-                    </div>
-                    <div class="user-info">
-                        <span class="user-name">Developer</span>
-                        <span class="user-email">Yahya Mundewadi</span>
-                        <span
-                            style="font-size:11px;color:var(--accent-green);font-weight:600;margin-top:1px;">yahya.in</span>
-                    </div>
+        <div class="sidebar-footer" id="sidebarFooter">
+            <!-- Dynamic User Section -->
+            <div class="auth-prompt-sidebar" id="authPromptSidebar">
+                <button onclick="openAuthModal()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"/></svg>
+                    Sign In
+                </button>
+            </div>
+            <div class="user-profile hidden" id="userProfileSidebar" onclick="openProfileModal()">
+                <div class="user-avatar" id="sidebarUserAvatar">U</div>
+                <div class="user-info">
+                    <span class="user-name" id="sidebarUserName">User Name</span>
+                    <span class="user-email" id="sidebarUserEmail">user@example.com</span>
                 </div>
-            </a>
+            </div>
         </div>
     </div>
 
-    <!-- Preview Modal -->
-    <div class="modal-overlay" id="previewModal">
-        <div class="modal-box">
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-box" style="max-width: 450px;">
             <div class="modal-header">
-                <h3>📋 Slide Preview</h3>
-                <button class="modal-close" onclick="closePreviewModal()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round">
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
+                <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> One-tap Sign In</h3>
+                <button class="modal-close" onclick="closeAuthModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
             </div>
-            <div class="modal-slide-area" id="modalSlideArea"></div>
+            <div class="auth-modal-content">
+                <div class="benefit-tag">✨ Save your PPT history & data</div>
+                <h2>One-click Sign in</h2>
+                <p>Get signed in within 5 seconds to download your presentation and keep your history safe. No data is taken, ensured by official privacy standards.</p>
+                
+                <button class="google-btn" onclick="signInWithGoogle()">
+                    <svg viewBox="0 0 48 48">
+                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24s.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                        <path fill="none" d="M0 0h48v48H0z"></path>
+                    </svg>
+                    Sign in with Google
+                </button>
+                <p style="margin-top: 20px; font-size: 12px; opacity: 0.7;">You can manage your profile from the Side Menu anytime.</p>
+            </div>
         </div>
     </div>
 
-    <!-- My PPTs Modal -->
-    <div class="modal-overlay" id="myPptsModal">
-        <div class="modal-box">
+    <!-- Profile Modal -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-box" style="max-width: 450px;">
             <div class="modal-header">
-                <h3>📂 Studio : Your Generated Presentations</h3>
-                <button class="modal-close" onclick="closeMyPptsModal()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round">
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
+                <h3>👤 User Profile</h3>
+                <button class="modal-close" onclick="closeProfileModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
             </div>
-            <div class="modal-slide-area" id="myPptsArea" style="background:#fff;"></div>
+            <div class="profile-edit-form">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="text" id="profileEmail" disabled style="background: #f5f5f5;">
+                </div>
+                <div class="form-group">
+                    <label>Display Name</label>
+                    <input type="text" id="profileName" placeholder="Enter your name">
+                </div>
+                <button class="save-btn" onclick="updateUserProfile()">Save Changes</button>
+                <button class="logout-btn" onclick="signOut()">Sign Out</button>
+            </div>
         </div>
     </div>
 
@@ -1129,6 +1281,13 @@
         const API_URL = '/.netlify/functions/ppt-chat';
         const botIconSVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`;
         const userIconSVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+
+        // Supabase Configuration
+        const SB_URL = "https://nghfugykhrpxxlxkiyji.supabase.co";
+        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5naGZ1Z3lraHJweHhseGtpeWppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTk2MzQsImV4cCI6MjA5MTQ3NTYzNH0.EgFu1Uj6EyE6scGJMYM1sN0DRUO9H-IexaG7XLnfGKc";
+        let sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY) : null;
+
+        let user = null;
 
         let currentChatId = null;
         let chatHistoryDb = JSON.parse(localStorage.getItem('ppt_chats') || '[]');
@@ -1585,8 +1744,111 @@
             window.open('edit.html', '_blank');
         }
 
-        // ── PDF EXPORT ───────────────────────────────────────────────
+        // ── AUTH LOGIC ────────────────────────────────────────────────
+        async function checkUser() {
+            if (!sb) sb = window.supabase.createClient(SB_URL, SB_KEY);
+            const { data: { session } } = await sb.auth.getSession();
+            user = session ? session.user : null;
+            updateUIForAuth();
+        }
+
+        function updateUIForAuth() {
+            const authPrompt = document.getElementById('authPromptSidebar');
+            const userProfile = document.getElementById('userProfileSidebar');
+            
+            if (user) {
+                authPrompt.classList.add('hidden');
+                userProfile.classList.remove('hidden');
+                
+                const meta = user.user_metadata;
+                document.getElementById('sidebarUserName').innerText = meta.full_name || user.email.split('@')[0];
+                document.getElementById('sidebarUserEmail').innerText = user.email;
+                
+                if (meta.avatar_url) {
+                    document.getElementById('sidebarUserAvatar').innerHTML = `<img src="${meta.avatar_url}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+                } else {
+                    document.getElementById('sidebarUserAvatar').innerText = (meta.full_name || user.email)[0].toUpperCase();
+                }
+                
+                // Pre-fill profile modal
+                document.getElementById('profileEmail').value = user.email;
+                document.getElementById('profileName').value = meta.full_name || '';
+            } else {
+                authPrompt.classList.remove('hidden');
+                userProfile.classList.add('hidden');
+            }
+        }
+
+        async function signInWithGoogle() {
+            const { error } = await sb.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.href
+                }
+            });
+            if (error) alert("Error signing in: " + error.message);
+        }
+
+        async function signOut() {
+            await sb.auth.signOut();
+            window.location.reload();
+        }
+
+        async function updateUserProfile() {
+            const newName = document.getElementById('profileName').value.trim();
+            if (!newName) return;
+            
+            const { error } = await sb.auth.updateUser({
+                data: { full_name: newName }
+            });
+            
+            if (error) {
+                alert("Error updating profile: " + error.message);
+            } else {
+                // Update in our public.profiles table too if needed (though trigger handles it usually)
+                await sb.from('profiles').update({ display_name: newName }).eq('id', user.id);
+                alert("Profile updated!");
+                checkUser();
+                closeProfileModal();
+            }
+        }
+
+        async function logPPTActivity(type) {
+            if (!user) return;
+            await sb.from('ppt_logs').insert([{
+                user_id: user.id,
+                email: user.email,
+                topic: state.topic,
+                slide_count: state.points.length + 1,
+                tone: state.tone,
+                export_type: type
+            }]);
+        }
+
+        function openAuthModal() { 
+            document.getElementById('authModal').classList.add('open'); 
+            document.body.style.overflow = 'hidden';
+        }
+        function closeAuthModal() { 
+            document.getElementById('authModal').classList.remove('open'); 
+            document.body.style.overflow = '';
+        }
+        function openProfileModal() { 
+            document.getElementById('profileModal').classList.add('open'); 
+            document.body.style.overflow = 'hidden';
+        }
+        function closeProfileModal() { 
+            document.getElementById('profileModal').classList.remove('open'); 
+            document.body.style.overflow = '';
+        }
+
+        // ── PDF EXPORT (Updated) ───────────────────────────────────────────────
         async function exportPDF(type) {
+            if (!user) {
+                openAuthModal();
+                return;
+            }
+            logPPTActivity('pdf');
             addMessage('system', `Building ${type.toUpperCase()} PDF. Please wait...`);
             try {
                 const { jsPDF } = window.jspdf;
@@ -1634,6 +1896,11 @@
         }
 
         async function exportPPTX(type) {
+            if (!user) {
+                openAuthModal();
+                return;
+            }
+            logPPTActivity('pptx');
             addMessage('system', `Generating editable ${type.toUpperCase()} PPTX...`);
             try {
                 const pptx = new PptxGenJS();
@@ -1686,7 +1953,11 @@
         function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open'); }
         function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open'); }
 
-        window.onload = () => { renderSidebar(); startNewChat(); };
+        window.onload = () => { 
+            checkUser();
+            renderSidebar(); 
+            startNewChat(); 
+        };
     </script>
 </body>
 
