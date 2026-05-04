@@ -3231,22 +3231,24 @@
         }
 
         async function updateUIForAuth() {
+            const currentUser = user; // Capture state to avoid race conditions during await
             const loginBtn = document.getElementById('topbarLoginWrap');
             const profileBtn = document.getElementById('topbarProfileWrap');
-            if (user) {
+            
+            if (currentUser) {
                 if (loginBtn) loginBtn.style.display = 'none';
                 if (profileBtn) profileBtn.style.display = 'block';
 
                 try {
-                    const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
-                    const displayName = profile?.display_name || user.user_metadata?.full_name || user.email.split('@')[0];
+                    const { data: profile } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+                    const displayName = profile?.display_name || currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
 
                     const nameEl = document.getElementById('userNameDisplay');
                     const emailEl = document.getElementById('userEmailDisplay');
                     const avatarEl = document.getElementById('userAvatar');
                     
                     if (nameEl) nameEl.textContent = displayName;
-                    if (emailEl) emailEl.textContent = user.email;
+                    if (emailEl) emailEl.textContent = currentUser.email;
                     if (avatarEl) avatarEl.textContent = displayName.charAt(0).toUpperCase();
 
                     const mNameEl = document.getElementById('modalUserName');
@@ -3255,10 +3257,15 @@
                     const eNameEl = document.getElementById('editDisplayName');
 
                     if (mNameEl) mNameEl.textContent = displayName;
-                    if (mEmailEl) mEmailEl.textContent = user.email;
+                    if (mEmailEl) mEmailEl.textContent = currentUser.email;
                     if (mAvatarEl) mAvatarEl.textContent = displayName.charAt(0).toUpperCase();
                     if (eNameEl) eNameEl.value = displayName;
-                } catch (e) { console.error("Profile fetch error:", e); }
+                } catch (e) { 
+                    console.error("Profile fetch error:", e); 
+                    // Fallback UI if profile fetch fails
+                    const nameEl = document.getElementById('userNameDisplay');
+                    if (nameEl && !nameEl.textContent) nameEl.textContent = currentUser.email.split('@')[0];
+                }
             } else {
                 if (loginBtn) loginBtn.style.display = 'block';
                 if (profileBtn) profileBtn.style.display = 'none';
