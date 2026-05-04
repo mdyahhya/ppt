@@ -1208,6 +1208,24 @@
         </div>
     </div>
 
+    <!-- My PPTs Modal -->
+    <div class="modal-overlay" id="myPptsModal">
+        <div class="modal-box" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>📂 My Presentations</h3>
+                <button class="modal-close" onclick="document.getElementById('myPptsModal').classList.remove('open'); setTimeout(() => { document.getElementById('myPptsModal').style.display = 'none'; }, 300);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+            <div id="myPptsArea" style="max-height: 70vh; overflow-y: auto; padding: 20px;">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </div>
+
     <!-- Profile Modal -->
     <div class="modal-overlay" id="profileModal">
         <div class="modal-box" style="max-width: 450px;">
@@ -1254,7 +1272,7 @@
                             style="font-size:13px;font-weight:500;color:var(--accent-green);background:rgba(16,163,127,0.1);padding:2px 8px;border-radius:12px;margin-left:8px;">v2.0</span>
                     </div>
                 </div>
-                <button onclick="openMyPPTs()" class="my-ppts-btn-top">
+                <button onclick="location.href='edit.html'" class="my-ppts-btn-top">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="3" y="3" width="18" height="18" rx="2" />
                         <path d="M7 8h10M7 12h10M7 16h10" />
@@ -1417,6 +1435,10 @@
         }
 
         function openMyPPTs() {
+            const modal = document.getElementById('myPptsModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('open'), 10);
+
             const area = document.getElementById('myPptsArea');
             area.innerHTML = '';
             const ppts = chatHistoryDb.filter(c => c.state && c.state.points && c.state.points.length > 0);
