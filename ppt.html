@@ -1767,46 +1767,60 @@
         }
 
         // ── AUTH LOGIC ────────────────────────────────────────────────
+        let lastProcessedUserId = null;
         async function checkUser() {
             if (!sb) sb = window.supabase.createClient(SB_URL, SB_KEY);
+            
+            if (window.location.hash && window.location.hash.includes('access_token')) {
+                window.history.replaceState(null, null, window.location.pathname);
+            }
 
-            // Listen for changes
             sb.auth.onAuthStateChange((event, session) => {
-                console.log("Auth event:", event);
                 user = session ? session.user : null;
                 updateUIForAuth();
             });
 
-            // Initial check
             const { data: { session } } = await sb.auth.getSession();
             user = session ? session.user : null;
             updateUIForAuth();
         }
 
         function updateUIForAuth() {
+            if (user && lastProcessedUserId === user.id) return;
+            if (user) lastProcessedUserId = user.id;
+            else lastProcessedUserId = null;
+
             const authPrompt = document.getElementById('authPromptSidebar');
             const userProfile = document.getElementById('userProfileSidebar');
 
             if (user) {
-                authPrompt.classList.add('hidden');
-                userProfile.classList.remove('hidden');
+                if (authPrompt) authPrompt.classList.add('hidden');
+                if (userProfile) userProfile.classList.remove('hidden');
 
-                const meta = user.user_metadata;
-                document.getElementById('sidebarUserName').innerText = meta.full_name || user.email.split('@')[0];
-                document.getElementById('sidebarUserEmail').innerText = user.email;
+                const meta = user.user_metadata || {};
+                const nameEl = document.getElementById('sidebarUserName');
+                const emailEl = document.getElementById('sidebarUserEmail');
+                const avatarEl = document.getElementById('sidebarUserAvatar');
 
-                if (meta.avatar_url) {
-                    document.getElementById('sidebarUserAvatar').innerHTML = `<img src="${meta.avatar_url}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-                } else {
-                    document.getElementById('sidebarUserAvatar').innerText = (meta.full_name || user.email)[0].toUpperCase();
+                if (nameEl) nameEl.innerText = meta.full_name || user.email.split('@')[0];
+                if (emailEl) emailEl.innerText = user.email;
+
+                if (avatarEl) {
+                    if (meta.avatar_url) {
+                        avatarEl.innerHTML = `<img src="${meta.avatar_url}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+                    } else {
+                        avatarEl.innerText = (meta.full_name || user.email)[0].toUpperCase();
+                    }
                 }
 
                 // Pre-fill profile modal
-                document.getElementById('profileEmail').value = user.email;
-                document.getElementById('profileName').value = meta.full_name || '';
+                const pEmail = document.getElementById('profileEmail');
+                const pName = document.getElementById('profileName');
+                if (pEmail) pEmail.value = user.email;
+                if (pName) pName.value = meta.full_name || '';
             } else {
-                authPrompt.classList.remove('hidden');
-                userProfile.classList.add('hidden');
+                if (authPrompt) authPrompt.classList.remove('hidden');
+                if (userProfile) userProfile.classList.add('hidden');
             }
         }
 
