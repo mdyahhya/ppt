@@ -1771,10 +1771,6 @@
         async function checkUser() {
             if (!sb) sb = window.supabase.createClient(SB_URL, SB_KEY);
             
-            if (window.location.hash && window.location.hash.includes('access_token')) {
-                window.history.replaceState(null, null, window.location.pathname);
-            }
-
             sb.auth.onAuthStateChange((event, session) => {
                 user = session ? session.user : null;
                 updateUIForAuth();
