@@ -2405,11 +2405,6 @@
 
         let lastProcessedUserId = null;
         async function checkUser() {
-            // Clear stale hash from URL to prevent refresh loops
-            if (window.location.hash && window.location.hash.includes('access_token')) {
-                window.history.replaceState(null, null, window.location.pathname);
-            }
-
             const { data: { session } } = await _supabase.auth.getSession();
             user = session?.user ?? null;
             updateUIForAuth();
