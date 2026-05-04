@@ -14,6 +14,7 @@
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         *,
         *::before,
@@ -182,6 +183,91 @@
             fill: none;
             stroke: currentColor;
             stroke-width: 2;
+        }
+
+        /* Profile Button */
+        .user-profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 8px;
+        }
+        .user-profile-btn:hover {
+            border-color: var(--accent);
+            background: var(--surface);
+        }
+        .user-profile-btn .avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .user-profile-btn .info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            line-height: 1.1;
+        }
+        .user-profile-btn .name {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .user-profile-btn .email {
+            font-size: 9px;
+            color: var(--text3);
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+        .modal-box {
+            background: var(--surface);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            position: relative;
+        }
+        .modal-header {
+            padding: 24px 24px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-close {
+            background: none; border: none; cursor: pointer; color: var(--text3);
+        }
+        .modal-body {
+            padding: 0 24px 24px;
+        }
+        .modal-footer {
+            padding: 16px 24px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
         }
 
         /* ── MAIN LAYOUT ─────────────────────────────────────────── */
@@ -1374,6 +1460,18 @@
             </div>
         </div>
         <div class="export-group">
+            <div id="topbarProfileWrap" style="display: none;">
+                <div class="user-profile-btn" onclick="openProfileModal()">
+                    <div class="avatar" id="userAvatar">?</div>
+                    <div class="info">
+                        <div class="name" id="userNameDisplay">Guest</div>
+                        <div class="email" id="userEmailDisplay">Sign In</div>
+                    </div>
+                </div>
+            </div>
+            <div id="topbarLoginWrap">
+                <button class="exp-btn" onclick="openAuthModal()" style="background: transparent; border-color: var(--border); color: var(--text2);">Sign In</button>
+            </div>
             <button class="exp-btn pptx" onclick="exportPPTX('pc')">
                 <svg viewBox="0 0 24 24">
                     <rect x="2" y="3" width="20" height="14" rx="2" />
@@ -2901,6 +2999,11 @@
 
         // ── PDF EXPORT ───────────────────────────────────────────────────
         async function exportPDF() {
+            if (!user) {
+                openAuthModal();
+                return;
+            }
+            logPPTActivity('pdf');
             flushCurrentEdits();
             showToast('Building PDF...');
             try {
@@ -2972,6 +3075,11 @@
         }
 
         async function exportPPTX() {
+            if (!user) {
+                openAuthModal();
+                return;
+            }
+            logPPTActivity('pptx');
             flushCurrentEdits();
             showToast('Building PPTX...');
             try {
@@ -3012,6 +3120,99 @@
                 showToast('PPTX downloaded ✓');
             } catch (err) { console.error(err); showToast('PPTX error'); }
         }
+
+        // ── SUPABASE AUTH ────────────────────────────────────────────────
+        const SB_URL = "https://nghfugykhrpxxlxkiyji.supabase.co";
+        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5naGZ1Z3lraHJweHhseGtpeWppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTk2MzQsImV4cCI6MjA5MTQ3NTYzNH0.EgFu1Uj6EyE6scGJMYM1sN0DRUO9H-IexaG7XLnfGKc";
+        let sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY) : null;
+        let user = null;
+
+        async function checkUser() {
+            if (!sb) return;
+            const { data: { session } } = await sb.auth.getSession();
+            user = session?.user ?? null;
+            updateUIForAuth();
+
+            sb.auth.onAuthStateChange((_event, session) => {
+                user = session?.user ?? null;
+                updateUIForAuth();
+            });
+        }
+
+        async function updateUIForAuth() {
+            const loginBtn = document.getElementById('topbarLoginWrap');
+            const profileBtn = document.getElementById('topbarProfileWrap');
+            if (user) {
+                if (loginBtn) loginBtn.style.display = 'none';
+                if (profileBtn) profileBtn.style.display = 'block';
+
+                const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
+                const displayName = profile?.display_name || user.user_metadata?.full_name || user.email.split('@')[0];
+                
+                document.getElementById('userNameDisplay').textContent = displayName;
+                document.getElementById('userEmailDisplay').textContent = user.email;
+                document.getElementById('userAvatar').textContent = displayName.charAt(0).toUpperCase();
+
+                document.getElementById('modalUserName').textContent = displayName;
+                document.getElementById('modalUserEmail').textContent = user.email;
+                document.getElementById('modalUserAvatar').textContent = displayName.charAt(0).toUpperCase();
+                document.getElementById('editDisplayName').value = displayName;
+            } else {
+                if (loginBtn) loginBtn.style.display = 'block';
+                if (profileBtn) profileBtn.style.display = 'none';
+            }
+        }
+
+        function openAuthModal() { document.getElementById('authModal').style.display = 'flex'; }
+        function closeAuthModal() { document.getElementById('authModal').style.display = 'none'; }
+        function openProfileModal() { document.getElementById('profileModal').style.display = 'flex'; }
+        function closeProfileModal() { document.getElementById('profileModal').style.display = 'none'; }
+
+        async function signInWithGoogle() {
+            const { error } = await sb.auth.signInWithOAuth({
+                provider: 'google',
+                options: { redirectTo: window.location.origin + '/edit.html' }
+            });
+            if (error) alert(error.message);
+        }
+
+        async function signOut() {
+            await sb.auth.signOut();
+            closeProfileModal();
+            location.reload();
+        }
+
+        async function updateUserProfile() {
+            const newName = document.getElementById('editDisplayName').value;
+            if (!newName) return;
+            const { error } = await sb.from('profiles').update({ display_name: newName }).eq('id', user.id);
+            if (error) alert(error.message);
+            else {
+                showToast('Profile updated ✓');
+                updateUIForAuth();
+                closeProfileModal();
+            }
+        }
+
+        async function logPPTActivity(type) {
+            if (!user) return;
+            try {
+                await sb.from('ppt_logs').insert([{
+                    user_id: user.id,
+                    topic: pptData.topic || 'Unknown Studio PPT',
+                    export_type: type,
+                    slide_count: slideStates.length,
+                    meta: { source: 'studio' }
+                }]);
+            } catch (e) { console.error(e); }
+        }
+
+        // Add checkUser to initialization
+        const originalOnload = window.onload;
+        window.onload = function() {
+            if (originalOnload) originalOnload();
+            checkUser();
+        };
     </script>
 
     <!-- CROP MODAL -->
