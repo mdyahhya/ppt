@@ -3239,14 +3239,14 @@
 
         async function updateUIForAuth() {
             const currentUser = user; // Capture state to avoid race conditions during await
-            
+            const loginBtn = document.getElementById('topbarLoginWrap');
+            const profileBtn = document.getElementById('topbarProfileWrap');
+
             if (currentUser) {
                 // Only fetch if it's a new user session to save API calls
                 if (lastProcessedUserId === currentUser.id) return;
                 lastProcessedUserId = currentUser.id;
 
-                const loginBtn = document.getElementById('topbarLoginWrap');
-                const profileBtn = document.getElementById('topbarProfileWrap');
                 if (loginBtn) loginBtn.style.display = 'none';
                 if (profileBtn) profileBtn.style.display = 'block';
 
