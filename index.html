@@ -2415,20 +2415,28 @@
         }
 
         async function updateUIForAuth() {
-            if (user) {
+            const currentUser = user; // Capture state to avoid race conditions
+            if (currentUser) {
                 // Fetch profile
-                const { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
-                const displayName = profile?.display_name || user.user_metadata?.full_name || user.email.split('@')[0];
-
-                document.getElementById('taskbarProfileLabel').textContent = displayName.split(' ')[0]; // Show first name
+                const { data: profile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+                const displayName = profile?.display_name || currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
+                
+                const taskbarLabel = document.getElementById('taskbarProfileLabel');
+                if (taskbarLabel) taskbarLabel.textContent = displayName.split(' ')[0]; // Show first name
 
                 // Modal
-                document.getElementById('modalUserName').textContent = displayName;
-                document.getElementById('modalUserEmail').textContent = user.email;
-                document.getElementById('modalUserAvatar').textContent = displayName.charAt(0).toUpperCase();
-                document.getElementById('editDisplayName').value = displayName;
+                const mName = document.getElementById('modalUserName');
+                const mEmail = document.getElementById('modalUserEmail');
+                const mAvatar = document.getElementById('modalUserAvatar');
+                const eName = document.getElementById('editDisplayName');
+
+                if (mName) mName.textContent = displayName;
+                if (mEmail) mEmail.textContent = currentUser.email;
+                if (mAvatar) mAvatar.textContent = displayName.charAt(0).toUpperCase();
+                if (eName) eName.value = displayName;
             } else {
-                document.getElementById('taskbarProfileLabel').textContent = 'Profile';
+                const taskbarLabel = document.getElementById('taskbarProfileLabel');
+                if (taskbarLabel) taskbarLabel.textContent = 'Profile';
             }
         }
 
