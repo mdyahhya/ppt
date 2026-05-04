@@ -2403,20 +2403,32 @@
             animateAllCounters(); // Start hero animations immediately
         };
 
+        let lastProcessedUserId = null;
         async function checkUser() {
+            // Clear stale hash from URL to prevent refresh loops
+            if (window.location.hash && window.location.hash.includes('access_token')) {
+                window.history.replaceState(null, null, window.location.pathname);
+            }
+
             const { data: { session } } = await _supabase.auth.getSession();
             user = session?.user ?? null;
             updateUIForAuth();
 
-            _supabase.auth.onAuthStateChange((_event, session) => {
+            _supabase.auth.onAuthStateChange((event, session) => {
+                console.log("Auth Event:", event);
                 user = session?.user ?? null;
                 updateUIForAuth();
             });
         }
 
         async function updateUIForAuth() {
-            const currentUser = user; // Capture state to avoid race conditions
+            const currentUser = user;
+            
             if (currentUser) {
+                // Only fetch if it's a new user session to save API calls
+                if (lastProcessedUserId === currentUser.id) return;
+                lastProcessedUserId = currentUser.id;
+
                 // Fetch profile
                 const { data: profile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single();
                 const displayName = profile?.display_name || currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
