@@ -198,10 +198,12 @@
             transition: all 0.2s;
             margin-right: 8px;
         }
+
         .user-profile-btn:hover {
             border-color: var(--accent);
             background: var(--surface);
         }
+
         .user-profile-btn .avatar {
             width: 24px;
             height: 24px;
@@ -214,17 +216,20 @@
             font-size: 11px;
             font-weight: 700;
         }
+
         .user-profile-btn .info {
             display: flex;
             flex-direction: column;
             text-align: left;
             line-height: 1.1;
         }
+
         .user-profile-btn .name {
             font-size: 11px;
             font-weight: 700;
             color: var(--text);
         }
+
         .user-profile-btn .email {
             font-size: 9px;
             color: var(--text3);
@@ -242,6 +247,7 @@
             z-index: 10000;
             padding: 20px;
         }
+
         .modal-box {
             background: var(--surface);
             border-radius: 20px;
@@ -251,18 +257,25 @@
             overflow: hidden;
             position: relative;
         }
+
         .modal-header {
             padding: 24px 24px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+
         .modal-close {
-            background: none; border: none; cursor: pointer; color: var(--text3);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text3);
         }
+
         .modal-body {
             padding: 0 24px 24px;
         }
+
         .modal-footer {
             padding: 16px 24px 24px;
             border-top: 1px solid var(--border);
@@ -458,8 +471,10 @@
         .slide-text-zone {
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* Changed from center to top-align */
-            padding: 5px 40px; /* Reduced vertical padding */
+            justify-content: flex-start;
+            /* Changed from center to top-align */
+            padding: 5px 40px;
+            /* Reduced vertical padding */
             overflow: hidden;
             z-index: 2;
         }
@@ -513,7 +528,8 @@
         .slide-heading {
             font-weight: 800;
             line-height: 1.1;
-            margin: 0 0 4px 0; /* Small bottom gap before body text */
+            margin: 0 0 4px 0;
+            /* Small bottom gap before body text */
             outline: none;
             border: none;
             background: transparent;
@@ -532,7 +548,8 @@
 
         .slide-body {
             outline: none;
-            margin: 0; /* Forced zero margin */
+            margin: 0;
+            /* Forced zero margin */
             border: none;
             background: transparent;
             width: 100%;
@@ -1199,8 +1216,13 @@
         }
 
         @keyframes fadeInOverlay {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .sheet-overlay.open {
@@ -1286,7 +1308,7 @@
             top: 50%;
             transform: translateY(-50%);
             z-index: 10;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             border: 1px solid var(--border);
             color: var(--text);
             width: 36px;
@@ -1298,8 +1320,13 @@
             font-size: 18px;
         }
 
-        .mobile-slide-nav.prev { left: 6px; }
-        .mobile-slide-nav.next { right: 6px; }
+        .mobile-slide-nav.prev {
+            left: 6px;
+        }
+
+        .mobile-slide-nav.next {
+            right: 6px;
+        }
 
         /* ═══════════════════════════════════════════════════════════ */
         /* ── MOBILE RESPONSIVE ───────────────────────────────────── */
@@ -1316,6 +1343,7 @@
         }
 
         @media (max-width: 768px) {
+
             /* Hide desktop panels */
             .thumbs-panel {
                 display: none !important;
@@ -1453,7 +1481,9 @@
         </div>
         <div class="ppt-select-wrap">
             <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1px; white-space:nowrap;">My PPTs:</span>
+                <span
+                    style="font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1px; white-space:nowrap;">My
+                    PPTs:</span>
                 <select id="pptStudioSelector" class="ppt-studio-select" onchange="handlePptSwitch(this.value)">
                     <option value="">Select a Presentation...</option>
                 </select>
@@ -1470,7 +1500,8 @@
                 </div>
             </div>
             <div id="topbarLoginWrap">
-                <button class="exp-btn" onclick="openAuthModal()" style="background: transparent; border-color: var(--border); color: var(--text2);">Sign In</button>
+                <button class="exp-btn" onclick="openAuthModal()"
+                    style="background: transparent; border-color: var(--border); color: var(--text2);">Sign In</button>
             </div>
             <button class="exp-btn pptx" onclick="exportPPTX('pc')">
                 <svg viewBox="0 0 24 24">
@@ -1494,13 +1525,26 @@
     <div class="editor-body" id="editorBody">
 
         <!-- NO DATA STATE -->
-        <div class="no-data" id="noDataState" style="background:var(--bg); flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px; z-index:1000;">
-            <div style="width:80px; height:80px; background:rgba(16,163,127,0.1); border-radius:30px; display:flex; align-items:center; justify-content:center; margin-bottom:24px; color:var(--accent);">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        <div class="no-data" id="noDataState"
+            style="background:var(--bg); flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px; z-index:1000;">
+            <div
+                style="width:80px; height:80px; background:rgba(16,163,127,0.1); border-radius:30px; display:flex; align-items:center; justify-content:center; margin-bottom:24px; color:var(--accent);">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                    <line x1="12" y1="22.08" x2="12" y2="12" />
+                </svg>
             </div>
-            <h2 style="font-family:var(--font-display); font-size:clamp(24px, 4vw, 32px); font-weight:800; color:var(--text); margin-bottom:12px;">Design Your Presentation</h2>
-            <p style="font-size:16px; color:var(--text3); line-height:1.6; max-width:400px; margin-bottom:32px;">Please create a PPT via the AI Chat first to start editing here. Your designs will appear automatically.</p>
-            <a href="ppt.html" style="background:var(--accent); color:white; padding:16px 32px; border-radius:12px; font-weight:700; text-decoration:none; box-shadow:0 10px 20px rgba(16,163,127,0.25); transition:all 0.2s;">Make PPT to Edit</a>
+            <h2
+                style="font-family:var(--font-display); font-size:clamp(24px, 4vw, 32px); font-weight:800; color:var(--text); margin-bottom:12px;">
+                Design Your Presentation</h2>
+            <p style="font-size:16px; color:var(--text3); line-height:1.6; max-width:400px; margin-bottom:32px;">Please
+                create a PPT via the AI Chat first to start editing here. Your designs will appear automatically.</p>
+            <a href="ppt.html"
+                style="background:var(--accent); color:white; padding:16px 32px; border-radius:12px; font-weight:700; text-decoration:none; box-shadow:0 10px 20px rgba(16,163,127,0.25); transition:all 0.2s;">Make
+                PPT to Edit</a>
         </div>
 
         <!-- SLIDE THUMBNAILS PANEL (Desktop) -->
@@ -1685,9 +1729,18 @@
                             <span>JPG, PNG, GIF · Any size</span>
                         </div>
                         <div id="imgPreviewZone" class="img-preview-wrap hidden">
-                            <img id="imgPreviewEl" src="" alt="Slide image" style="width:100%;height:140px;object-fit:cover;border-radius:8px;">
-                            <button onclick="openCropModal()" class="img-remove-btn" style="position:absolute;top:8px;left:8px;background:var(--accent);display:flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:1;margin-bottom:0;"><path d="M6.13 1L6 16a2 2 0 0 0 2 2h15"/><path d="M1 6.13L16 6a2 2 0 0 1 2 2v15"/></svg> Crop</button>
-                            <button onclick="removeSlideImage()" class="img-remove-btn" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.6);">✕ Remove</button>
+                            <img id="imgPreviewEl" src="" alt="Slide image"
+                                style="width:100%;height:140px;object-fit:cover;border-radius:8px;">
+                            <button onclick="openCropModal()" class="img-remove-btn"
+                                style="position:absolute;top:8px;left:8px;background:var(--accent);display:flex;align-items:center;gap:4px;"><svg
+                                    width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" style="opacity:1;margin-bottom:0;">
+                                    <path d="M6.13 1L6 16a2 2 0 0 0 2 2h15" />
+                                    <path d="M1 6.13L16 6a2 2 0 0 1 2 2v15" />
+                                </svg> Crop</button>
+                            <button onclick="removeSlideImage()" class="img-remove-btn"
+                                style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.6);">✕
+                                Remove</button>
                         </div>
                     </div>
                     <hr class="sep">
@@ -1696,22 +1749,36 @@
                         <div class="layout-grid" id="layoutGridImage">
                             <button class="layout-btn active" data-layout="text-only"
                                 onclick="applyLayout('text-only', this)">
-                                <svg viewBox="0 0 28 20"><rect x="2" y="2" width="24" height="16" rx="2" /><line x1="6" y1="7" x2="22" y2="7" /><line x1="6" y1="10" x2="22" y2="10" /><line x1="6" y1="13" x2="18" y2="13" /></svg>
+                                <svg viewBox="0 0 28 20">
+                                    <rect x="2" y="2" width="24" height="16" rx="2" />
+                                    <line x1="6" y1="7" x2="22" y2="7" />
+                                    <line x1="6" y1="10" x2="22" y2="10" />
+                                    <line x1="6" y1="13" x2="18" y2="13" />
+                                </svg>
                                 Text Only
                             </button>
                             <button class="layout-btn" data-layout="image-background"
                                 onclick="applyLayout('image-background', this)">
-                                <svg viewBox="0 0 28 20"><rect x="2" y="2" width="24" height="16" rx="2" fill="currentColor" opacity="0.3" /><line x1="6" y1="10" x2="22" y2="10" /></svg>
+                                <svg viewBox="0 0 28 20">
+                                    <rect x="2" y="2" width="24" height="16" rx="2" fill="currentColor" opacity="0.3" />
+                                    <line x1="6" y1="10" x2="22" y2="10" />
+                                </svg>
                                 Image Background
                             </button>
                             <button class="layout-btn" data-layout="image-right"
                                 onclick="applyLayout('image-right', this)">
-                                <svg viewBox="0 0 28 20"><rect x="2" y="2" width="14" height="16" rx="1" /><rect x="18" y="2" width="8" height="16" rx="1" fill="currentColor" opacity="0.3" /></svg>
+                                <svg viewBox="0 0 28 20">
+                                    <rect x="2" y="2" width="14" height="16" rx="1" />
+                                    <rect x="18" y="2" width="8" height="16" rx="1" fill="currentColor" opacity="0.3" />
+                                </svg>
                                 Image Right
                             </button>
                             <button class="layout-btn" data-layout="image-left"
                                 onclick="applyLayout('image-left', this)">
-                                <svg viewBox="0 0 28 20"><rect x="2" y="2" width="8" height="16" rx="1" fill="currentColor" opacity="0.3" /><rect x="12" y="2" width="14" height="16" rx="1" /></svg>
+                                <svg viewBox="0 0 28 20">
+                                    <rect x="2" y="2" width="8" height="16" rx="1" fill="currentColor" opacity="0.3" />
+                                    <rect x="12" y="2" width="14" height="16" rx="1" />
+                                </svg>
                                 Image Left
                             </button>
                         </div>
@@ -1725,13 +1792,17 @@
 
                         <div class="tool-section-label" style="margin-top:16px;">Crop & Zoom</div>
                         <div style="margin-top:10px;">
-                            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:4px;">
+                            <div
+                                style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:4px;">
                                 <span>Zoom / Crop Level</span>
                                 <span id="valZoom">100%</span>
                             </div>
-                            <input type="range" min="100" max="300" value="100" style="width:100%;accent-color:var(--accent);" oninput="setImgZoom(this.value)">
+                            <input type="range" min="100" max="300" value="100"
+                                style="width:100%;accent-color:var(--accent);" oninput="setImgZoom(this.value)">
                         </div>
-                        <button onclick="resetImgCrop()" style="width:100%;margin-top:12px;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;">Reset Crop</button>
+                        <button onclick="resetImgCrop()"
+                            style="width:100%;margin-top:12px;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;">Reset
+                            Crop</button>
                     </div>
                     <hr class="sep">
                     <div class="tool-section">
@@ -1797,23 +1868,43 @@
     <div class="mobile-bottom-nav" id="mobileBottomNav">
         <div class="mobile-nav-inner">
             <button class="mob-nav-btn" onclick="openMobileSheet('slides')">
-                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/><line x1="10" y1="3" x2="10" y2="21"/></svg>
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="3" width="20" height="18" rx="2" />
+                    <line x1="2" y1="9" x2="22" y2="9" />
+                    <line x1="10" y1="3" x2="10" y2="21" />
+                </svg>
                 Slides
             </button>
             <button class="mob-nav-btn" onclick="openMobileSheet('design')">
-                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
                 Design
             </button>
             <button class="mob-nav-btn" onclick="openMobileSheet('text')">
-                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="4 7 4 4 20 4 20 7" />
+                    <line x1="9" y1="20" x2="15" y2="20" />
+                    <line x1="12" y1="4" x2="12" y2="20" />
+                </svg>
                 Text
             </button>
             <button class="mob-nav-btn" onclick="openMobileSheet('image')">
-                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <polyline points="21 15 16 10 5 21" />
+                </svg>
                 Image
             </button>
             <button class="mob-nav-btn" onclick="openMobileSheet('export')">
-                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
                 Export
             </button>
         </div>
@@ -1918,48 +2009,48 @@
                     content: item.state.content,
                     userName: item.state.userName || 'User'
                 };
-                
+
                 // Save this as the active "edit state" so refresh works
                 localStorage.setItem('ppt_edit_state', JSON.stringify(pptData));
-                
+
                 // CRITICAL FIX: Reset currentSlideIdx to -1 to prevent selectSlide 
                 // from saving the OLD slide's DOM text into the NEW slide state.
-                currentSlideIdx = -1; 
-                
+                currentSlideIdx = -1;
+
                 slideStates = [];
-                
+
                 // Rebuild slide states from scratch
                 const totalSlides = pptData.points.length + 1;
                 for (let i = 0; i < totalSlides; i++) {
                     if (i === 0) {
                         // Ensure heading is the NEW topic
-                        slideStates.push({ 
-                            heading: pptData.topic || "Presentation Title", 
-                            body: `By ${pptData.userName || 'User'}`, 
-                            theme: 'charcoal', 
-                            layout: 'text-only', 
-                            image: null, 
-                            headSize: 40, 
-                            bodySize: 18, 
-                            align: 'center', 
-                            imgFit: 'contain', 
-                            imgPosX: 50, 
-                            imgPosY: 50 
+                        slideStates.push({
+                            heading: pptData.topic || "Presentation Title",
+                            body: `By ${pptData.userName || 'User'}`,
+                            theme: 'charcoal',
+                            layout: 'text-only',
+                            image: null,
+                            headSize: 40,
+                            bodySize: 18,
+                            align: 'center',
+                            imgFit: 'contain',
+                            imgPosX: 50,
+                            imgPosY: 50
                         });
                     } else {
                         const idx = i - 1;
-                        slideStates.push({ 
-                            heading: pptData.points[idx] || "Slide Title", 
-                            body: (pptData.content[idx] || '').replace(/\*/g, ''), 
-                            theme: 'white', 
-                            layout: 'text-only', 
-                            image: null, 
-                            headSize: 32, 
-                            bodySize: 16, 
-                            align: 'left', 
-                            imgFit: 'contain', 
-                            imgPosX: 50, 
-                            imgPosY: 50 
+                        slideStates.push({
+                            heading: pptData.points[idx] || "Slide Title",
+                            body: (pptData.content[idx] || '').replace(/\*/g, ''),
+                            theme: 'white',
+                            layout: 'text-only',
+                            image: null,
+                            headSize: 32,
+                            bodySize: 16,
+                            align: 'left',
+                            imgFit: 'contain',
+                            imgPosX: 50,
+                            imgPosY: 50
                         });
                     }
                 }
@@ -1967,18 +2058,18 @@
                 buildThemeGrid();
                 buildThumbs();
                 buildMobileThumbs();
-                
+
                 // CRITICAL: Select and render the first slide. 
                 // We DON'T set currentSlideIdx to 0 here manually. 
                 // Keeping it at -1 ensures selectSlide(0) skips the 'save' step 
                 // and doesn't grab the old text from the screen.
                 selectSlide(0);
-                
+
                 // Force a deep DOM refresh to ensure visual sync
                 setTimeout(() => {
-                    renderCanvas(); 
+                    renderCanvas();
                 }, 10);
-                
+
                 document.getElementById('noDataState').style.display = 'none';
                 document.getElementById('thumbsPanel').classList.remove('hidden');
                 document.getElementById('canvasArea').classList.remove('hidden');
@@ -2078,8 +2169,8 @@
                 thumb.onclick = () => selectSlide(i);
                 thumb.innerHTML = `
                     <div class="mob-thumb-canvas" style="background:${thm.gradient || thm.bg};">
-                        <div class="mob-thumb-idx" style="color:${thm.heading}">${i+1}</div>
-                        <div class="mob-thumb-label" style="color:${thm.body}">${i === 0 ? 'TITLE' : `SLIDE ${i+1}`}</div>
+                        <div class="mob-thumb-idx" style="color:${thm.heading}">${i + 1}</div>
+                        <div class="mob-thumb-label" style="color:${thm.body}">${i === 0 ? 'TITLE' : `SLIDE ${i + 1}`}</div>
                         <div class="mob-thumb-title" style="color:${thm.heading}">${s.heading}</div>
                     </div>
                 `;
@@ -2109,8 +2200,8 @@
                 const mobCanvas = mobItem.querySelector('.mob-thumb-canvas');
                 mobCanvas.style.background = thm.gradient || thm.bg;
                 mobCanvas.innerHTML = `
-                    <div class="mob-thumb-idx" style="color:${thm.heading}">${idx+1}</div>
-                    <div class="mob-thumb-label" style="color:${thm.body}">${idx === 0 ? 'TITLE' : `SLIDE ${idx+1}`}</div>
+                    <div class="mob-thumb-idx" style="color:${thm.heading}">${idx + 1}</div>
+                    <div class="mob-thumb-label" style="color:${thm.body}">${idx === 0 ? 'TITLE' : `SLIDE ${idx + 1}`}</div>
                     <div class="mob-thumb-title" style="color:${thm.heading}">${s.heading}</div>
                 `;
             }
@@ -2193,7 +2284,7 @@
             // Text zone
             const textZone = document.createElement('div');
             textZone.className = 'slide-text-zone';
-            
+
             // For background image, ensure text is readable
             if (isBgImage && s.image) {
                 textZone.style.background = 'rgba(255,255,255,0.7)';
@@ -2223,7 +2314,7 @@
                 // If image added, reduce heading size to match body better and reduce gap
                 const finalHeadSize = isTextOnly ? s.headSize : Math.min(s.headSize, 22);
                 const finalGap = isTextOnly ? Math.round(s.headSize * 0.15) : 2; // Ultra-tiny gap
-                
+
                 textZone.innerHTML = `
                     <textarea class="slide-heading" style="font-size:${finalHeadSize}px;color:${thm.heading};text-align:${s.align}; margin:0; padding:0;" rows="2" oninput="onHeadingInput(this)">${s.heading}</textarea>
                     <div style="height:${finalGap}px;"></div>
@@ -2352,7 +2443,7 @@
             fitContain.style.background = !isCover ? 'rgba(16,163,127,0.12)' : 'var(--surface2)';
             fitContain.style.borderColor = !isCover ? 'var(--accent)' : 'var(--border)';
             fitContain.style.color = !isCover ? 'var(--accent)' : 'var(--text2)';
-            
+
             // Update sliders
             const zoomVal = s.imgZoom || 100;
             document.getElementById('valZoom').textContent = zoomVal + '%';
@@ -2480,7 +2571,7 @@
             reader.onload = (ev) => {
                 const dataUrl = ev.target.result;
                 slideStates[currentSlideIdx].image = dataUrl;
-                
+
                 // Update UI zones instantly
                 const uZone = document.getElementById('imgUploadZone');
                 const pZone = document.getElementById('imgPreviewZone');
@@ -2493,7 +2584,7 @@
                 if (slideStates[currentSlideIdx].layout === 'text-only') {
                     slideStates[currentSlideIdx].layout = 'image-right';
                 }
-                
+
                 renderCanvas();
                 syncPanelToSlide();
                 refreshThumb(currentSlideIdx);
@@ -2519,13 +2610,13 @@
         function openCropModal() {
             const s = slideStates[currentSlideIdx];
             if (!s.image) return;
-            
+
             document.getElementById('cropModal').style.display = 'flex';
             const cropImg = document.getElementById('cropperImage');
             cropImg.src = s.image;
 
             if (cropper) cropper.destroy();
-            
+
             // Wait for image to load before initializing cropper
             cropImg.onload = () => {
                 cropper = new Cropper(cropImg, {
@@ -2559,10 +2650,10 @@
                 imageSmoothingEnabled: true,
                 imageSmoothingQuality: 'high',
             });
-            
+
             const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
             slideStates[currentSlideIdx].image = croppedDataUrl;
-            
+
             renderCanvas();
             syncPanelToSlide();
             refreshThumb(currentSlideIdx);
@@ -2588,7 +2679,7 @@
             s.image = null;
             s.imgZoom = 100;
             s.layout = 'text-only';
-            
+
             renderCanvas();
             syncPanelToSlide();
             refreshThumb(currentSlideIdx);
@@ -2683,8 +2774,8 @@
                             display:flex;flex-direction:column;justify-content:center;
                             position:relative;
                         ">
-                            <div style="position:absolute;top:5px;right:7px;font-size:9px;font-weight:700;color:${thm.heading};opacity:0.5;">${i+1}</div>
-                            <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:${thm.body};opacity:0.6;margin-bottom:3px;">${i === 0 ? 'TITLE' : `SLIDE ${i+1}`}</div>
+                            <div style="position:absolute;top:5px;right:7px;font-size:9px;font-weight:700;color:${thm.heading};opacity:0.5;">${i + 1}</div>
+                            <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:${thm.body};opacity:0.6;margin-bottom:3px;">${i === 0 ? 'TITLE' : `SLIDE ${i + 1}`}</div>
                             <div style="font-size:10px;font-weight:700;color:${thm.heading};line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${s.heading}</div>
                         </div>
                     </div>
@@ -3032,7 +3123,7 @@
                             if (s.layout === 'image-right') imgX = w * 0.7;
                             else if (s.layout === 'image-background') imgW = w;
                             doc.addImage(s.image, 'JPEG', imgX, imgY, imgW, imgH, undefined, 'FAST');
-                        } catch (e) {}
+                        } catch (e) { }
                     }
 
                     const hexHead = thm.heading.replace('#', '');
@@ -3043,14 +3134,14 @@
                     const textAreaW = hasImgSide ? textWidth * 0.65 : textWidth;
                     const textX = (s.layout === 'image-left') ? margins + w * 0.3 : margins;
                     const headY = (i === 0) ? h * 0.35 : margins + 8; // Reduced top space
-                    
+
                     doc.setFont('Helvetica', 'bold');
                     doc.setFontSize(i === 0 ? 36 : 28);
                     doc.setTextColor(rh, gh, bh);
                     const headLines = doc.splitTextToSize(s.heading, textAreaW);
                     let align = (i === 0 || s.align === 'center') ? 'center' : (s.align === 'right' ? 'right' : 'left');
                     if (hasImgSide) align = s.align || 'left';
-                    const headX = align === 'center' ? (hasImgSide ? textX + textAreaW/2 : w/2) : (align === 'right' ? textX + textAreaW : textX);
+                    const headX = align === 'center' ? (hasImgSide ? textX + textAreaW / 2 : w / 2) : (align === 'right' ? textX + textAreaW : textX);
                     doc.text(headLines, headX, headY, { align });
 
                     if (i === 0) {
@@ -3067,7 +3158,7 @@
                     }
                     doc.setFontSize(7); doc.setTextColor(170);
                     doc.text('ppt.yahya.in · A Project by Yahya Mundewadi', margins, h - 8);
-                    doc.text(`${i+1}`, w - margins, h - 8, { align: 'right' });
+                    doc.text(`${i + 1}`, w - margins, h - 8, { align: 'right' });
                 }
                 doc.save(`${pptData.topic.replace(/\s+/g, '_')}.pdf`);
                 showToast('PDF downloaded ✓');
@@ -3148,7 +3239,7 @@
 
                 const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
                 const displayName = profile?.display_name || user.user_metadata?.full_name || user.email.split('@')[0];
-                
+
                 document.getElementById('userNameDisplay').textContent = displayName;
                 document.getElementById('userEmailDisplay').textContent = user.email;
                 document.getElementById('userAvatar').textContent = displayName.charAt(0).toUpperCase();
@@ -3212,20 +3303,30 @@
     </script>
 
     <!-- CROP MODAL -->
-    <div id="cropModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; padding:20px;">
-        <div style="background:var(--surface); width:100%; max-width:900px; border-radius:16px; overflow:hidden; display:flex; flex-direction:column; max-height:90vh;">
-            <div style="padding:16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+    <div id="cropModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+        <div
+            style="background:var(--surface); width:100%; max-width:900px; border-radius:16px; overflow:hidden; display:flex; flex-direction:column; max-height:90vh;">
+            <div
+                style="padding:16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
                 <h3 style="font-size:16px; font-weight:700; color:var(--text);">Crop & Adjust Image</h3>
-                <button onclick="closeCropModal()" style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--text3);">&times;</button>
+                <button onclick="closeCropModal()"
+                    style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--text3);">&times;</button>
             </div>
-            <div style="flex:1; overflow:hidden; background:#000; display:flex; align-items:center; justify-content:center;">
+            <div
+                style="flex:1; overflow:hidden; background:#000; display:flex; align-items:center; justify-content:center;">
                 <img id="cropperImage" style="max-width:100%;">
             </div>
-            <div style="padding:16px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:12px;">
-                <button onclick="closeCropModal()" style="padding:10px 20px; border-radius:8px; border:1px solid var(--border); background:var(--surface); cursor:pointer; font-weight:600; color:var(--text2);">Cancel</button>
-                <button onclick="applyCrop()" style="padding:10px 24px; border-radius:8px; border:none; background:var(--accent); color:white; cursor:pointer; font-weight:700;">Apply Crop</button>
+            <div
+                style="padding:16px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:12px;">
+                <button onclick="closeCropModal()"
+                    style="padding:10px 20px; border-radius:8px; border:1px solid var(--border); background:var(--surface); cursor:pointer; font-weight:600; color:var(--text2);">Cancel</button>
+                <button onclick="applyCrop()"
+                    style="padding:10px 24px; border-radius:8px; border:none; background:var(--accent); color:white; cursor:pointer; font-weight:700;">Apply
+                    Crop</button>
             </div>
         </div>
     </div>
 </body>
+
 </html>
