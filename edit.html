@@ -3218,8 +3218,15 @@
         let sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY) : null;
         let user = null;
 
+        let lastProcessedUserId = null;
         async function checkUser() {
             if (!sb) return;
+
+            // Clear stale hash from URL to prevent refresh loops
+            if (window.location.hash && window.location.hash.includes('access_token')) {
+                window.history.replaceState(null, null, window.location.pathname);
+            }
+
             const { data: { session } } = await sb.auth.getSession();
             user = session?.user ?? null;
             updateUIForAuth();
@@ -3232,10 +3239,14 @@
 
         async function updateUIForAuth() {
             const currentUser = user; // Capture state to avoid race conditions during await
-            const loginBtn = document.getElementById('topbarLoginWrap');
-            const profileBtn = document.getElementById('topbarProfileWrap');
             
             if (currentUser) {
+                // Only fetch if it's a new user session to save API calls
+                if (lastProcessedUserId === currentUser.id) return;
+                lastProcessedUserId = currentUser.id;
+
+                const loginBtn = document.getElementById('topbarLoginWrap');
+                const profileBtn = document.getElementById('topbarProfileWrap');
                 if (loginBtn) loginBtn.style.display = 'none';
                 if (profileBtn) profileBtn.style.display = 'block';
 
