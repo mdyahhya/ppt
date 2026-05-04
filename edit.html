@@ -3237,17 +3237,28 @@
                 if (loginBtn) loginBtn.style.display = 'none';
                 if (profileBtn) profileBtn.style.display = 'block';
 
-                const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
-                const displayName = profile?.display_name || user.user_metadata?.full_name || user.email.split('@')[0];
+                try {
+                    const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
+                    const displayName = profile?.display_name || user.user_metadata?.full_name || user.email.split('@')[0];
 
-                document.getElementById('userNameDisplay').textContent = displayName;
-                document.getElementById('userEmailDisplay').textContent = user.email;
-                document.getElementById('userAvatar').textContent = displayName.charAt(0).toUpperCase();
+                    const nameEl = document.getElementById('userNameDisplay');
+                    const emailEl = document.getElementById('userEmailDisplay');
+                    const avatarEl = document.getElementById('userAvatar');
+                    
+                    if (nameEl) nameEl.textContent = displayName;
+                    if (emailEl) emailEl.textContent = user.email;
+                    if (avatarEl) avatarEl.textContent = displayName.charAt(0).toUpperCase();
 
-                document.getElementById('modalUserName').textContent = displayName;
-                document.getElementById('modalUserEmail').textContent = user.email;
-                document.getElementById('modalUserAvatar').textContent = displayName.charAt(0).toUpperCase();
-                document.getElementById('editDisplayName').value = displayName;
+                    const mNameEl = document.getElementById('modalUserName');
+                    const mEmailEl = document.getElementById('modalUserEmail');
+                    const mAvatarEl = document.getElementById('modalUserAvatar');
+                    const eNameEl = document.getElementById('editDisplayName');
+
+                    if (mNameEl) mNameEl.textContent = displayName;
+                    if (mEmailEl) mEmailEl.textContent = user.email;
+                    if (mAvatarEl) mAvatarEl.textContent = displayName.charAt(0).toUpperCase();
+                    if (eNameEl) eNameEl.value = displayName;
+                } catch (e) { console.error("Profile fetch error:", e); }
             } else {
                 if (loginBtn) loginBtn.style.display = 'block';
                 if (profileBtn) profileBtn.style.display = 'none';
@@ -3301,6 +3312,47 @@
         // Add checkUser to initialization
         checkUser(); // Run immediately
     </script>
+
+    <!-- AUTH MODAL -->
+    <div id="authModal" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index: 10000; padding: 20px;">
+        <div style="max-width: 450px; background: white; padding: 40px; border-radius: 24px; text-align: center; position: relative;">
+            <button onclick="closeAuthModal()" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 24px; cursor: pointer; color: #94a3b8;">&times;</button>
+            <div style="margin-bottom: 24px;">
+                <div style="width: 64px; height: 64px; background: rgba(79, 142, 247, 0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: #4F8EF7;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                <h3 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">One-tap Sign In</h3>
+                <p style="color: #64748b; font-size: 15px; line-height: 1.6;">Sign in to save your presentation and sync across devices.</p>
+            </div>
+            <button onclick="signInWithGoogle()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; cursor: pointer; font-family: inherit; font-size: 15px; font-weight: 600; color: #0f172a;">
+                <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.64 24.55c0-1.65-.15-3.23-.42-4.75H24v9h12.72c-.55 2.87-2.18 5.3-4.63 6.95l7.46 5.79C43.89 37.1 46.64 31.49 46.64 24.55z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24s.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.46-5.79c-2.2 1.47-5.01 2.35-8.43 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+                Continue with Google
+            </button>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div id="profileModal" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index: 10000; padding: 20px;">
+        <div style="max-width: 450px; background: white; padding: 40px; border-radius: 24px; position: relative; width: 100%;">
+            <button onclick="closeProfileModal()" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 24px; cursor: pointer; color: #94a3b8;">&times;</button>
+            <h3 style="font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 24px;">Your Profile</h3>
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 32px; padding: 20px; background: #f8fafc; border-radius: 16px;">
+                <div id="modalUserAvatar" style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #4F8EF7, #7C5CFC); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 700;">?</div>
+                <div>
+                    <div id="modalUserName" style="font-size: 18px; font-weight: 700; color: #0f172a;">User Name</div>
+                    <div id="modalUserEmail" style="font-size: 14px; color: #64748b;">email@example.com</div>
+                </div>
+            </div>
+            <div style="margin-bottom: 24px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #0f172a; margin-bottom: 8px;">Display Name</label>
+                <input type="text" id="editDisplayName" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: inherit; font-size: 14px; outline: none;" placeholder="Your Name">
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button onclick="updateUserProfile()" style="flex: 1; padding: 14px; background: #4F8EF7; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 14px;">Save Changes</button>
+                <button onclick="signOut()" style="padding: 14px 20px; background: #f1f5f9; color: #EF4444; border: 1px solid #fee2e2; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 14px;">Sign Out</button>
+            </div>
+        </div>
+    </div>
 
     <!-- CROP MODAL -->
     <div id="cropModal"
