@@ -1278,7 +1278,7 @@
     <section class="hero">
         <div class="hero-eyebrow">
             <span class="hero-eyebrow-dot"></span>
-            AI PPT in under 30 seconds — free, no sign-up
+            AI PPT in under 30 seconds — 100% Free
         </div>
 
         <h1>
@@ -1922,7 +1922,8 @@
                         </svg>
                     </div>
                     <div class="feat-title">No Account Required</div>
-                    <div class="feat-desc">Start generating immediately — no sign-up, no login, no credit card. Just
+                    <div class="feat-desc">Start generating immediately — 100% Free, no credit card, no premium
+                        required. Just
                         open the app and start creating your first AI-powered presentation.</div>
                 </div>
 
@@ -2124,10 +2125,10 @@
     <!-- CTA -->
     <section class="cta-section">
         <div class="cta-box">
-            <div class="hero-eyebrow" style="margin: 0 auto 24px;">
+            <!-- <div class="hero-eyebrow" style="margin: 0 auto 24px;">
                 <span class="hero-eyebrow-dot"></span>
                 No sign-up required
-            </div>
+            </div> -->
             <h2>Your next presentation,<br>already written.</h2>
             <p>Open the app, type your topic, and get a polished deck in under a minute.</p>
             <a href="ppt.html" class="btn-primary" style="display: inline-flex; margin: 0 auto;">
@@ -2387,6 +2388,13 @@
 
     <script>
         // ── INITIALIZATION ──
+        const SUPABASE_URL = 'https://nghfugykhrpxxlxkiyji.supabase.co';
+        const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5naGZ1Z3lraHJweHhseGtpeWppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTk2MzQsImV4cCI6MjA5MTQ3NTYzNH0.EgFu1Uj6EyE6scGJMYM1sN0DRUO9H-IexaG7XLnfGKc';
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+        let user = null;
+
         // Initialize immediately
         checkUser();
 
@@ -2394,13 +2402,6 @@
             trackVisit();
             animateAllCounters(); // Start hero animations immediately
         };
-
-        const SUPABASE_URL = 'https://nghfugykhrpxxlxkiyji.supabase.co';
-        const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5naGZ1Z3lraHJweHhseGtpeWppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4OTk2MzQsImV4cCI6MjA5MTQ3NTYzNH0.EgFu1Uj6EyE6scGJMYM1sN0DRUO9H-IexaG7XLnfGKc';
-        const { createClient } = supabase;
-        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
-
-        let user = null;
 
         async function checkUser() {
             const { data: { session } } = await _supabase.auth.getSession();
