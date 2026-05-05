@@ -1660,7 +1660,7 @@ ${state.points.map((p, i) => `S${i + 1}: ${p}`).join('\n')}
 
 INSTRUCTIONS:
 1. For Slide S1 (Introduction), write exactly one professional, engaging paragraph (no bullet points).
-2. For ALL other slides (S2 onwards), write exactly 4 full sentences. Each sentence MUST be on a new line and start with a bullet point (•).
+2. For ALL other slides (S2 onwards), write exactly 4 short, professional and easy-to-read sentences. Each sentence MUST be on a new line and start with a bullet point (•).
 3. Use "|||" as a separator between slides. 
 4. Output content in the exact same order as the slide titles. No titles, no extra chat, no explanations.`;
 
@@ -1692,7 +1692,7 @@ INSTRUCTIONS:
                         <div class="slide-card-header" style="color:#888;">TITLE SLIDE</div>
                         <h4 style="font-size:22px;color:#fff;">${state.topic}</h4>
                         <p style="color:#aaa;margin-top:8px;">By <strong style="color:#ccc;">${state.userName.split('\n').map(n => n.trim()).filter(n => n).join(', ')}</strong><br>
-                        <span style="font-size:11px;opacity:0.5;">ppt.yahya.in · A Project by Yahya Mundewadi</span></p>
+                        <span style="font-size:11px;opacity:0.5;">ppt.yahya.in</span></p>
                     </div>
             `;
 
@@ -1754,7 +1754,7 @@ INSTRUCTIONS:
             // Title slide
             const titleSlide = document.createElement('div');
             titleSlide.className = 'modal-slide title-slide';
-            titleSlide.innerHTML = `<div class="slide-num">SLIDE 1 — TITLE</div><h3>${state.topic}</h3><p>By ${state.userName.split('\n').map(n => n.trim()).filter(n => n).join(', ')}<br>ppt.yahya.in · A Project by Yahya Mundewadi</p>`;
+            titleSlide.innerHTML = `<div class="slide-num">SLIDE 1 — TITLE</div><h3>${state.topic}</h3><p>By ${state.userName.split('\n').map(n => n.trim()).filter(n => n).join(', ')}<br>ppt.yahya.in</p>`;
             area.appendChild(titleSlide);
 
             state.points.forEach((pt, idx) => {
@@ -1945,7 +1945,7 @@ INSTRUCTIONS:
                 const pdfBy2 = pdfNames2.length > 1 ? `By ${pdfNames2.join(', ')}` : `By ${pdfNames2[0] || 'Unknown'}`;
                 doc.text(pdfBy2, w / 2, startY + titleHeight + 10, { align: 'center' });
                 doc.setFontSize(8); doc.setTextColor(120);
-                doc.text('ppt.yahya.in : A Project by Yahya Mundewadi', margins, h - 8);
+                doc.text('ppt.yahya.in', margins, h - 8);
                 renderFooter(null);
 
                 state.points.forEach((point, idx) => {
@@ -1989,7 +1989,7 @@ INSTRUCTIONS:
                 slide1.background = { fill: '212121' };
                 slide1.addText(state.topic, { x: '5%', y: '30%', w: '90%', h: isMobile ? 2.5 : 2, fontSize: isMobile ? 32 : 54, color: 'FFFFFF', bold: true, align: 'center', valign: 'middle', wrap: true });
                 slide1.addText(pptBL2, { x: '5%', y: isMobile ? '58%' : '60%', w: '90%', h: 0.8, fontSize: isMobile ? 16 : 24, color: 'B4B4B4', align: 'center' });
-                slide1.addText('ppt.yahya.in : A Project by Yahya Mundewadi', { x: '5%', y: '90%', w: '90%', h: 0.4, fontSize: 9, color: '6B7280', align: 'center' });
+                slide1.addText('ppt.yahya.in', { x: '5%', y: '90%', w: '90%', h: 0.4, fontSize: 9, color: '6B7280', align: 'center' });
 
                 state.points.forEach((title, i) => {
                     const slide = pptx.addSlide({ masterName: 'MASTER_SLIDE' });
