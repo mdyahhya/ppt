@@ -2012,9 +2012,13 @@
                         slideStates.push({
                             heading: pptData.topic || "Presentation Title",
                             body: `By ${pptData.userName || 'User'}`,
-                            theme: 'charcoal',
+                            theme: 'white',
                             layout: 'text-only',
                             image: null,
+                            logo: null,
+                            logoX: 88,
+                            logoY: 8,
+                            logoSize: 40,
                             headSize: 40,
                             bodySize: 18,
                             align: 'center',
@@ -2030,6 +2034,10 @@
                             theme: 'white',
                             layout: 'text-only',
                             image: null,
+                            logo: null,
+                            logoX: 88,
+                            logoY: 8,
+                            logoSize: 40,
                             headSize: 32,
                             bodySize: 16,
                             align: 'left',
@@ -2295,7 +2303,7 @@
                         <span style="font-size:14px; opacity:0.7; margin-bottom:4px;">By</span>
                         <textarea class="title-slide-names" style="font-size:20px; color:${thm.body}; text-align:${textAlign}; background:transparent; border:none; outline:none; width:100%; resize:none; overflow:hidden; font-family:inherit; font-weight:700; padding:0;" oninput="onNameInput(this)">${pptData.userName}</textarea>
                     </div>
-                    <div class="title-slide-brand" style="color:${thm.body};text-align:${textAlign}; margin-top:24px; font-size:12px; opacity:0.6;">ppt.yahya.in · A Project by Yahya Mundewadi</div>
+                    <div class="title-slide-brand" style="color:${thm.body};text-align:${textAlign}; margin-top:24px; font-size:12px; opacity:0.6;">ppt.yahya.in</div>
                 `;
             } else {
                 // If image added, reduce heading size to match body better and reduce gap
@@ -2307,6 +2315,22 @@
                     <div style="height:${finalGap}px;"></div>
                     <textarea class="slide-body" style="font-size:${s.bodySize}px;color:${thm.body};text-align:${s.align}; margin:0; padding:0;" rows="6" oninput="onBodyInput(this)">${s.body}</textarea>
                 `;
+            }
+
+            // Logo Support
+            if (s.logo) {
+                const logoEl = document.createElement('img');
+                logoEl.src = s.logo;
+                logoEl.style.position = 'absolute';
+                logoEl.style.left = s.logoX + '%';
+                logoEl.style.top = s.logoY + '%';
+                logoEl.style.width = s.logoSize + 'px';
+                logoEl.style.cursor = 'move';
+                logoEl.style.zIndex = '100';
+                logoEl.className = 'slide-logo-img';
+                
+                // Simple drag logic placeholder (buttons are easier for mobile/precise)
+                mainContent.appendChild(logoEl);
             }
 
             // Image zone
@@ -2371,13 +2395,41 @@
             pptData.userName = el.value;
             el.style.height = 'auto';
             el.style.height = el.scrollHeight + 'px';
+            // Sync with slide body if it's slide 0
+            if (currentSlideIdx === 0) {
+                slideStates[0].body = `By ${el.value}`;
+                document.getElementById('textEditBody').value = `By ${el.value}`;
+            }
         }
 
         function onBodyInput(el) {
-            slideStates[currentSlideIdx].body = el.value;
+            const s = slideStates[currentSlideIdx];
+            s.body = el.value;
+            if (currentSlideIdx === 0) {
+                pptData.userName = el.value.replace(/^By\s+/i, '');
+            }
             el.style.height = 'auto';
             el.style.height = el.scrollHeight + 'px';
             document.getElementById('textEditBody').value = el.value;
+            refreshThumb(currentSlideIdx);
+        }
+
+        function syncHeadingFromPanel() {
+            const val = document.getElementById('textEditHeading').value;
+            slideStates[currentSlideIdx].heading = val;
+            if (currentSlideIdx === 0) pptData.topic = val;
+            renderCanvas();
+            refreshThumb(currentSlideIdx);
+        }
+
+        function syncBodyFromPanel() {
+            const val = document.getElementById('textEditBody').value;
+            slideStates[currentSlideIdx].body = val;
+            if (currentSlideIdx === 0) {
+                pptData.userName = val.replace(/^By\s+/i, '');
+            }
+            renderCanvas();
+            refreshThumb(currentSlideIdx);
         }
 
         // ── SYNC PANEL → SLIDE ───────────────────────────────────────────
@@ -2407,6 +2459,12 @@
             // Update text editors in text tab
             document.getElementById('textEditHeading').value = s.heading;
             document.getElementById('textEditBody').value = s.body;
+
+            // Update Logo Controls
+            const logoCtrl = document.getElementById('logoControls');
+            if (logoCtrl) {
+                logoCtrl.classList.toggle('hidden', !s.logo);
+            }
 
             // Update align buttons
             const aligns = ['left', 'center', 'right'];
@@ -2574,6 +2632,37 @@
                 if (uZone) uZone.classList.add('hidden');
                 if (pZone) pZone.classList.remove('hidden');
                 if (pEl) pEl.src = dataUrl;
+        function handleLogoUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (re) => {
+                const s = slideStates[currentSlideIdx];
+                s.logo = re.target.result;
+                renderCanvas();
+                syncPanelToSlide();
+                refreshThumb(currentSlideIdx);
+                showToast("Logo added ✓");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function moveLogo(prop, delta) {
+            const s = slideStates[currentSlideIdx];
+            if (prop === 'x') s.logoX += delta;
+            if (prop === 'y') s.logoY += delta;
+            if (prop === 'size') s.logoSize = Math.max(10, s.logoSize + delta);
+            renderCanvas();
+        }
+
+        function removeLogo() {
+            const s = slideStates[currentSlideIdx];
+            s.logo = null;
+            renderCanvas();
+            syncPanelToSlide();
+            refreshThumb(currentSlideIdx);
+            showToast("Logo removed");
+        }
 
                 // Switch to image-right if it's currently text-only to ensure user SEES the image
                 if (slideStates[currentSlideIdx].layout === 'text-only') {
@@ -3142,6 +3231,14 @@
                         } catch (e) { }
                     }
 
+                    if (s.logo) {
+                        try {
+                            const lRatio = w / 100, lHRatio = h / 100;
+                            const lSize = (s.logoSize / 3); // Approximate scale for PDF mm
+                            doc.addImage(s.logo, 'PNG', s.logoX * lRatio, s.logoY * lHRatio, lSize, lSize, undefined, 'FAST');
+                        } catch (e) {}
+                    }
+
                     const hexHead = thm.heading.replace('#', '');
                     const rh = parseInt(hexHead.substring(0, 2), 16), gh = parseInt(hexHead.substring(2, 4), 16), bh = parseInt(hexHead.substring(4, 6), 16);
                     const hexBody = thm.body.replace('#', '');
@@ -3173,7 +3270,7 @@
                         doc.text(bodyLines, headX, headY + headLines.length * 10 + 6, { align, lineHeightFactor: 1.5 }); // Tightened gap
                     }
                     doc.setFontSize(7); doc.setTextColor(170);
-                    doc.text('ppt.yahya.in · A Project by Yahya Mundewadi', margins, h - 8);
+                    doc.text('ppt.yahya.in', margins, h - 8);
                     doc.text(`${i + 1}`, w - margins, h - 8, { align: 'right' });
                 }
                 doc.save(`${pptData.topic.replace(/\s+/g, '_')}.pdf`);
@@ -3217,6 +3314,11 @@
                         });
                     }
 
+                    if (s.logo) {
+                        const lSize = s.logoSize / 70; 
+                        slide.addImage({ data: s.logo, x: (s.logoX / 10), y: (s.logoY / 10), w: lSize, h: lSize });
+                    }
+
                     const textW = hasImgSide ? 4.5 : 9, textX = (hasImgSide && s.layout === 'image-left') ? 5.25 : 0.5;
                     const hCol = thm.heading.replace('#', ''), bCol = thm.body.replace('#', '');
                     const align = (i === 0 || s.align === 'center') ? (hasImgSide ? (s.align || 'left') : 'center') : (s.align || 'left');
@@ -3224,7 +3326,7 @@
                     if (i === 0) {
                         slide.addText(s.heading, { x: textX, y: '30%', w: textW, fontSize: 44, color: hCol, bold: true, align });
                         slide.addText(byLine, { x: textX, y: '60%', w: textW, fontSize: 20, color: bCol, align });
-                        slide.addText('ppt.yahya.in · A Project by Yahya Mundewadi', { x: textX, y: '90%', w: textW, fontSize: 8, color: '888888', align });
+                        slide.addText('ppt.yahya.in', { x: textX, y: '90%', w: textW, fontSize: 8, color: '888888', align });
                     } else {
                         slide.addText(s.heading, { x: textX, y: '10%', w: textW, fontSize: 32, color: hCol, bold: true, align });
                         if (s.body) slide.addText(s.body.replace(/\*/g, ''), { x: textX, y: '28%', w: textW, fontSize: 18, color: bCol, valign: 'top', align });
