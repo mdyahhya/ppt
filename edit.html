@@ -2289,11 +2289,13 @@
             }
 
             if (isTitle) {
-                const nameHtml = displayName.split('\n').map(n => n.trim()).filter(n => n).join('<br>');
                 textZone.innerHTML = `
-                    <textarea class="slide-heading" style="font-size:${isTextOnly ? s.headSize : Math.min(s.headSize, 28)}px;color:${thm.heading};text-align:${textAlign};background:transparent;font-weight:800;" rows="2" oninput="onHeadingInput(this)">${s.heading}</textarea>
-                    <div class="title-slide-name" style="color:${thm.body};text-align:${textAlign}; margin-top:8px;">By ${nameHtml}</div>
-                    <div class="title-slide-brand" style="color:${thm.body};text-align:${textAlign}; margin-top:4px;">ppt.yahya.in · A Project by Yahya Mundewadi</div>
+                    <textarea class="slide-heading" style="font-size:${isTextOnly ? s.headSize : Math.min(s.headSize, 28)}px;color:${thm.heading};text-align:${textAlign};background:transparent;font-weight:800; border:none; outline:none; width:100%; resize:none; overflow:hidden;" rows="2" oninput="onHeadingInput(this)">${s.heading}</textarea>
+                    <div style="margin-top:16px; color:${thm.body}; text-align:${textAlign}; font-size:18px; font-weight:600; display:flex; flex-direction:column; align-items:${textAlign === 'center' ? 'center' : (textAlign === 'right' ? 'flex-end' : 'flex-start')};">
+                        <span style="font-size:14px; opacity:0.7; margin-bottom:4px;">By</span>
+                        <textarea class="title-slide-names" style="font-size:20px; color:${thm.body}; text-align:${textAlign}; background:transparent; border:none; outline:none; width:100%; resize:none; overflow:hidden; font-family:inherit; font-weight:700; padding:0;" oninput="onNameInput(this)">${pptData.userName}</textarea>
+                    </div>
+                    <div class="title-slide-brand" style="color:${thm.body};text-align:${textAlign}; margin-top:24px; font-size:12px; opacity:0.6;">ppt.yahya.in · A Project by Yahya Mundewadi</div>
                 `;
             } else {
                 // If image added, reduce heading size to match body better and reduce gap
@@ -2356,11 +2358,19 @@
         }
 
         function onHeadingInput(el) {
-            slideStates[currentSlideIdx].heading = el.value;
+            const s = slideStates[currentSlideIdx];
+            s.heading = el.value;
+            if (currentSlideIdx === 0) pptData.topic = el.value;
             el.style.height = 'auto';
             el.style.height = el.scrollHeight + 'px';
             document.getElementById('textEditHeading').value = el.value;
             refreshThumb(currentSlideIdx);
+        }
+
+        function onNameInput(el) {
+            pptData.userName = el.value;
+            el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
         }
 
         function onBodyInput(el) {
@@ -3058,11 +3068,14 @@
             return thm;
         }
 
+        let toastTimeout;
         function showToast(msg) {
             const toast = document.getElementById('toast');
+            if (!toast) return;
+            clearTimeout(toastTimeout);
             toast.textContent = msg;
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2400);
+            toastTimeout = setTimeout(() => toast.classList.remove('show'), 2400);
         }
 
         // Save text before export
@@ -3106,8 +3119,26 @@
                         try {
                             let imgX = 0, imgY = 0, imgW = w * 0.3, imgH = h;
                             if (s.layout === 'image-right') imgX = w * 0.7;
-                            else if (s.layout === 'image-background') imgW = w;
-                            doc.addImage(s.image, 'JPEG', imgX, imgY, imgW, imgH, undefined, 'FAST');
+                            else if (s.layout === 'image-background') { imgW = w; imgH = h; }
+
+                            // Implement 'contain' logic for PDF
+                            const imgProps = doc.getImageProperties(s.image);
+                            const imgRatio = imgProps.width / imgProps.height;
+                            const containerRatio = imgW / imgH;
+
+                            let finalW = imgW, finalH = imgH;
+                            if (s.layout !== 'image-background') {
+                                if (imgRatio > containerRatio) {
+                                    finalH = imgW / imgRatio;
+                                    imgY = (h - finalH) / 2;
+                                } else {
+                                    finalW = imgH * imgRatio;
+                                    if (s.layout === 'image-right') imgX = w - finalW;
+                                    else imgX = 0;
+                                }
+                            }
+                            
+                            doc.addImage(s.image, 'JPEG', imgX, imgY, finalW, finalH, undefined, 'FAST');
                         } catch (e) { }
                     }
 
@@ -3178,7 +3209,12 @@
                         else if (s.layout === 'image-background') imgW = 10;
                         
                         const sizingType = s.layout === 'image-background' ? 'crop' : 'contain';
-                        slide.addImage({ data: s.image, x: imgX, y: imgY, w: imgW, h: imgH, sizing: { type: sizingType, w: imgW, h: imgH } });
+                        // Use contain to avoid stretching, and ensure dimensions are provided for crop
+                        slide.addImage({ 
+                            data: s.image, 
+                            x: imgX, y: imgY, w: imgW, h: imgH, 
+                            sizing: { type: sizingType, w: imgW, h: imgH } 
+                        });
                     }
 
                     const textW = hasImgSide ? 4.5 : 9, textX = (hasImgSide && s.layout === 'image-left') ? 5.25 : 0.5;
