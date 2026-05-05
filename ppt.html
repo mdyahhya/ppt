@@ -1588,7 +1588,7 @@
                 state.slideCount = countMap[input] || 9;
                 state.step = 5;
                 showTyping();
-                const structurePrompt = `Create exactly ${state.slideCount} sequential slide titles for "${state.topic}". Tone is ${state.tone}. Format: Provide one title per line with no bullets/numbers. No extra chat.`;
+                const structurePrompt = `Create exactly ${state.slideCount} sequential slide titles for "${state.topic}". Tone is ${state.tone}. The FIRST slide must be "Introduction". Format: Provide one title per line with no bullets/numbers. No extra chat.`;
                 const pointsResponse = await callAI(structurePrompt, 'You are a master presentation architect.');
                 hideTyping();
                 state.points = pointsResponse.split('\n').map(p => p.trim()).filter(p => p.length > 0).slice(0, state.slideCount);
@@ -1654,7 +1654,15 @@
                 if (animBubble) animBubble.innerHTML = `<div class="status-animate"><span class="spin"></span>${generationPhrases[phraseIdx]}</div>`;
             }, 2200);
 
-            const prompt = `Write slide content for topic "${state.topic}" (${state.tone}).\nTitles:\n${state.points.map((p, i) => `S${i + 1}: ${p}`).join('\n')}\n\nFor EACH slide title listed above, write ONLY the content for that specific slide — exactly 2-3 professional bullet points relevant to that slide's title. Use "|||" as a separator between slides. Output content in the exact same order as the slide titles. No titles, no extra text, no explanations.`;
+            const prompt = `Write slide content for topic "${state.topic}" (${state.tone}).
+Titles:
+${state.points.map((p, i) => `S${i + 1}: ${p}`).join('\n')}
+
+INSTRUCTIONS:
+1. For Slide S1 (Introduction), write exactly one professional, engaging paragraph (no bullet points).
+2. For ALL other slides (S2 onwards), write exactly 4 full sentences. Each sentence MUST be on a new line and start with a bullet point (•).
+3. Use "|||" as a separator between slides. 
+4. Output content in the exact same order as the slide titles. No titles, no extra chat, no explanations.`;
 
             try {
                 const response = await callAI(prompt, 'You are an elite presentation copywriter. Write content ONLY for each slide in order, separated by |||. Do not mix content across slides.');
